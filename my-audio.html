@@ -1,0 +1,567 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Your Audio Files - Blue FM TTS</title>
+    
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+    
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --primary: #2563eb;
+            --secondary: #3b82f6;
+            --accent: #60a5fa;
+            --success: #10b981;
+            --warning: #f59e0b;
+            --danger: #ef4444;
+            --glass-bg: rgba(255, 255, 255, 0.1);
+            --glass-border: rgba(255, 255, 255, 0.2);
+            --text-primary: #ffffff;
+            --text-secondary: #e0e0ff;
+            --shadow: rgba(37, 99, 235, 0.3);
+        }
+
+        body {
+            font-family: 'Poppins', sans-serif;
+            min-height: 100vh;
+            background: linear-gradient(135deg, #1e3a8a 0%, #2563eb 50%, #3b82f6 100%);
+            color: var(--text-primary);
+            overflow-x: hidden;
+            position: relative;
+        }
+
+        /* Background Animation */
+        .bg-animation {
+            position: fixed;
+            width: 100%;
+            height: 100%;
+            top: 0;
+            left: 0;
+            z-index: -1;
+            overflow: hidden;
+        }
+
+        .sound-wave {
+            position: absolute;
+            width: 100%;
+            height: 100px;
+            bottom: 0;
+            background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1440 320"><path fill="%2360a5fa" fill-opacity="0.3" d="M0,160L48,170.7C96,181,192,203,288,197.3C384,192,480,160,576,165.3C672,171,768,213,864,213.3C960,213,1056,171,1152,160C1248,149,1344,171,1392,181.3L1440,192L1440,320L1392,320C1344,320,1248,320,1152,320C1056,320,960,320,864,320C768,320,672,320,576,320C480,320,384,320,288,320C192,320,96,320,48,320L0,320Z"></path></svg>');
+            animation: wave 20s linear infinite;
+        }
+
+        @keyframes wave {
+            0% { transform: translateX(0); }
+            100% { transform: translateX(-50%); }
+        }
+
+        /* Navigation */
+        nav {
+            position: fixed;
+            top: 0;
+            width: 100%;
+            z-index: 100;
+            background: var(--glass-bg);
+            backdrop-filter: blur(10px);
+            padding: 1rem 2rem;
+            border-bottom: 1px solid var(--glass-border);
+        }
+
+        .nav-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .back-btn {
+            color: var(--text-primary);
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            transition: all 0.3s ease;
+            padding: 0.5rem 1rem;
+            border-radius: 25px;
+        }
+
+        .back-btn:hover {
+            color: var(--accent);
+            background: rgba(255, 255, 255, 0.1);
+        }
+
+        /* Main Content */
+        .main-content {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 6rem 1rem 2rem;
+        }
+
+        /* Header Section */
+        .header-section {
+            text-align: center;
+            margin-bottom: 3rem;
+        }
+
+        .page-title {
+            font-size: 2.5rem;
+            font-weight: 700;
+            margin-bottom: 1rem;
+            background: linear-gradient(45deg, var(--text-primary), var(--accent));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .page-subtitle {
+            font-size: 1.1rem;
+            color: var(--text-secondary);
+        }
+
+        /* Glass Container */
+        .glass-container {
+            background: var(--glass-bg);
+            backdrop-filter: blur(10px);
+            border: 1px solid var(--glass-border);
+            border-radius: 20px;
+            padding: 2rem;
+            box-shadow: 0 8px 32px var(--shadow);
+            margin-bottom: 2rem;
+        }
+
+        /* Audio Cards */
+        .audio-list {
+            display: grid;
+            gap: 1.5rem;
+        }
+
+        .audio-item {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid var(--glass-border);
+            border-radius: 15px;
+            padding: 1.5rem;
+            transition: all 0.3s ease;
+        }
+
+        .audio-item:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 20px rgba(37, 99, 235, 0.2);
+        }
+
+        .audio-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: start;
+            margin-bottom: 1rem;
+        }
+
+        .audio-info {
+            flex: 1;
+        }
+
+        .audio-name {
+            font-size: 1.25rem;
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+            color: var(--text-primary);
+        }
+
+        .audio-meta {
+            display: flex;
+            gap: 2rem;
+            margin-bottom: 0.5rem;
+            flex-wrap: wrap;
+        }
+
+        .meta-item {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            font-size: 0.9rem;
+            color: var(--text-secondary);
+        }
+
+        .status-badge {
+            padding: 0.25rem 0.75rem;
+            border-radius: 15px;
+            font-size: 0.8rem;
+            font-weight: 600;
+            text-transform: uppercase;
+        }
+
+        .status-completed {
+            background: rgba(16, 185, 129, 0.2);
+            color: var(--success);
+            border: 1px solid var(--success);
+        }
+
+        .status-processing {
+            background: rgba(245, 158, 11, 0.2);
+            color: var(--warning);
+            border: 1px solid var(--warning);
+        }
+
+        .status-failed {
+            background: rgba(239, 68, 68, 0.2);
+            color: var(--danger);
+            border: 1px solid var(--danger);
+        }
+
+        .audio-actions {
+            display: flex;
+            gap: 0.5rem;
+            margin-top: 1rem;
+        }
+
+        .btn {
+            padding: 0.5rem 1rem;
+            border: none;
+            border-radius: 25px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            font-size: 0.9rem;
+        }
+
+        .btn-primary {
+            background: linear-gradient(45deg, var(--primary), var(--secondary));
+            color: white;
+        }
+
+        .btn-success {
+            background: linear-gradient(45deg, var(--success), #059669);
+            color: white;
+        }
+
+        .btn-warning {
+            background: linear-gradient(45deg, var(--warning), #d97706);
+            color: white;
+        }
+
+        .btn:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+        }
+
+        .btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        /* Empty State */
+        .empty-state {
+            text-align: center;
+            padding: 3rem 2rem;
+        }
+
+        .empty-icon {
+            font-size: 4rem;
+            color: var(--text-secondary);
+            margin-bottom: 1rem;
+            opacity: 0.5;
+        }
+
+        .empty-title {
+            font-size: 1.5rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .empty-message {
+            color: var(--text-secondary);
+            margin-bottom: 2rem;
+        }
+
+        .btn-large {
+            padding: 1rem 2rem;
+            font-size: 1.1rem;
+        }
+
+        /* Loading Animation */
+        .loading-spinner {
+            display: inline-block;
+            width: 16px;
+            height: 16px;
+            border: 2px solid rgba(255, 255, 255, 0.3);
+            border-top-color: white;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .audio-header {
+                flex-direction: column;
+                gap: 1rem;
+            }
+
+            .audio-meta {
+                flex-direction: column;
+                gap: 0.5rem;
+            }
+
+            .audio-actions {
+                flex-wrap: wrap;
+            }
+
+            .page-title {
+                font-size: 2rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Background Animation -->
+    <div class="bg-animation">
+        <div class="sound-wave"></div>
+    </div>
+
+    <!-- Navigation -->
+    <nav>
+        <div class="nav-container">
+            <a href="index.html" class="back-btn">
+                <i class="fas fa-arrow-left"></i>
+                Back to Dashboard
+            </a>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <main class="main-content">
+        <!-- Header Section -->
+        <section class="header-section">
+            <h1 class="page-title">Your Audio Files</h1>
+            <p class="page-subtitle">Manage and download your generated audio files</p>
+        </section>
+
+        <!-- Audio List Section -->
+        <section class="glass-container">
+            <div class="audio-list" id="audioList">
+                <!-- Audio items will be loaded here -->
+            </div>
+
+            <!-- Empty State -->
+            <div class="empty-state" id="emptyState" style="display: none;">
+                <div class="empty-icon">
+                    <i class="fas fa-music"></i>
+                </div>
+                <h3 class="empty-title">No Audio Files Yet</h3>
+                <p class="empty-message">Start creating your first audio file to see it here</p>
+                <a href="index.html" class="btn btn-primary btn-large">
+                    <i class="fas fa-plus"></i> Create Audio
+                </a>
+            </div>
+        </section>
+    </main>
+
+    <script>
+        // Load audio history
+        function loadAudioHistory() {
+            const audioHistory = JSON.parse(localStorage.getItem('audioHistory') || '[]');
+            const audioList = document.getElementById('audioList');
+            const emptyState = document.getElementById('emptyState');
+
+            if (audioHistory.length === 0) {
+                audioList.style.display = 'none';
+                emptyState.style.display = 'block';
+                return;
+            }
+
+            audioList.style.display = 'grid';
+            emptyState.style.display = 'none';
+
+            audioList.innerHTML = audioHistory.map(audio => createAudioItem(audio)).join('');
+        }
+
+        // Create audio item HTML
+        function createAudioItem(audio) {
+            const createdDate = new Date(audio.createdAt).toLocaleDateString();
+            const createdTime = new Date(audio.createdAt).toLocaleTimeString();
+            
+            let statusBadge = '';
+            let actions = '';
+
+            switch (audio.status) {
+                case 'completed':
+                    statusBadge = '<span class="status-badge status-completed">Completed</span>';
+                    actions = `
+                        <button class="btn btn-success" onclick="downloadAudio('${audio.id}', 'mp3')">
+                            <i class="fas fa-download"></i> MP3
+                        </button>
+                        <button class="btn btn-success" onclick="downloadAudio('${audio.id}', 'wav')">
+                            <i class="fas fa-download"></i> WAV
+                        </button>
+                        <button class="btn btn-primary" onclick="playAudio('${audio.id}')">
+                            <i class="fas fa-play"></i> Play
+                        </button>
+                    `;
+                    break;
+                case 'processing':
+                    statusBadge = '<span class="status-badge status-processing">Processing</span>';
+                    actions = `
+                        <button class="btn btn-warning" disabled>
+                            <div class="loading-spinner"></div> Processing...
+                        </button>
+                    `;
+                    break;
+                case 'failed':
+                    statusBadge = '<span class="status-badge status-failed">Failed</span>';
+                    actions = `
+                        <button class="btn btn-primary" onclick="retryGeneration('${audio.id}')">
+                            <i class="fas fa-redo"></i> Retry
+                        </button>
+                    `;
+                    break;
+            }
+
+            return `
+                <div class="audio-item">
+                    <div class="audio-header">
+                        <div class="audio-info">
+                            <h3 class="audio-name">${audio.fileName}</h3>
+                            <div class="audio-meta">
+                                <div class="meta-item">
+                                    <i class="fas fa-microphone"></i>
+                                    <span>${audio.voice}</span>
+                                </div>
+                                <div class="meta-item">
+                                    <i class="fas fa-font"></i>
+                                    <span>${audio.characters} characters</span>
+                                </div>
+                                ${audio.duration ? `
+                                <div class="meta-item">
+                                    <i class="fas fa-clock"></i>
+                                    <span>${audio.duration}</span>
+                                </div>
+                                ` : ''}
+                                <div class="meta-item">
+                                    <i class="fas fa-calendar"></i>
+                                    <span>${createdDate} ${createdTime}</span>
+                                </div>
+                            </div>
+                        </div>
+                        ${statusBadge}
+                    </div>
+                    <div class="audio-actions">
+                        ${actions}
+                        <button class="btn btn-warning" onclick="deleteAudio('${audio.id}')" style="margin-left: auto;">
+                            <i class="fas fa-trash"></i> Delete
+                        </button>
+                    </div>
+                </div>
+            `;
+        }
+
+        // Download Audio
+        function downloadAudio(audioId, format) {
+            const audioHistory = JSON.parse(localStorage.getItem('audioHistory') || '[]');
+            const audio = audioHistory.find(a => a.id === audioId);
+            
+            if (!audio) {
+                alert('Audio file not found!');
+                return;
+            }
+
+            // Simulate download
+            const fileName = `${audio.fileName}.${format}`;
+            alert(`Downloading ${fileName}...`);
+            
+            // In real implementation, you would:
+            // 1. Get download URL from Firebase Storage
+            // 2. Create download link
+            // 3. Trigger download
+        }
+
+        // Play Audio
+        function playAudio(audioId) {
+            const audioHistory = JSON.parse(localStorage.getItem('audioHistory') || '[]');
+            const audio = audioHistory.find(a => a.id === audioId);
+            
+            if (!audio) {
+                alert('Audio file not found!');
+                return;
+            }
+
+            // Simulate play
+            alert(`Playing ${audio.fileName}...`);
+            
+            // In real implementation, you would:
+            // 1. Get audio URL from Firebase Storage
+            // 2. Create audio element
+            // 3. Play audio
+        }
+
+        // Retry Generation
+        function retryGeneration(audioId) {
+            let audioHistory = JSON.parse(localStorage.getItem('audioHistory') || '[]');
+            const audioIndex = audioHistory.findIndex(a => a.id === audioId);
+            
+            if (audioIndex === -1) {
+                alert('Audio file not found!');
+                return;
+            }
+
+            // Update status to processing
+            audioHistory[audioIndex].status = 'processing';
+            localStorage.setItem('audioHistory', JSON.stringify(audioHistory));
+            
+            // Reload the list
+            loadAudioHistory();
+            
+            // Simulate retry process
+            setTimeout(() => {
+                audioHistory[audioIndex].status = 'completed';
+                audioHistory[audioIndex].duration = '2:30 min';
+                audioHistory[audioIndex].completedAt = new Date().toISOString();
+                localStorage.setItem('audioHistory', JSON.stringify(audioHistory));
+                loadAudioHistory();
+            }, 3000);
+        }
+
+        // Delete Audio
+        function deleteAudio(audioId) {
+            if (!confirm('Are you sure you want to delete this audio file?')) {
+                return;
+            }
+
+            let audioHistory = JSON.parse(localStorage.getItem('audioHistory') || '[]');
+            audioHistory = audioHistory.filter(a => a.id !== audioId);
+            localStorage.setItem('audioHistory', JSON.stringify(audioHistory));
+            
+            loadAudioHistory();
+        }
+
+        // Load on page load
+        document.addEventListener('DOMContentLoaded', loadAudioHistory);
+
+        // Auto-refresh every 30 seconds to check for completed processing
+        setInterval(() => {
+            const audioHistory = JSON.parse(localStorage.getItem('audioHistory') || '[]');
+            const hasProcessing = audioHistory.some(a => a.status === 'processing');
+            
+            if (hasProcessing) {
+                loadAudioHistory();
+            }
+        }, 30000);
+    </script>
+</body>
+</html>
