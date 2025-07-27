@@ -1,0 +1,1384 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Blue FM TTS - Text to Speech Platform</title>
+    
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+    
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --primary: #2563eb;
+            --secondary: #3b82f6;
+            --accent: #60a5fa;
+            --gold: #fbbf24;
+            --success: #10b981;
+            --warning: #f59e0b;
+            --glass-bg: rgba(255, 255, 255, 0.1);
+            --glass-border: rgba(255, 255, 255, 0.2);
+            --text-primary: #ffffff;
+            --text-secondary: #e0e0ff;
+            --shadow: rgba(37, 99, 235, 0.3);
+        }
+
+        body {
+            font-family: 'Poppins', sans-serif;
+            min-height: 100vh;
+            background: linear-gradient(135deg, #1e3a8a 0%, #2563eb 50%, #3b82f6 100%);
+            color: var(--text-primary);
+            overflow-x: hidden;
+            position: relative;
+        }
+
+        /* Background Animation */
+        .bg-animation {
+            position: fixed;
+            width: 100%;
+            height: 100%;
+            top: 0;
+            left: 0;
+            z-index: -1;
+            overflow: hidden;
+        }
+
+        .sound-wave {
+            position: absolute;
+            width: 100%;
+            height: 100px;
+            bottom: 0;
+            background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1440 320"><path fill="%2360a5fa" fill-opacity="0.3" d="M0,160L48,170.7C96,181,192,203,288,197.3C384,192,480,160,576,165.3C672,171,768,213,864,213.3C960,213,1056,171,1152,160C1248,149,1344,171,1392,181.3L1440,192L1440,320L1392,320C1344,320,1248,320,1152,320C1056,320,960,320,864,320C768,320,672,320,576,320C480,320,384,320,288,320C192,320,96,320,48,320L0,320Z"></path></svg>');
+            animation: wave 20s linear infinite;
+        }
+
+        @keyframes wave {
+            0% { transform: translateX(0); }
+            100% { transform: translateX(-50%); }
+        }
+
+        /* Navigation */
+        nav {
+            position: fixed;
+            top: 0;
+            width: 100%;
+            z-index: 100;
+            background: var(--glass-bg);
+            backdrop-filter: blur(10px);
+            padding: 1rem 2rem;
+            border-bottom: 1px solid var(--glass-border);
+        }
+
+        .nav-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo {
+            font-size: 1.75rem;
+            font-weight: 700;
+            color: var(--text-primary);
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .logo i {
+            color: var(--accent);
+        }
+
+        .nav-links {
+            display: flex;
+            align-items: center;
+            gap: 1.5rem;
+        }
+
+        .nav-link {
+            color: var(--text-primary);
+            text-decoration: none;
+            font-weight: 500;
+            transition: all 0.3s ease;
+            position: relative;
+            padding: 0.5rem 1rem;
+            border-radius: 25px;
+        }
+
+        .nav-link:hover {
+            color: var(--accent);
+            background: rgba(255, 255, 255, 0.1);
+        }
+
+        .nav-link.premium {
+            background: linear-gradient(45deg, var(--gold), #f59e0b);
+            color: #1f2937;
+            font-weight: 600;
+        }
+
+        .nav-link.premium:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 20px rgba(251, 191, 36, 0.4);
+        }
+
+        .nav-link.audio-link {
+            background: linear-gradient(45deg, var(--success), #059669);
+            color: white;
+            font-weight: 600;
+        }
+
+        .nav-link.audio-link:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 20px rgba(16, 185, 129, 0.4);
+        }
+
+        /* User Menu */
+        .user-menu {
+            position: relative;
+        }
+
+        .user-btn {
+            background: var(--glass-bg);
+            border: 1px solid var(--glass-border);
+            padding: 0.5rem 1rem;
+            border-radius: 25px;
+            color: var(--text-primary);
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            transition: all 0.3s ease;
+        }
+
+        .user-btn:hover {
+            background: rgba(255, 255, 255, 0.2);
+        }
+
+        .user-dropdown {
+            position: absolute;
+            top: 100%;
+            right: 0;
+            margin-top: 0.5rem;
+            background: var(--glass-bg);
+            backdrop-filter: blur(10px);
+            border: 1px solid var(--glass-border);
+            border-radius: 10px;
+            padding: 0.5rem;
+            min-width: 200px;
+            display: none;
+        }
+
+        .user-dropdown.show {
+            display: block;
+            animation: fadeIn 0.3s ease-out;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(-10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* Glass Container */
+        .glass-container {
+            background: var(--glass-bg);
+            backdrop-filter: blur(10px);
+            border: 1px solid var(--glass-border);
+            border-radius: 20px;
+            padding: 2rem;
+            box-shadow: 0 8px 32px var(--shadow);
+        }
+
+        /* Main Content */
+        .main-content {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 6rem 1rem 2rem;
+        }
+
+        /* Hero Section */
+        .hero-section {
+            text-align: center;
+            margin-bottom: 3rem;
+        }
+
+        .hero-title {
+            font-size: 3rem;
+            font-weight: 700;
+            margin-bottom: 1rem;
+            background: linear-gradient(45deg, var(--text-primary), var(--accent));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .hero-subtitle {
+            font-size: 1.25rem;
+            color: var(--text-secondary);
+            margin-bottom: 2rem;
+        }
+
+        /* Stats */
+        .stats-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1rem;
+            margin-bottom: 3rem;
+        }
+
+        .stat-card {
+            background: rgba(255, 255, 255, 0.05);
+            padding: 1.5rem;
+            border-radius: 15px;
+            text-align: center;
+            border: 1px solid var(--glass-border);
+        }
+
+        .stat-number {
+            font-size: 2rem;
+            font-weight: 700;
+            color: var(--accent);
+        }
+
+        .stat-label {
+            font-size: 0.9rem;
+            color: var(--text-secondary);
+        }
+
+        /* Audio Cards */
+        .section-title {
+            font-size: 2rem;
+            margin-bottom: 2rem;
+            text-align: center;
+        }
+
+        .audio-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 2rem;
+            margin-bottom: 3rem;
+        }
+
+        .audio-card {
+            cursor: pointer;
+            transition: all 0.3s ease;
+            position: relative;
+        }
+
+        .audio-card:hover {
+            transform: translateY(-5px);
+        }
+
+        .audio-card.selected {
+            box-shadow: 0 0 30px var(--accent);
+            border-color: var(--accent);
+        }
+
+        .audio-card-content {
+            padding: 1.5rem;
+        }
+
+        .voice-avatar {
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            margin: 0 auto 1rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 2rem;
+            background: linear-gradient(45deg, var(--primary), var(--secondary));
+        }
+
+        .voice-name {
+            font-size: 1.25rem;
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+        }
+
+        .voice-description {
+            font-size: 0.9rem;
+            color: var(--text-secondary);
+            margin-bottom: 1rem;
+        }
+
+        .audio-controls {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .play-btn {
+            background: var(--primary);
+            border: none;
+            color: white;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s ease;
+        }
+
+        .play-btn:hover {
+            background: var(--secondary);
+            transform: scale(1.1);
+        }
+
+        .audio-wave {
+            flex: 1;
+            height: 40px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 20px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .audio-progress {
+            height: 100%;
+            background: linear-gradient(90deg, var(--primary), var(--secondary));
+            width: 0%;
+            border-radius: 20px;
+            transition: width 0.3s ease;
+        }
+
+        .radio-select {
+            position: absolute;
+            top: 1rem;
+            right: 1rem;
+            width: 24px;
+            height: 24px;
+            border: 2px solid var(--glass-border);
+            border-radius: 50%;
+            background: transparent;
+            cursor: pointer;
+        }
+
+        .audio-card.selected .radio-select {
+            background: var(--accent);
+            border-color: var(--accent);
+        }
+
+        .audio-card.selected .radio-select::after {
+            content: '✓';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            color: white;
+            font-size: 14px;
+        }
+
+        /* Upload Section */
+        .upload-section {
+            margin-bottom: 3rem;
+        }
+
+        .upload-area {
+            border: 2px dashed var(--glass-border);
+            border-radius: 20px;
+            padding: 3rem;
+            text-align: center;
+            transition: all 0.3s ease;
+            position: relative;
+        }
+
+        .upload-area:hover {
+            border-color: var(--accent);
+            background: rgba(96, 165, 250, 0.1);
+        }
+
+        .upload-area.drag-over {
+            border-color: var(--accent);
+            background: rgba(96, 165, 250, 0.2);
+        }
+
+        .upload-icon {
+            font-size: 3rem;
+            color: var(--accent);
+            margin-bottom: 1rem;
+        }
+
+        .btn {
+            padding: 0.75rem 2rem;
+            border: none;
+            border-radius: 50px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .btn-primary {
+            background: linear-gradient(45deg, var(--primary), var(--secondary));
+            color: white;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 30px var(--shadow);
+        }
+
+        .btn-primary:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        .btn-success {
+            background: linear-gradient(45deg, var(--success), #059669);
+            color: white;
+        }
+
+        .btn-success:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 30px rgba(16, 185, 129, 0.4);
+        }
+
+        .file-info {
+            margin-top: 1rem;
+            padding: 1rem;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 10px;
+            display: none;
+        }
+
+        .file-info.show {
+            display: block;
+        }
+
+        /* Generate Section */
+        .generate-section {
+            text-align: center;
+            padding: 2rem;
+            background: linear-gradient(45deg, rgba(37, 99, 235, 0.1), rgba(96, 165, 250, 0.1));
+            border-radius: 20px;
+            margin-bottom: 2rem;
+        }
+
+        .generate-btn {
+            font-size: 1.25rem;
+            padding: 1rem 3rem;
+        }
+
+        /* Processing Status Section */
+        .processing-section {
+            display: none;
+            text-align: center;
+            padding: 2rem;
+            background: linear-gradient(45deg, rgba(245, 158, 11, 0.1), rgba(251, 191, 36, 0.1));
+            border-radius: 20px;
+            margin-bottom: 2rem;
+            border: 1px solid var(--warning);
+        }
+
+        .processing-section.show {
+            display: block;
+            animation: slideDown 0.5s ease-out;
+        }
+
+        @keyframes slideDown {
+            from { opacity: 0; transform: translateY(-20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .processing-icon {
+            font-size: 3rem;
+            color: var(--warning);
+            margin-bottom: 1rem;
+            animation: spin 2s linear infinite;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .processing-title {
+            font-size: 1.5rem;
+            color: var(--warning);
+            margin-bottom: 0.5rem;
+        }
+
+        .processing-message {
+            color: var(--text-secondary);
+            font-size: 1rem;
+            margin-bottom: 1rem;
+        }
+
+        .estimated-time {
+            background: rgba(245, 158, 11, 0.2);
+            border: 1px solid var(--warning);
+            padding: 1rem;
+            border-radius: 10px;
+            margin-top: 1rem;
+        }
+
+        /* Download Section */
+        .download-section {
+            display: none;
+            text-align: center;
+            padding: 2rem;
+            background: linear-gradient(45deg, rgba(16, 185, 129, 0.1), rgba(5, 150, 105, 0.1));
+            border-radius: 20px;
+            margin-bottom: 2rem;
+            border: 1px solid var(--success);
+        }
+
+        .download-section.show {
+            display: block;
+            animation: slideDown 0.5s ease-out;
+        }
+
+        .download-icon {
+            font-size: 3rem;
+            color: var(--success);
+            margin-bottom: 1rem;
+            animation: bounce 2s infinite;
+        }
+
+        @keyframes bounce {
+            0%, 20%, 50%, 80%, 100% { transform: translateY(0); }
+            40% { transform: translateY(-10px); }
+            60% { transform: translateY(-5px); }
+        }
+
+        .download-title {
+            font-size: 1.5rem;
+            color: var(--success);
+            margin-bottom: 0.5rem;
+        }
+
+        .download-message {
+            color: var(--text-secondary);
+            margin-bottom: 2rem;
+        }
+
+        .download-options {
+            display: flex;
+            justify-content: center;
+            gap: 1rem;
+            margin-bottom: 1rem;
+            flex-wrap: wrap;
+        }
+
+        .download-btn {
+            padding: 0.75rem 1.5rem;
+            font-size: 1rem;
+        }
+
+        .audio-details {
+            background: rgba(16, 185, 129, 0.1);
+            border: 1px solid var(--success);
+            padding: 1rem;
+            border-radius: 10px;
+            margin-top: 1rem;
+            text-align: left;
+        }
+
+        .detail-row {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 0.5rem;
+        }
+
+        .detail-label {
+            color: var(--text-secondary);
+        }
+
+        .detail-value {
+            color: var(--text-primary);
+            font-weight: 600;
+        }
+
+        /* Character Counter */
+        .character-info {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-top: 1rem;
+            padding: 1rem;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 10px;
+        }
+
+        .char-count {
+            font-size: 0.9rem;
+            color: var(--text-secondary);
+        }
+
+        .char-limit {
+            font-size: 0.9rem;
+            color: var(--accent);
+        }
+
+        /* Toast */
+        .toast {
+            position: fixed;
+            bottom: 2rem;
+            right: 2rem;
+            background: var(--glass-bg);
+            backdrop-filter: blur(10px);
+            padding: 1rem 2rem;
+            border-radius: 10px;
+            border: 1px solid var(--glass-border);
+            display: none;
+            animation: slideUp 0.3s ease-out;
+            z-index: 1000;
+        }
+
+        @keyframes slideUp {
+            from { transform: translateY(100px); opacity: 0; }
+            to { transform: translateY(0); opacity: 1; }
+        }
+
+        .toast.show {
+            display: block;
+        }
+
+        .toast.success {
+            border-color: var(--success);
+            color: var(--success);
+        }
+
+        .toast.error {
+            border-color: #ef4444;
+            color: #ef4444;
+        }
+
+        .toast.warning {
+            border-color: var(--warning);
+            color: var(--warning);
+        }
+
+        /* Footer */
+        footer {
+            text-align: center;
+            padding: 2rem;
+            color: var(--text-secondary);
+            border-top: 1px solid var(--glass-border);
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .hero-title {
+                font-size: 2rem;
+            }
+
+            .nav-links {
+                gap: 0.5rem;
+            }
+
+            .nav-link {
+                padding: 0.5rem 0.75rem;
+                font-size: 0.9rem;
+            }
+
+            .audio-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .stats-container {
+                grid-template-columns: 1fr;
+            }
+
+            .download-options {
+                flex-direction: column;
+                align-items: center;
+            }
+
+            .download-btn {
+                width: 100%;
+                max-width: 300px;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .nav-links {
+                flex-direction: column;
+                gap: 0.25rem;
+            }
+
+            .nav-link {
+                padding: 0.25rem 0.5rem;
+                font-size: 0.8rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Background Animation -->
+    <div class="bg-animation">
+        <div class="sound-wave"></div>
+    </div>
+
+    <!-- Navigation -->
+    <nav>
+        <div class="nav-container">
+            <a href="#" class="logo">
+                <i class="fas fa-microphone-alt"></i>
+                Blue FM TTS
+            </a>
+            <div class="nav-links">
+                <a href="my-audio.html" class="nav-link audio-link">
+                    <i class="fas fa-headphones"></i> Your Audio
+                </a>
+                <a href="membership.html" class="nav-link premium">
+                    <i class="fas fa-crown"></i> Premium
+                </a>
+                <div class="user-menu">
+                    <button class="user-btn" onclick="toggleUserMenu()">
+                        <i class="fas fa-user-circle"></i>
+                        <span id="userName">User</span>
+                    </button>
+                    <div class="user-dropdown" id="userDropdown">
+                        <div style="padding: 0.75rem; border-bottom: 1px solid var(--glass-border);">
+                            <div style="font-weight: 600;">Free Plan</div>
+                            <div style="font-size: 0.8rem; color: var(--text-secondary);">5,000 chars/month</div>
+                        </div>
+                        <a href="membership.html" class="nav-link" style="display: block; padding: 0.75rem;">
+                            <i class="fas fa-gem"></i> Upgrade to Premium
+                        </a>
+                        <button class="nav-link" style="display: block; width: 100%; text-align: left; padding: 0.75rem; background: none; border: none; cursor: pointer;" onclick="logout()">
+                            <i class="fas fa-sign-out-alt"></i> Logout
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <main class="main-content">
+        <!-- Hero Section -->
+        <section class="hero-section">
+            <h1 class="hero-title">Transform Text to Natural Speech</h1>
+            <p class="hero-subtitle">Create professional voiceovers with AI-powered voices</p>
+        </section>
+
+        <!-- Stats Section -->
+        <section class="stats-container">
+            <div class="stat-card">
+                <div class="stat-number">4</div>
+                <div class="stat-label">Natural Voices</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-number">20+</div>
+                <div class="stat-label">Languages</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-number">500+</div>
+                <div class="stat-label">Users Joined</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-number">99.9%</div>
+                <div class="stat-label">Accuracy</div>
+            </div>
+        </section>
+
+        <!-- Voice Selection -->
+        <section class="glass-container">
+            <h2 class="section-title">Choose Your Voice</h2>
+            <div class="audio-grid">
+                <!-- Voice Card 1 -->
+                <div class="audio-card glass-container" onclick="selectVoice('voice1')">
+                    <div class="radio-select"></div>
+                    <div class="audio-card-content">
+                        <div class="voice-avatar">👨</div>
+                        <h3 class="voice-name">Professional Male</h3>
+                        <p class="voice-description">Clear, confident business voice</p>
+                        <div class="audio-controls">
+                            <button class="play-btn" onclick="playDemo(event, 'voice1')">
+                                <i class="fas fa-play"></i>
+                            </button>
+                            <div class="audio-wave">
+                                <div class="audio-progress"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Voice Card 2 -->
+                <div class="audio-card glass-container" onclick="selectVoice('voice2')">
+                    <div class="radio-select"></div>
+                    <div class="audio-card-content">
+                        <div class="voice-avatar">👩</div>
+                        <h3 class="voice-name">Friendly Female</h3>
+                        <p class="voice-description">Warm, engaging narrative voice</p>
+                        <div class="audio-controls">
+                            <button class="play-btn" onclick="playDemo(event, 'voice2')">
+                                <i class="fas fa-play"></i>
+                            </button>
+                            <div class="audio-wave">
+                                <div class="audio-progress"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Voice Card 3 -->
+                <div class="audio-card glass-container" onclick="selectVoice('voice3')">
+                    <div class="radio-select"></div>
+                    <div class="audio-card-content">
+                        <div class="voice-avatar">🎙️</div>
+                        <h3 class="voice-name">News Anchor</h3>
+                        <p class="voice-description">Authoritative news reading voice</p>
+                        <div class="audio-controls">
+                            <button class="play-btn" onclick="playDemo(event, 'voice3')">
+                                <i class="fas fa-play"></i>
+                            </button>
+                            <div class="audio-wave">
+                                <div class="audio-progress"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Voice Card 4 -->
+                <div class="audio-card glass-container" onclick="selectVoice('voice4')">
+                    <div class="radio-select"></div>
+                    <div class="audio-card-content">
+                        <div class="voice-avatar">📚</div>
+                        <h3 class="voice-name">Storyteller</h3>
+                        <p class="voice-description">Expressive audiobook narration</p>
+                        <div class="audio-controls">
+                            <button class="play-btn" onclick="playDemo(event, 'voice4')">
+                                <i class="fas fa-play"></i>
+                            </button>
+                            <div class="audio-wave">
+                                <div class="audio-progress"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Upload Section -->
+        <section class="upload-section glass-container">
+            <h2 class="section-title">Upload Your Text</h2>
+            <div class="upload-area" id="uploadArea">
+                <div class="upload-icon">
+                    <i class="fas fa-file-alt"></i>
+                </div>
+                <p style="margin-bottom: 1rem;">Drag & drop your .txt file here or</p>
+                <button class="btn btn-primary" onclick="document.getElementById('fileInput').click()">
+                    <i class="fas fa-upload"></i> Browse Files
+                </button>
+                <input type="file" id="fileInput" style="display: none;" accept=".txt">
+                <div class="file-info" id="fileInfo">
+                    <i class="fas fa-check-circle" style="color: #10b981;"></i>
+                    <span id="fileName"></span>
+                </div>
+            </div>
+            <div class="character-info" id="charInfo" style="display: none;">
+                <span class="char-count">Characters: <span id="charCount">0</span></span>
+                <span class="char-limit">Monthly Limit: 5,000 (Free Plan)</span>
+            </div>
+        </section>
+
+        <!-- Generate Section -->
+        <section class="generate-section" id="generateSection">
+            <h3 style="margin-bottom: 1rem;">Ready to Create Your Audio?</h3>
+            <button class="btn btn-primary generate-btn" id="generateBtn" disabled onclick="generateAudio()">
+                <i class="fas fa-magic"></i> Generate Audio
+            </button>
+        </section>
+
+        <!-- Processing Section -->
+        <section class="processing-section" id="processingSection">
+            <div class="processing-icon">
+                <i class="fas fa-cog"></i>
+            </div>
+            <h3 class="processing-title">Processing Your Audio</h3>
+            <p class="processing-message">Please wait while your text is being converted to speech using the selected voice reference</p>
+            <div class="estimated-time">
+                <strong>⏱️ Estimated Time: 10 minutes to 3 hours</strong>
+                <br>
+                <small>Processing time depends on file size and current server load</small>
+            </div>
+        </section>
+
+        <!-- Download Section -->
+        <section class="download-section" id="downloadSection">
+            <div class="download-icon">
+                <i class="fas fa-download"></i>
+            </div>
+            <h3 class="download-title">Your Audio is Ready!</h3>
+            <p class="download-message">Choose your preferred format and download your audio file</p>
+            
+            <div class="download-options">
+                <button class="btn btn-success download-btn" onclick="downloadAudio('mp3')">
+                    <i class="fas fa-file-audio"></i> Download MP3
+                </button>
+                <button class="btn btn-success download-btn" onclick="downloadAudio('wav')">
+                    <i class="fas fa-file-audio"></i> Download WAV
+                </button>
+                <button class="btn btn-success download-btn" onclick="downloadAudio('m4a')">
+                    <i class="fas fa-file-audio"></i> Download M4A
+                </button>
+            </div>
+
+            <div class="audio-details">
+                <div class="detail-row">
+                    <span class="detail-label">File Name:</span>
+                    <span class="detail-value" id="audioFileName">my_audio_file</span>
+                </div>
+                <div class="detail-row">
+                    <span class="detail-label">Voice Used:</span>
+                    <span class="detail-value" id="audioVoice">Professional Male</span>
+                </div>
+                <div class="detail-row">
+                    <span class="detail-label">Duration:</span>
+                    <span class="detail-value" id="audioDuration">2:45 min</span>
+                </div>
+                <div class="detail-row">
+                    <span class="detail-label">Characters:</span>
+                    <span class="detail-value" id="audioCharCount">1,250</span>
+                </div>
+            </div>
+
+            <button class="btn btn-primary" onclick="resetForm()" style="margin-top: 1rem;">
+                <i class="fas fa-plus"></i> Create Another Audio
+            </button>
+        </section>
+    </main>
+
+    <!-- Footer -->
+    <footer>
+        <p>&copy; 2024 Blue FM TTS. All rights reserved.</p>
+    </footer>
+
+    <!-- Toast -->
+    <div class="toast" id="toast"></div>
+
+    <script type="module">
+        import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js';
+        import { getAuth, onAuthStateChanged, signOut } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js';
+        import { getStorage, ref, uploadBytes, getDownloadURL } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-storage.js';
+
+        // ✅ NEW Firebase configuration
+        const firebaseConfig = {
+            apiKey: "AIzaSyCmBZmN-BCa3Qkb7f7K9TjXuK1_ma1ukbw",
+            authDomain: "bluefm-tts.firebaseapp.com",
+            projectId: "bluefm-tts",
+            storageBucket: "bluefm-tts.firebasestorage.app",
+            messagingSenderId: "184060585228",
+            appId: "1:184060585228:web:045fdd4e5d4429fc7e9529",
+            measurementId: "G-ZTZNZG8YSJ"
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const auth = getAuth(app);
+        const storage = getStorage(app);
+
+        // Global variables
+        let selectedVoice = null;
+        let uploadedFile = null;
+        let currentUser = null;
+
+        // Voice names mapping
+        const voiceNames = {
+            'voice1': 'Professional Male',
+            'voice2': 'Friendly Female', 
+            'voice3': 'News Anchor',
+            'voice4': 'Storyteller'
+        };
+
+        // ✅ Voice to Reference Audio mapping
+        const voiceToReference = {
+            'voice1': 'professional-male.mp3',
+            'voice2': 'friendly-female.mp3',
+            'voice3': 'news-anchor.mp3',
+            'voice4': 'storyteller.mp3'
+        };
+
+        // ✅ Demo audio URLs (replace with actual Firebase Storage URLs)
+        const demoAudioUrls = {
+            'voice1': 'https://bluefm-tts.firebasestorage.app/reference-voices/professional-male.mp3',
+            'voice2': 'https://bluefm-tts.firebasestorage.app/reference-voices/friendly-female.mp3',
+            'voice3': 'https://bluefm-tts.firebasestorage.app/reference-voices/news-anchor.mp3',
+            'voice4': 'https://bluefm-tts.firebasestorage.app/reference-voices/storyteller.mp3'
+        };
+
+        // Check authentication state
+        onAuthStateChanged(auth, (user) => {
+            if (user) {
+                currentUser = user;
+                console.log('User logged in:', user.email);
+                
+                // Update UI with user info
+                document.getElementById('userName').textContent = user.displayName || user.email.split('@')[0];
+                
+                // Store user data
+                localStorage.setItem('isLoggedIn', 'true');
+                localStorage.setItem('userEmail', user.email);
+                localStorage.setItem('userId', user.uid);
+                
+            } else {
+                console.log('User not logged in');
+                window.location.href = 'login.html';
+            }
+        });
+
+        // Voice Selection
+        window.selectVoice = function(voiceId) {
+            document.querySelectorAll('.audio-card').forEach(card => {
+                card.classList.remove('selected');
+            });
+            
+            event.currentTarget.classList.add('selected');
+            selectedVoice = voiceId;
+            checkGenerateButton();
+            showToast(`Voice selected: ${voiceNames[voiceId]}!`);
+        }
+
+        // ✅ Enhanced Play Demo with Real Audio
+        window.playDemo = function(event, voiceId) {
+            event.stopPropagation();
+            const btn = event.currentTarget;
+            const icon = btn.querySelector('i');
+            const progressBar = btn.parentElement.querySelector('.audio-progress');
+            
+            if (icon.classList.contains('fa-play')) {
+                try {
+                    // Create audio element
+                    const audio = new Audio(demoAudioUrls[voiceId]);
+                    
+                    icon.classList.remove('fa-play');
+                    icon.classList.add('fa-pause');
+                    
+                    // Play audio
+                    audio.play();
+                    
+                    // Update progress bar
+                    audio.addEventListener('timeupdate', () => {
+                        const progress = (audio.currentTime / audio.duration) * 100;
+                        progressBar.style.width = progress + '%';
+                    });
+                    
+                    // Reset when audio ends
+                    audio.addEventListener('ended', () => {
+                        icon.classList.remove('fa-pause');
+                        icon.classList.add('fa-play');
+                        progressBar.style.width = '0%';
+                    });
+                    
+                    // Handle errors
+                    audio.addEventListener('error', () => {
+                        console.log('Audio demo not available yet');
+                        icon.classList.remove('fa-pause');
+                        icon.classList.add('fa-play');
+                        progressBar.style.width = '0%';
+                        showToast('Demo audio will be available soon!', 'warning');
+                    });
+                    
+                } catch (error) {
+                    console.log('Demo audio error:', error);
+                    // Fallback to animated demo
+                    let progress = 0;
+                    const interval = setInterval(() => {
+                        progress += 2;
+                        progressBar.style.width = progress + '%';
+                        
+                        if (progress >= 100) {
+                            clearInterval(interval);
+                            icon.classList.remove('fa-pause');
+                            icon.classList.add('fa-play');
+                            progressBar.style.width = '0%';
+                        }
+                    }, 100);
+                }
+            }
+        }
+
+        // File Upload
+        const fileInput = document.getElementById('fileInput');
+        const uploadArea = document.getElementById('uploadArea');
+        
+        fileInput.addEventListener('change', handleFileSelect);
+        
+        uploadArea.addEventListener('dragover', (e) => {
+            e.preventDefault();
+            uploadArea.classList.add('drag-over');
+        });
+        
+        uploadArea.addEventListener('dragleave', () => {
+            uploadArea.classList.remove('drag-over');
+        });
+        
+        uploadArea.addEventListener('drop', (e) => {
+            e.preventDefault();
+            uploadArea.classList.remove('drag-over');
+            
+            const files = e.dataTransfer.files;
+            if (files.length > 0) {
+                handleFile(files[0]);
+            }
+        });
+
+        function handleFileSelect(e) {
+            const file = e.target.files[0];
+            if (file) {
+                handleFile(file);
+            }
+        }
+
+        function handleFile(file) {
+            if (!file.name.endsWith('.txt')) {
+                showToast('Please upload a .txt file only!', 'error');
+                return;
+            }
+            
+            uploadedFile = file;
+            document.getElementById('fileName').textContent = file.name;
+            document.getElementById('fileInfo').classList.add('show');
+            
+            // Read file to count characters
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                const text = e.target.result;
+                const charCount = text.length;
+                document.getElementById('charCount').textContent = charCount.toLocaleString();
+                document.getElementById('charInfo').style.display = 'flex';
+                
+                if (charCount > 5000) {
+                    showToast('File exceeds free plan limit. Upgrade to Premium!', 'warning');
+                }
+            };
+            reader.readAsText(file);
+            
+            checkGenerateButton();
+            showToast('File uploaded successfully!');
+        }
+
+        // Check Generate Button
+        function checkGenerateButton() {
+            const btn = document.getElementById('generateBtn');
+            if (selectedVoice && uploadedFile && currentUser) {
+                btn.disabled = false;
+            } else {
+                btn.disabled = true;
+            }
+        }
+
+        // ✅ Enhanced Generate Audio with Firebase Storage Integration
+        window.generateAudio = async function() {
+            if (!selectedVoice || !uploadedFile) {
+                showToast('Please select a voice and upload a file!', 'error');
+                return;
+            }
+            
+            try {
+                // Hide generate section and show processing
+                document.getElementById('generateSection').style.display = 'none';
+                document.getElementById('processingSection').classList.add('show');
+                
+                showToast('Starting audio generation...', 'success');
+                
+                // Generate unique ID for this job
+                const jobId = Date.now().toString();
+                const userId = currentUser.uid;
+                
+                // Upload text file with metadata
+                const textFileName = `${jobId}-${uploadedFile.name}`;
+                const textRef = ref(storage, `tts-requests/${userId}/${textFileName}`);
+                
+                // ✅ Upload with reference voice metadata
+                const metadata = {
+                    customMetadata: {
+                        userId: userId,
+                        voiceId: selectedVoice,
+                        voiceName: voiceNames[selectedVoice],
+                        referenceAudio: voiceToReference[selectedVoice],
+                        jobId: jobId,
+                        timestamp: new Date().toISOString()
+                    }
+                };
+                
+                await uploadBytes(textRef, uploadedFile, metadata);
+                console.log('✅ Text file uploaded with reference voice info');
+                
+                // Save to history
+                saveAudioToHistory(jobId);
+                
+                showToast('Files uploaded! Processing will start shortly...', 'success');
+                
+                // Redirect to audio page after 3 seconds
+                setTimeout(() => {
+                    window.location.href = 'my-audio.html';
+                }, 3000);
+                
+            } catch (error) {
+                console.error('Upload error:', error);
+                showToast('Upload failed! Please try again.', 'error');
+                
+                // Reset UI on error
+                document.getElementById('generateSection').style.display = 'block';
+                document.getElementById('processingSection').classList.remove('show');
+            }
+        }
+
+        // ✅ Enhanced Save Audio to History
+        function saveAudioToHistory(jobId) {
+            const audioData = {
+                id: jobId,
+                fileName: uploadedFile.name.replace('.txt', ''),
+                voice: voiceNames[selectedVoice],
+                voiceId: selectedVoice,
+                referenceAudio: voiceToReference[selectedVoice],
+                characters: document.getElementById('charCount').textContent,
+                status: 'processing',
+                createdAt: new Date().toISOString(),
+                userId: currentUser.uid
+            };
+            
+            // Get existing history
+            let audioHistory = JSON.parse(localStorage.getItem('audioHistory') || '[]');
+            
+            // Add new audio
+            audioHistory.unshift(audioData);
+            
+            // Keep only last 20 audios
+            if (audioHistory.length > 20) {
+                audioHistory = audioHistory.slice(0, 20);
+            }
+            
+            // Save to localStorage
+            localStorage.setItem('audioHistory', JSON.stringify(audioHistory));
+        }
+
+        // Show Download Section (for demo purposes)
+        function showDownloadSection() {
+            document.getElementById('processingSection').classList.remove('show');
+            document.getElementById('downloadSection').classList.add('show');
+            
+            // Update audio details
+            document.getElementById('audioFileName').textContent = uploadedFile.name.replace('.txt', '');
+            document.getElementById('audioVoice').textContent = voiceNames[selectedVoice];
+            document.getElementById('audioCharCount').textContent = document.getElementById('charCount').textContent;
+            
+            // Simulate duration calculation (1 char ≈ 0.1 seconds)
+            const charCount = parseInt(document.getElementById('charCount').textContent.replace(/,/g, ''));
+            const durationSeconds = Math.ceil(charCount * 0.1);
+            const minutes = Math.floor(durationSeconds / 60);
+            const seconds = durationSeconds % 60;
+            document.getElementById('audioDuration').textContent = `${minutes}:${seconds.toString().padStart(2, '0')} min`;
+            
+            // Update status in history
+            updateAudioStatus('completed');
+            
+            showToast('Audio generation completed!', 'success');
+        }
+
+        // Update Audio Status
+        function updateAudioStatus(status) {
+            let audioHistory = JSON.parse(localStorage.getItem('audioHistory') || '[]');
+            if (audioHistory.length > 0) {
+                audioHistory[0].status = status;
+                if (status === 'completed') {
+                    audioHistory[0].duration = document.getElementById('audioDuration').textContent;
+                    audioHistory[0].completedAt = new Date().toISOString();
+                }
+                localStorage.setItem('audioHistory', JSON.stringify(audioHistory));
+            }
+        }
+
+        // Download Audio
+        window.downloadAudio = function(format) {
+            showToast(`Downloading ${format.toUpperCase()} file...`, 'success');
+            
+            // Simulate download (replace with actual download logic)
+            const fileName = `${uploadedFile.name.replace('.txt', '')}_${selectedVoice}.${format}`;
+            
+            // For demo purposes, just show success message
+            setTimeout(() => {
+                showToast(`${format.toUpperCase()} file downloaded successfully!`, 'success');
+            }, 1000);
+        }
+
+        // Reset Form
+        window.resetForm = function() {
+            // Reset all sections
+            document.getElementById('generateSection').style.display = 'block';
+            document.getElementById('processingSection').classList.remove('show');
+            document.getElementById('downloadSection').classList.remove('show');
+            
+            // Reset form data
+            selectedVoice = null;
+            uploadedFile = null;
+            
+            // Clear UI
+            document.querySelectorAll('.audio-card').forEach(card => {
+                card.classList.remove('selected');
+            });
+            
+            document.getElementById('fileInfo').classList.remove('show');
+            document.getElementById('charInfo').style.display = 'none';
+            document.getElementById('fileInput').value = '';
+            
+            checkGenerateButton();
+            showToast('Ready for new audio generation!');
+        }
+
+        // User Menu
+        window.toggleUserMenu = function() {
+            const dropdown = document.getElementById('userDropdown');
+            dropdown.classList.toggle('show');
+        }
+
+        // Logout
+        window.logout = async function() {
+            try {
+                await signOut(auth);
+                
+                localStorage.removeItem('isLoggedIn');
+                localStorage.removeItem('userEmail');
+                localStorage.removeItem('userId');
+                localStorage.removeItem('userName');
+                
+                showToast('Logged out successfully!');
+                window.location.href = 'login.html';
+                
+            } catch (error) {
+                console.error('Logout error:', error);
+                showToast('Logout failed!', 'error');
+            }
+        }
+
+        // Toast
+        function showToast(message, type = 'success') {
+            const toast = document.getElementById('toast');
+            toast.textContent = message;
+            toast.className = `toast show ${type}`;
+            
+            setTimeout(() => {
+                toast.classList.remove('show');
+            }, 3000);
+        }
+
+        // Close dropdown when clicking outside
+        window.addEventListener('click', (e) => {
+            if (!e.target.closest('.user-menu')) {
+                document.getElementById('userDropdown').classList.remove('show');
+            }
+        });
+
+        // Make functions available globally
+        window.checkGenerateButton = checkGenerateButton;
+    </script>
+</body>
+</html>
