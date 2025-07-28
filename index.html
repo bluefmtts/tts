@@ -527,7 +527,41 @@
             margin-top: 1rem;
         }
 
-        /* 🆕 R2 Download Section */
+        /* 🆕 Real-time Status Update Section */
+        .status-update {
+            background: rgba(59, 130, 246, 0.1);
+            border: 1px solid var(--secondary);
+            padding: 1rem;
+            border-radius: 10px;
+            margin-top: 1rem;
+            text-align: left;
+        }
+
+        .status-steps {
+            list-style: none;
+            padding: 0;
+        }
+
+        .status-step {
+            padding: 0.5rem 0;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .status-step.completed {
+            color: var(--success);
+        }
+
+        .status-step.current {
+            color: var(--warning);
+        }
+
+        .status-step.pending {
+            color: var(--text-secondary);
+        }
+
+        /* Download Section */
         .download-section {
             display: none;
             text-align: center;
@@ -565,44 +599,6 @@
         .download-message {
             color: var(--text-secondary);
             margin-bottom: 2rem;
-        }
-
-        .r2-download-card {
-            background: rgba(16, 185, 129, 0.1);
-            border: 1px solid var(--success);
-            padding: 2rem;
-            border-radius: 15px;
-            margin-bottom: 1rem;
-        }
-
-        .r2-badge {
-            background: linear-gradient(45deg, #ff7849, #ff6b35);
-            color: white;
-            padding: 0.5rem 1rem;
-            border-radius: 20px;
-            font-size: 0.9rem;
-            font-weight: 600;
-            display: inline-block;
-            margin-bottom: 1rem;
-        }
-
-        .download-url {
-            background: rgba(255, 255, 255, 0.1);
-            padding: 1rem;
-            border-radius: 10px;
-            margin: 1rem 0;
-            word-break: break-all;
-            font-family: 'Courier New', monospace;
-            font-size: 0.9rem;
-        }
-
-        .expiry-warning {
-            background: rgba(245, 158, 11, 0.2);
-            border: 1px solid var(--warning);
-            padding: 1rem;
-            border-radius: 10px;
-            margin-top: 1rem;
-            color: var(--warning);
         }
 
         .download-options {
@@ -871,7 +867,7 @@
                 <div class="audio-card glass-container" onclick="selectVoice('voice3')">
                     <div class="radio-select"></div>
                     <div class="audio-card-content">
-                        <div class="voice-avatar">🎙️</div>
+                        <div class="voice-avatar">🎙</div>
                         <h3 class="voice-name">News Anchor</h3>
                         <p class="voice-description">Authoritative news reading voice</p>
                         <div class="audio-controls">
@@ -936,50 +932,57 @@
             </button>
         </section>
 
-        <!-- Processing Section -->
+        <!-- 🆕 Enhanced Processing Section with Real-time Updates -->
         <section class="processing-section" id="processingSection">
             <div class="processing-icon">
                 <i class="fas fa-cog"></i>
             </div>
             <h3 class="processing-title">Processing Your Audio</h3>
-            <p class="processing-message">Please wait while your text is being converted to speech using the selected voice reference</p>
+            <p class="processing-message" id="processingMessage">Starting audio generation...</p>
             <div class="estimated-time">
-                <strong>⏱️ Estimated Time: 10 minutes to 3 hours</strong>
+                <strong>⏱ Estimated Time: 5-15 minutes</strong>
                 <br>
-                <small>Processing time depends on file size and current server load</small>
+                <small>Processing time depends on file size and server load</small>
+            </div>
+            
+            <!-- 🆕 Real-time Status Updates -->
+            <div class="status-update">
+                <h4 style="margin-bottom: 1rem;">Processing Status:</h4>
+                <ul class="status-steps" id="statusSteps">
+                    <li class="status-step pending" id="step1">
+                        <i class="fas fa-clock"></i> Uploading files...
+                    </li>
+                    <li class="status-step pending" id="step2">
+                        <i class="fas fa-clock"></i> Sending to processing server...
+                    </li>
+                    <li class="status-step pending" id="step3">
+                        <i class="fas fa-clock"></i> Generating audio with AI...
+                    </li>
+                    <li class="status-step pending" id="step4">
+                        <i class="fas fa-clock"></i> Uploading to cloud storage...
+                    </li>
+                    <li class="status-step pending" id="step5">
+                        <i class="fas fa-clock"></i> Finalizing download...
+                    </li>
+                </ul>
             </div>
         </section>
 
-        <!-- 🆕 Enhanced Download Section with R2 Support -->
+        <!-- 🆕 Enhanced Download Section with R2 Integration -->
         <section class="download-section" id="downloadSection">
             <div class="download-icon">
                 <i class="fas fa-download"></i>
             </div>
             <h3 class="download-title">Your Audio is Ready!</h3>
-            <p class="download-message">Download your audio file from Cloudflare R2 storage</p>
+            <p class="download-message">Your audio has been generated and is ready for download</p>
             
-            <div class="r2-download-card">
-                <div class="r2-badge">
-                    <i class="fas fa-cloud"></i> Cloudflare R2 Storage
-                </div>
-                
-                <div class="download-options">
-                    <button class="btn btn-success download-btn" id="directDownloadBtn" onclick="downloadFromR2()">
-                        <i class="fas fa-download"></i> Download Audio File
-                    </button>
-                    <button class="btn btn-primary download-btn" onclick="copyDownloadLink()">
-                        <i class="fas fa-copy"></i> Copy Download Link
-                    </button>
-                </div>
-                
-                <div class="download-url" id="downloadUrl" style="display: none;">
-                    <!-- R2 URL will be inserted here -->
-                </div>
-                
-                <div class="expiry-warning">
-                    <i class="fas fa-clock"></i>
-                    <strong>Important:</strong> This download link expires in 24 hours
-                </div>
+            <div class="download-options">
+                <button class="btn btn-success download-btn" onclick="downloadAudioFromR2()">
+                    <i class="fas fa-cloud-download-alt"></i> Download Audio
+                </button>
+                <button class="btn btn-success download-btn" onclick="previewAudio()">
+                    <i class="fas fa-play"></i> Preview Audio
+                </button>
             </div>
 
             <div class="audio-details">
@@ -992,8 +995,8 @@
                     <span class="detail-value" id="audioVoice">Professional Male</span>
                 </div>
                 <div class="detail-row">
-                    <span class="detail-label">Storage:</span>
-                    <span class="detail-value" id="audioStorage">Cloudflare R2</span>
+                    <span class="detail-label">File Size:</span>
+                    <span class="detail-value" id="audioFileSize">Loading...</span>
                 </div>
                 <div class="detail-row">
                     <span class="detail-label">Characters:</span>
@@ -1019,10 +1022,24 @@
     <!-- Toast -->
     <div class="toast" id="toast"></div>
 
+    <!-- 🆕 Audio Preview Modal -->
+    <div id="audioPreviewModal" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.8); z-index: 2000; display: flex; align-items: center; justify-content: center;">
+        <div style="background: var(--glass-bg); backdrop-filter: blur(10px); padding: 2rem; border-radius: 20px; max-width: 500px; width: 90%;">
+            <h3 style="margin-bottom: 1rem; text-align: center;">Audio Preview</h3>
+            <audio id="previewAudioPlayer" controls style="width: 100%; margin-bottom: 1rem;">
+                Your browser does not support the audio element.
+            </audio>
+            <div style="text-align: center;">
+                <button class="btn btn-primary" onclick="closePreview()">Close</button>
+            </div>
+        </div>
+    </div>
+
     <script type="module">
         import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js';
         import { getAuth, onAuthStateChanged, signOut } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js';
         import { getStorage, ref, uploadBytes, getDownloadURL } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-storage.js';
+        import { getFirestore, doc, onSnapshot, collection, query, where, orderBy, limit } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js';
 
         // ✅ Firebase configuration
         const firebaseConfig = {
@@ -1038,14 +1055,15 @@
         const app = initializeApp(firebaseConfig);
         const auth = getAuth(app);
         const storage = getStorage(app);
+        const db = getFirestore(app);
 
         // Global variables
         let selectedVoice = null;
         let uploadedFile = null;
         let currentUser = null;
         let currentJobId = null;
+        let jobListener = null;
         let currentDownloadUrl = null;
-        let statusCheckInterval = null;
 
         // Voice names mapping
         const voiceNames = {
@@ -1065,17 +1083,17 @@
 
         // ✅ Demo audio URLs
         const demoAudioUrls = {
-            'voice1': 'https://bluefm-tts.firebasestorage.app/reference-voices/professional-male.mp3',
-            'voice2': 'https://bluefm-tts.firebasestorage.app/reference-voices/friendly-female.mp3',
-            'voice3': 'https://bluefm-tts.firebasestorage.app/reference-voices/news-anchor.mp3',
-            'voice4': 'https://bluefm-tts.firebasestorage.app/reference-voices/storyteller.mp3'
+            'voice1': 'https://firebasestorage.googleapis.com/v0/b/bluefm-tts.firebasestorage.app/o/reference-voices%2Fprofessional-male.mp3?alt=media',
+            'voice2': 'https://firebasestorage.googleapis.com/v0/b/bluefm-tts.firebasestorage.app/o/reference-voices%2Ffriendly-female.mp3?alt=media',
+            'voice3': 'https://firebasestorage.googleapis.com/v0/b/bluefm-tts.firebasestorage.app/o/reference-voices%2Fnews-anchor.mp3?alt=media',
+            'voice4': 'https://firebasestorage.googleapis.com/v0/b/bluefm-tts.firebasestorage.app/o/reference-voices%2Fstoryteller.mp3?alt=media'
         };
 
         // Check authentication state
         onAuthStateChanged(auth, (user) => {
             if (user) {
                 currentUser = user;
-                console.log('User logged in:', user.email);
+                console.log('✅ User logged in:', user.email);
                 
                 // Update UI with user info
                 document.getElementById('userName').textContent = user.displayName || user.email.split('@')[0];
@@ -1085,11 +1103,46 @@
                 localStorage.setItem('userEmail', user.email);
                 localStorage.setItem('userId', user.uid);
                 
+                // 🆕 Check for any active jobs
+                checkActiveJobs();
+                
             } else {
-                console.log('User not logged in');
+                console.log('❌ User not logged in');
                 window.location.href = 'login.html';
             }
         });
+
+        // 🆕 Check for Active Jobs
+        async function checkActiveJobs() {
+            try {
+                const q = query(
+                    collection(db, "tts_jobs"),
+                    where("userId", "==", currentUser.uid),
+                    where("status", "in", ["processing", "sent_to_telegram"]),
+                    orderBy("createdAt", "desc"),
+                    limit(1)
+                );
+                
+                const unsubscribe = onSnapshot(q, (querySnapshot) => {
+                    if (!querySnapshot.empty) {
+                        const latestJob = querySnapshot.docs[0];
+                        const jobData = latestJob.data();
+                        
+                        console.log('🔄 Found active job:', latestJob.id);
+                        
+                        // Resume monitoring this job
+                        currentJobId = latestJob.id;
+                        startJobMonitoring(latestJob.id);
+                        
+                        // Show processing section
+                        showProcessingSection();
+                    }
+                });
+                
+            } catch (error) {
+                console.error('❌ Error checking active jobs:', error);
+            }
+        }
 
         // Voice Selection
         window.selectVoice = function(voiceId) {
@@ -1232,7 +1285,7 @@
             }
         }
 
-        // ✅ Enhanced Generate Audio with Firebase Storage Integration
+        // ✅ Enhanced Generate Audio with Real-time Monitoring
         window.generateAudio = async function() {
             if (!selectedVoice || !uploadedFile) {
                 showToast('Please select a voice and upload a file!', 'error');
@@ -1240,18 +1293,17 @@
             }
             
             try {
-                // Hide generate section and show processing
-                document.getElementById('generateSection').style.display = 'none';
-                document.getElementById('processingSection').classList.add('show');
-                
-                showToast('Starting audio generation...', 'success');
-                
                 // Generate unique ID for this job
-                currentJobId = Date.now().toString();
+                const jobId = Date.now().toString();
                 const userId = currentUser.uid;
+                currentJobId = jobId;
+                
+                // Show processing section
+                showProcessingSection();
+                updateStatus('Uploading files...', 1);
                 
                 // Upload text file with metadata
-                const textFileName = `${currentJobId}-${uploadedFile.name}`;
+                const textFileName = `${jobId}-${uploadedFile.name}`;
                 const textRef = ref(storage, `tts-requests/${userId}/${textFileName}`);
                 
                 // ✅ Upload with reference voice metadata
@@ -1261,7 +1313,7 @@
                         voiceId: selectedVoice,
                         voiceName: voiceNames[selectedVoice],
                         referenceAudio: voiceToReference[selectedVoice],
-                        jobId: currentJobId,
+                        jobId: jobId,
                         timestamp: new Date().toISOString()
                     }
                 };
@@ -1269,201 +1321,218 @@
                 await uploadBytes(textRef, uploadedFile, metadata);
                 console.log('✅ Text file uploaded with reference voice info');
                 
-                // Save to history
-                saveAudioToHistory(currentJobId);
+                updateStatus('Sending to processing server...', 2);
                 
-                showToast('Files uploaded! Processing will start shortly...', 'success');
+                // 🆕 Start real-time job monitoring
+                startJobMonitoring(jobId);
                 
-                // 🆕 Start status checking
-                startStatusChecking();
+                showToast('Files uploaded! Processing started...', 'success');
                 
             } catch (error) {
-                console.error('Upload error:', error);
+                console.error('❌ Upload error:', error);
                 showToast('Upload failed! Please try again.', 'error');
-                
-                // Reset UI on error
-                document.getElementById('generateSection').style.display = 'block';
-                document.getElementById('processingSection').classList.remove('show');
+                resetToGenerateSection();
             }
         }
 
-        // 🆕 Status Checking Function with Updated URL
-        function startStatusChecking() {
-            if (statusCheckInterval) {
-                clearInterval(statusCheckInterval);
+        // 🆕 Real-time Job Monitoring
+        function startJobMonitoring(jobId) {
+            if (jobListener) {
+                jobListener(); // Unsubscribe from previous listener
             }
             
-            // Check every 10 seconds
-            statusCheckInterval = setInterval(async () => {
-                try {
-                    // ✅ Updated Firebase Function URL
-                    const response = await fetch(`https://us-central1-bluefm-tts.cloudfunctions.net/getJobStatus?jobId=${currentJobId}&userId=${currentUser.uid}`);
+            const jobRef = doc(db, "tts_jobs", jobId);
+            
+            jobListener = onSnapshot(jobRef, (doc) => {
+                if (doc.exists()) {
+                    const jobData = doc.data();
+                    console.log('📊 Job status update:', jobData.status);
                     
-                    if (!response.ok) {
-                        throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+                    switch(jobData.status) {
+                        case 'processing':
+                            updateStatus('AI is generating your audio...', 3);
+                            break;
+                            
+                        case 'sent_to_telegram':
+                            updateStatus('Processing on AI server...', 3);
+                            break;
+                            
+                        case 'completed':
+                            if (jobData.downloadUrl) {
+                                currentDownloadUrl = jobData.downloadUrl;
+                                showDownloadSection(jobData);
+                            }
+                            break;
+                            
+                        case 'failed':
+                            showError(jobData.error || 'Processing failed');
+                            break;
                     }
-                    
-                    const data = await response.json();
-                    console.log('Status check:', data);
-                    
-                    if (data.status === 'completed') {
-                        clearInterval(statusCheckInterval);
-                        statusCheckInterval = null;
-                        
-                        if (data.downloadUrl) {
-                            currentDownloadUrl = data.downloadUrl;
-                            showDownloadSection(data);
-                        }
-                    } else if (data.status === 'failed') {
-                        clearInterval(statusCheckInterval);
-                        statusCheckInterval = null;
-                        showToast('Audio generation failed!', 'error');
-                        
-                        // Reset UI
-                        document.getElementById('generateSection').style.display = 'block';
-                        document.getElementById('processingSection').classList.remove('show');
-                    }
-                    
-                } catch (error) {
-                    console.error('Status check error:', error);
-                    // Don't clear interval on network errors - keep trying
-                    if (error.message.includes('404') || error.message.includes('500')) {
-                        console.log('Function not deployed yet, continuing to check...');
-                    }
+                } else {
+                    console.log('❌ Job document not found');
                 }
-            }, 10000); // 10 seconds
-        }
-
-        // ✅ Enhanced Save Audio to History
-        function saveAudioToHistory(jobId) {
-            const audioData = {
-                id: jobId,
-                fileName: uploadedFile.name.replace('.txt', ''),
-                voice: voiceNames[selectedVoice],
-                voiceId: selectedVoice,
-                referenceAudio: voiceToReference[selectedVoice],
-                characters: document.getElementById('charCount').textContent,
-                status: 'processing',
-                createdAt: new Date().toISOString(),
-                userId: currentUser.uid
-            };
-            
-            // Get existing history
-            let audioHistory = JSON.parse(localStorage.getItem('audioHistory') || '[]');
-            
-            // Add new audio
-            audioHistory.unshift(audioData);
-            
-            // Keep only last 20 audios
-            if (audioHistory.length > 20) {
-                audioHistory = audioHistory.slice(0, 20);
-            }
-            
-            // Save to localStorage
-            localStorage.setItem('audioHistory', JSON.stringify(audioHistory));
-        }
-
-        // 🆕 Show Download Section with R2 URL
-        function showDownloadSection(jobData) {
-            document.getElementById('processingSection').classList.remove('show');
-            document.getElementById('downloadSection').classList.add('show');
-            
-            // Update audio details
-            document.getElementById('audioFileName').textContent = uploadedFile.name.replace('.txt', '');
-            document.getElementById('audioVoice').textContent = voiceNames[selectedVoice];
-            document.getElementById('audioCharCount').textContent = document.getElementById('charCount').textContent;
-            document.getElementById('audioStorage').textContent = jobData.storage === 'cloudflare_r2' ? 'Cloudflare R2' : 'Firebase Storage';
-            
-            // Show expiry time
-            if (jobData.expiresAt) {
-                const expiryDate = new Date(jobData.expiresAt);
-                const now = new Date();
-                const hoursLeft = Math.ceil((expiryDate - now) / (1000 * 60 * 60));
-                document.getElementById('audioExpiry').textContent = `${hoursLeft} hours`;
-            }
-            
-            // Store download URL
-            currentDownloadUrl = jobData.downloadUrl;
-            
-            // Update status in history
-            updateAudioStatus('completed');
-            
-            showToast('Audio generation completed!', 'success');
-        }
-
-        // Update Audio Status
-        function updateAudioStatus(status) {
-            let audioHistory = JSON.parse(localStorage.getItem('audioHistory') || '[]');
-            if (audioHistory.length > 0) {
-                audioHistory[0].status = status;
-                if (status === 'completed') {
-                    audioHistory[0].downloadUrl = currentDownloadUrl;
-                    audioHistory[0].completedAt = new Date().toISOString();
-                }
-                localStorage.setItem('audioHistory', JSON.stringify(audioHistory));
-            }
-        }
-
-        // 🆕 Download from R2
-        window.downloadFromR2 = function() {
-            if (!currentDownloadUrl) {
-                showToast('Download URL not available!', 'error');
-                return;
-            }
-            
-            showToast('Starting download...', 'success');
-            
-            // Create temporary link and trigger download
-            const a = document.createElement('a');
-            a.href = currentDownloadUrl;
-            a.download = `${uploadedFile.name.replace('.txt', '')}_${selectedVoice}.wav`;
-            document.body.appendChild(a);
-            a.click();
-            document.body.removeChild(a);
-            
-            showToast('Download started!', 'success');
-        }
-
-        // 🆕 Copy Download Link
-        window.copyDownloadLink = function() {
-            if (!currentDownloadUrl) {
-                showToast('Download URL not available!', 'error');
-                return;
-            }
-            
-            // Show URL
-            const urlDiv = document.getElementById('downloadUrl');
-            urlDiv.textContent = currentDownloadUrl;
-            urlDiv.style.display = 'block';
-            
-            // Copy to clipboard
-            navigator.clipboard.writeText(currentDownloadUrl).then(() => {
-                showToast('Download link copied to clipboard!', 'success');
-            }).catch(() => {
-                showToast('Failed to copy link. Use manual copy.', 'warning');
+            }, (error) => {
+                console.error('❌ Job monitoring error:', error);
             });
+        }
+
+        // 🆕 Update Processing Status
+        function updateStatus(message, step) {
+            document.getElementById('processingMessage').textContent = message;
+            
+            // Update step indicators
+            for (let i = 1; i <= 5; i++) {
+                const stepEl = document.getElementById(`step${i}`);
+                const icon = stepEl.querySelector('i');
+                
+                if (i < step) {
+                    stepEl.className = 'status-step completed';
+                    icon.className = 'fas fa-check-circle';
+                } else if (i === step) {
+                    stepEl.className = 'status-step current';
+                    icon.className = 'fas fa-spinner fa-spin';
+                } else {
+                    stepEl.className = 'status-step pending';
+                    icon.className = 'fas fa-clock';
+                }
+            }
+        }
+
+        // 🆕 Show Processing Section
+        function showProcessingSection() {
+            document.getElementById('generateSection').style.display = 'none';
+            document.getElementById('processingSection').classList.add('show');
+            document.getElementById('downloadSection').classList.remove('show');
+        }
+
+        // 🆕 Show Download Section with R2 Data
+        function showDownloadSection(jobData) {
+            updateStatus('Audio ready for download!', 5);
+            
+            setTimeout(() => {
+                document.getElementById('processingSection').classList.remove('show');
+                document.getElementById('downloadSection').classList.add('show');
+                
+                // Update audio details
+                document.getElementById('audioFileName').textContent = uploadedFile.name.replace('.txt', '');
+                document.getElementById('audioVoice').textContent = voiceNames[selectedVoice];
+                document.getElementById('audioCharCount').textContent = document.getElementById('charCount').textContent;
+                
+                // Calculate expiry time
+                if (jobData.downloadUrlExpiresAt) {
+                    const expiryDate = jobData.downloadUrlExpiresAt.toDate();
+                    const now = new Date();
+                    const hoursLeft = Math.ceil((expiryDate - now) / (1000 * 60 * 60));
+                    document.getElementById('audioExpiry').textContent = `${hoursLeft} hours`;
+                }
+                
+                showToast('🎉 Audio generation completed!', 'success');
+                
+                // Get file size from R2 URL
+                getFileSizeFromUrl(currentDownloadUrl);
+                
+            }, 1000);
+        }
+
+        // 🆕 Get File Size from R2 URL
+        async function getFileSizeFromUrl(url) {
+            try {
+                const response = await fetch(url, { method: 'HEAD' });
+                const contentLength = response.headers.get('content-length');
+                if (contentLength) {
+                    const sizeInMB = (parseInt(contentLength) / (1024 * 1024)).toFixed(1);
+                    document.getElementById('audioFileSize').textContent = `${sizeInMB} MB`;
+                }
+            } catch (error) {
+                console.log('Could not get file size:', error);
+                document.getElementById('audioFileSize').textContent = 'Unknown';
+            }
+        }
+
+        // 🆕 Download Audio from R2
+        window.downloadAudioFromR2 = async function() {
+            if (!currentDownloadUrl) {
+                showToast('Download URL not available!', 'error');
+                return;
+            }
+            
+            try {
+                showToast('Starting download...', 'success');
+                
+                // Create download link
+                const link = document.createElement('a');
+                link.href = currentDownloadUrl;
+                link.download = `${uploadedFile.name.replace('.txt', '')}_${selectedVoice}.wav`;
+                link.target = '_blank';
+                
+                // Trigger download
+                document.body.appendChild(link);
+                link.click();
+                document.body.removeChild(link);
+                
+                showToast('Download started!', 'success');
+                
+            } catch (error) {
+                console.error('❌ Download error:', error);
+                showToast('Download failed! Please try again.', 'error');
+            }
+        }
+
+        // 🆕 Preview Audio
+        window.previewAudio = function() {
+            if (!currentDownloadUrl) {
+                showToast('Audio not available for preview!', 'error');
+                return;
+            }
+            
+            const modal = document.getElementById('audioPreviewModal');
+            const player = document.getElementById('previewAudioPlayer');
+            
+            player.src = currentDownloadUrl;
+            modal.style.display = 'flex';
+        }
+
+        // 🆕 Close Preview
+        window.closePreview = function() {
+            const modal = document.getElementById('audioPreviewModal');
+            const player = document.getElementById('previewAudioPlayer');
+            
+            player.pause();
+            player.currentTime = 0;
+            modal.style.display = 'none';
+        }
+
+        // Show Error
+        function showError(error) {
+            document.getElementById('processingSection').classList.remove('show');
+            resetToGenerateSection();
+            showToast(`Processing failed: ${error}`, 'error');
+        }
+
+        // Reset to Generate Section
+        function resetToGenerateSection() {
+            document.getElementById('generateSection').style.display = 'block';
+            document.getElementById('processingSection').classList.remove('show');
+            document.getElementById('downloadSection').classList.remove('show');
         }
 
         // Reset Form
         window.resetForm = function() {
-            // Stop status checking
-            if (statusCheckInterval) {
-                clearInterval(statusCheckInterval);
-                statusCheckInterval = null;
+            // Stop job monitoring
+            if (jobListener) {
+                jobListener();
+                jobListener = null;
             }
             
-            // Reset all sections
-            document.getElementById('generateSection').style.display = 'block';
-            document.getElementById('processingSection').classList.remove('show');
-            document.getElementById('downloadSection').classList.remove('show');
-            
-            // Reset form data
+            // Reset variables
             selectedVoice = null;
             uploadedFile = null;
             currentJobId = null;
             currentDownloadUrl = null;
             
-            // Clear UI
+            // Reset UI
+            resetToGenerateSection();
+            
             document.querySelectorAll('.audio-card').forEach(card => {
                 card.classList.remove('selected');
             });
@@ -1471,7 +1540,6 @@
             document.getElementById('fileInfo').classList.remove('show');
             document.getElementById('charInfo').style.display = 'none';
             document.getElementById('fileInput').value = '';
-            document.getElementById('downloadUrl').style.display = 'none';
             
             checkGenerateButton();
             showToast('Ready for new audio generation!');
@@ -1486,12 +1554,6 @@
         // Logout
         window.logout = async function() {
             try {
-                // Stop status checking
-                if (statusCheckInterval) {
-                    clearInterval(statusCheckInterval);
-                    statusCheckInterval = null;
-                }
-                
                 await signOut(auth);
                 
                 localStorage.removeItem('isLoggedIn');
@@ -1524,12 +1586,10 @@
             if (!e.target.closest('.user-menu')) {
                 document.getElementById('userDropdown').classList.remove('show');
             }
-        });
-
-        // Cleanup on page unload
-        window.addEventListener('beforeunload', () => {
-            if (statusCheckInterval) {
-                clearInterval(statusCheckInterval);
+            
+            // Close preview modal when clicking outside
+            if (e.target.id === 'audioPreviewModal') {
+                closePreview();
             }
         });
 
