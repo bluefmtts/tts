@@ -425,13 +425,6 @@
             border-radius: 15px;
         }
 
-        .service-locked {
-            background: linear-gradient(45deg, rgba(245, 158, 11, 0.1), rgba(251, 191, 36, 0.05));
-            border: 2px solid var(--warning);
-            margin-bottom: 2rem;
-            text-align: center;
-        }
-
         .service-info-box {
             background: rgba(255, 255, 255, 0.05);
             padding: 1rem;
@@ -1678,7 +1671,7 @@
         import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js';
         import { getAuth, onAuthStateChanged, signOut } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js';
         import { getStorage, ref, uploadBytes, getDownloadURL } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-storage.js';
-        import { getFirestore, doc, onSnapshot, collection, query, where, orderBy, limit, setDoc, updateDoc, serverTimestamp } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js';
+        import { getFirestore, doc, onSnapshot, collection, query, where, orderBy, limit, setDoc, updateDoc, serverTimestamp, getDoc } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js';
 
         // Firebase configuration
         const firebaseConfig = {
@@ -1697,8 +1690,7 @@
         const db = getFirestore(app);
 
         // Configuration
-        const TARGET_USER_ID = "WjOw52WYq7XBRrEtaV2oa8aR7323";
-        const ADMIN_EMAIL = "vikassingh44999@hmail.com"; // Change this to your admin email
+        const ADMIN_EMAIL = "admin@bluefm.com"; // Change this to your admin email
 
         // Global variables
         let selectedVoice = null;
@@ -1709,6 +1701,7 @@
         let currentDownloadUrl = null;
         let connectionRetryCount = 0;
         let userServiceStatus = false;
+        let userAssignedBot = null;
 
         // Voice configuration
         const voiceNames = {
@@ -1782,6 +1775,7 @@
                 const unsubscribe = onSnapshot(userRef, (doc) => {
                     if (doc.exists()) {
                         const userData = doc.data();
+                        userAssignedBot = userData.assigned_bot;
                         updateServiceStatusUI(userData);
                     }
                 });
@@ -1813,8 +1807,8 @@
                             <ul style="list-style: none; padding: 0;">
                                 <li>AI Voice Engine: Online</li>
                                 <li>Processing Queue: Available</li>
+                                <li>Assigned Bot: ${userData.assigned_bot}</li>
                                 <li>Monthly Limit: 5,000 characters</li>
-                                <li>File Formats: .txt supported</li>
                             </ul>
                         </div>
                         <p style="font-size: 0.9rem; color: var(--text-secondary); margin-top: 1rem;">
@@ -2034,12 +2028,14 @@
 
         // Check for active jobs
         async function checkActiveJobs() {
+            if (!currentUser) return;
+            
             try {
                 updateConnectionStatus('connecting', 'Checking jobs...');
                 
                 const q = query(
                     collection(db, "tts_jobs"),
-                    where("userId", "==", TARGET_USER_ID),
+                    where("userId", "==", currentUser.uid),
                     where("status", "in", ["processing", "sent_to_telegram"]),
                     orderBy("createdAt", "desc"),
                     limit(1)
@@ -2224,7 +2220,7 @@
             }
         }
 
-        // Generate audio
+        // FIXED Generate Audio Function - Routes to User's Assigned Bot
         window.generateAudio = async function() {
             if (!userServiceStatus) {
                 showToast('Service not activated yet!', 'error');
@@ -2239,14 +2235,24 @@
             try {
                 updateConnectionStatus('connecting', 'Starting...');
                 
+                // Get current user's assigned bot
+                const userDoc = await getDoc(doc(db, 'users', currentUser.uid));
+                const userData = userDoc.data();
+                
+                if (!userData.assigned_bot) {
+                    showToast('No bot assigned to your account!', 'error');
+                    return;
+                }
+                
                 const jobId = Date.now().toString();
-                const userId = TARGET_USER_ID;
+                const userId = currentUser.uid; // Use actual current user ID
                 currentJobId = jobId;
                 
                 showProcessingSection();
                 updateStatus('Uploading files...', 1);
                 updateProgress(20);
                 
+                // Upload file with current user's ID (not hardcoded TARGET_USER_ID)
                 const textFileName = `${jobId}-${uploadedFile.name}`;
                 const textRef = ref(storage, `tts-requests/${userId}/${textFileName}`);
                 
@@ -2257,20 +2263,32 @@
                         voiceName: voiceNames[selectedVoice],
                         referenceAudio: voiceToReference[selectedVoice],
                         jobId: jobId,
+                        assignedBot: userData.assigned_bot,
                         timestamp: new Date().toISOString()
                     }
                 };
                 
                 await uploadBytes(textRef, uploadedFile, metadata);
-                console.log('✅ Text file uploaded for target user:', userId);
+                console.log('✅ Text file uploaded for user:', userId);
+                console.log('✅ Assigned bot:', userData.assigned_bot);
                 
-                updateStatus('Sending to processing server...', 2);
+                updateStatus('Sending to your assigned bot...', 2);
                 updateProgress(40);
                 updateConnectionStatus('connected', 'Processing...');
                 
+                // Create job document for monitoring
+                await setDoc(doc(db, 'tts_jobs', jobId), {
+                    userId: userId,
+                    fileName: uploadedFile.name,
+                    voiceId: selectedVoice,
+                    assignedBot: userData.assigned_bot,
+                    status: 'uploaded',
+                    createdAt: serverTimestamp()
+                });
+                
                 startJobMonitoring(jobId);
                 
-                showToast('Files uploaded! Processing started...', 'success');
+                showToast(`Files uploaded to ${userData.assigned_bot}!`, 'success');
                 
             } catch (error) {
                 console.error('❌ Upload error:', error);
