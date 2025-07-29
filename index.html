@@ -236,6 +236,17 @@
             box-shadow: 0 5px 20px rgba(16, 185, 129, 0.4);
         }
 
+        .nav-link.admin-link {
+            background: linear-gradient(45deg, var(--warning), #f59e0b);
+            color: #1f2937;
+            font-weight: 600;
+        }
+
+        .nav-link.admin-link:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 20px rgba(245, 158, 11, 0.4);
+        }
+
         /* User Menu */
         .user-menu {
             position: relative;
@@ -391,6 +402,152 @@
         .stat-label {
             font-size: 0.9rem;
             color: var(--text-secondary);
+        }
+
+        /* Bot Status Section */
+        .bot-status-section {
+            margin-bottom: 3rem;
+        }
+
+        .bot-ready {
+            text-align: center;
+            padding: 2rem;
+            background: linear-gradient(45deg, rgba(16, 185, 129, 0.1), rgba(5, 150, 105, 0.1));
+            border: 2px solid var(--success);
+            border-radius: 15px;
+        }
+
+        .bot-pending {
+            text-align: center;
+            padding: 2rem;
+            background: linear-gradient(45deg, rgba(245, 158, 11, 0.1), rgba(251, 191, 36, 0.1));
+            border: 2px solid var(--warning);
+            border-radius: 15px;
+        }
+
+        .bot-link {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 1rem 2rem;
+            background: linear-gradient(45deg, #0088cc, #00aaff);
+            color: white;
+            text-decoration: none;
+            border-radius: 50px;
+            font-weight: 600;
+            margin-top: 1rem;
+            transition: all 0.3s ease;
+        }
+
+        .bot-link:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 30px rgba(0, 136, 204, 0.4);
+        }
+
+        /* Admin Panel Styles */
+        .admin-panel-section {
+            margin-bottom: 3rem;
+            border: 2px solid var(--warning);
+            background: linear-gradient(45deg, rgba(245, 158, 11, 0.1), rgba(251, 191, 36, 0.05));
+        }
+
+        .users-management {
+            max-height: 600px;
+            overflow-y: auto;
+        }
+
+        .user-card {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid var(--glass-border);
+            border-radius: 15px;
+            padding: 1.5rem;
+            margin-bottom: 1rem;
+            transition: all 0.3s ease;
+        }
+
+        .user-card:hover {
+            transform: translateY(-2px);
+            border-color: var(--accent);
+        }
+
+        .user-info {
+            display: grid;
+            grid-template-columns: 1fr 1fr 1fr;
+            gap: 1rem;
+            margin-bottom: 1rem;
+            align-items: center;
+        }
+
+        .user-detail {
+            text-align: left;
+        }
+
+        .user-detail strong {
+            color: var(--accent);
+            display: block;
+            margin-bottom: 0.25rem;
+        }
+
+        .bot-assignment {
+            display: flex;
+            gap: 1rem;
+            align-items: center;
+            flex-wrap: wrap;
+        }
+
+        .bot-input {
+            flex: 1;
+            min-width: 200px;
+            padding: 0.5rem 1rem;
+            border: 1px solid var(--glass-border);
+            border-radius: 25px;
+            background: rgba(255, 255, 255, 0.1);
+            color: var(--text-primary);
+            font-size: 0.9rem;
+        }
+
+        .bot-input:focus {
+            outline: none;
+            border-color: var(--accent);
+        }
+
+        .bot-input::placeholder {
+            color: var(--text-secondary);
+        }
+
+        .assign-btn {
+            padding: 0.5rem 1.5rem;
+            background: linear-gradient(45deg, var(--success), #059669);
+            border: none;
+            border-radius: 25px;
+            color: white;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .assign-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(16, 185, 129, 0.4);
+        }
+
+        .status-badge {
+            padding: 0.25rem 0.75rem;
+            border-radius: 15px;
+            font-size: 0.8rem;
+            font-weight: 600;
+        }
+
+        .status-assigned {
+            background: rgba(16, 185, 129, 0.2);
+            color: var(--success);
+            border: 1px solid var(--success);
+        }
+
+        .status-pending {
+            background: rgba(245, 158, 11, 0.2);
+            color: var(--warning);
+            border: 1px solid var(--warning);
         }
 
         /* Audio Cards */
@@ -1075,6 +1232,20 @@
             .glass-container {
                 padding: 1.5rem;
             }
+
+            .user-info {
+                grid-template-columns: 1fr;
+                gap: 0.5rem;
+            }
+
+            .bot-assignment {
+                flex-direction: column;
+                align-items: stretch;
+            }
+
+            .bot-input {
+                min-width: auto;
+            }
         }
 
         @media (max-width: 480px) {
@@ -1174,6 +1345,9 @@
                 <a href="membership.html" class="nav-link premium">
                     <i class="fas fa-crown"></i> Premium
                 </a>
+                <a href="#" onclick="showAdminPanel()" class="nav-link admin-link">
+                    <i class="fas fa-users-cog"></i> Admin
+                </a>
                 <div class="user-menu">
                     <button class="user-btn" onclick="toggleUserMenu()">
                         <i class="fas fa-user-circle"></i>
@@ -1221,6 +1395,44 @@
             <div class="stat-card">
                 <div class="stat-number">99.9%</div>
                 <div class="stat-label">Accuracy</div>
+            </div>
+        </section>
+
+        <!-- User Bot Status Section -->
+        <section class="bot-status-section glass-container" id="botStatusSection">
+            <h2 class="section-title">
+                <i class="fas fa-robot"></i> Your Personal Bot
+            </h2>
+            <div id="botStatusContent">
+                <div class="loading-spinner"></div>
+                <p>Loading bot assignment...</p>
+            </div>
+        </section>
+
+        <!-- Admin Panel Section -->
+        <section class="admin-panel-section glass-container" id="adminPanel" style="display: none;">
+            <h2 class="section-title">
+                <i class="fas fa-users-cog"></i> Admin Panel - User Management
+            </h2>
+            
+            <div class="admin-stats" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1rem; margin-bottom: 2rem;">
+                <div class="stat-card">
+                    <div class="stat-number" id="totalUsers">0</div>
+                    <div class="stat-label">Total Users</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-number" id="assignedBots">0</div>
+                    <div class="stat-label">Assigned Bots</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-number" id="pendingUsers">0</div>
+                    <div class="stat-label">Pending Assignment</div>
+                </div>
+            </div>
+
+            <div class="users-management">
+                <h3 style="margin-bottom: 1rem;">User Management</h3>
+                <div id="usersList"></div>
             </div>
         </section>
 
@@ -1451,7 +1663,7 @@
         import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js';
         import { getAuth, onAuthStateChanged, signOut } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js';
         import { getStorage, ref, uploadBytes, getDownloadURL } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-storage.js';
-        import { getFirestore, doc, onSnapshot, collection, query, where, orderBy, limit } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js';
+        import { getFirestore, doc, onSnapshot, collection, query, where, orderBy, limit, setDoc, updateDoc, serverTimestamp } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js';
 
         // Firebase configuration
         const firebaseConfig = {
@@ -1471,6 +1683,7 @@
 
         // 🎯 Target User Configuration
         const TARGET_USER_ID = "WjOw52WYq7XBRrEtaV2oa8aR7323";
+        const ADMIN_EMAIL = "vikassingh44999@gmail.com"; // Change this to your admin email
 
         // Global variables
         let selectedVoice = null;
@@ -1528,12 +1741,210 @@
             statusEl.querySelector('span').textContent = message;
         }
 
+        // User Auto-Save Function
+        async function saveUserToFirestore(user) {
+            try {
+                const userRef = doc(db, 'users', user.uid);
+                await setDoc(userRef, {
+                    email: user.email,
+                    uid: user.uid,
+                    login_time: serverTimestamp(),
+                    assigned_bot: null
+                }, { merge: true });
+                
+                console.log('✅ User saved to Firestore');
+                loadUserBotStatus(user.uid);
+                
+            } catch (error) {
+                console.error('❌ Error saving user:', error);
+            }
+        }
+
+        // Load User Bot Status
+        async function loadUserBotStatus(userId) {
+            try {
+                const userRef = doc(db, 'users', userId);
+                const unsubscribe = onSnapshot(userRef, (doc) => {
+                    if (doc.exists()) {
+                        const userData = doc.data();
+                        updateBotStatusUI(userData);
+                    }
+                });
+                
+            } catch (error) {
+                console.error('❌ Error loading bot status:', error);
+            }
+        }
+
+        // Update Bot Status UI
+        function updateBotStatusUI(userData) {
+            const statusContent = document.getElementById('botStatusContent');
+            
+            if (userData.assigned_bot) {
+                statusContent.innerHTML = `
+                    <div class="bot-ready">
+                        <i class="fas fa-robot" style="font-size: 3rem; color: var(--success); margin-bottom: 1rem;"></i>
+                        <h3 style="color: var(--success); margin-bottom: 0.5rem;">✅ Your Bot is Ready!</h3>
+                        <p style="margin-bottom: 1rem;">Bot Username: <strong>${userData.assigned_bot}</strong></p>
+                        <a href="https://t.me/${userData.assigned_bot.replace('@', '')}" 
+                           target="_blank" 
+                           class="bot-link">
+                            <i class="fab fa-telegram"></i>
+                            Open Your Bot
+                        </a>
+                        <p style="margin-top: 1rem; font-size: 0.9rem; color: var(--text-secondary);">
+                            Click above to start sending your .txt files to your personal bot
+                        </p>
+                    </div>
+                `;
+            } else {
+                statusContent.innerHTML = `
+                    <div class="bot-pending">
+                        <i class="fas fa-hourglass-half" style="font-size: 3rem; color: var(--warning); margin-bottom: 1rem; animation: pulse 2s infinite;"></i>
+                        <h3 style="color: var(--warning); margin-bottom: 0.5rem;">⏳ Bot Assignment Pending</h3>
+                        <p style="margin-bottom: 1rem;">Your personal bot will be assigned within 24 hours</p>
+                        <p style="font-size: 0.9rem; color: var(--text-secondary);">
+                            Contact admin if urgent: ${ADMIN_EMAIL}
+                        </p>
+                    </div>
+                `;
+            }
+        }
+
+        // Admin Panel Functions
+        window.showAdminPanel = function() {
+            const adminPanel = document.getElementById('adminPanel');
+            if (currentUser && currentUser.email === ADMIN_EMAIL) {
+                adminPanel.style.display = 'block';
+                loadAllUsers();
+                adminPanel.scrollIntoView({ behavior: 'smooth' });
+            } else {
+                showToast('Admin access only!', 'error');
+            }
+        }
+
+        // Load All Users for Admin
+        async function loadAllUsers() {
+            try {
+                const usersRef = collection(db, 'users');
+                const unsubscribe = onSnapshot(usersRef, (snapshot) => {
+                    const users = snapshot.docs.map(doc => ({
+                        id: doc.id,
+                        ...doc.data()
+                    }));
+                    
+                    updateAdminStats(users);
+                    renderUsersList(users);
+                });
+                
+            } catch (error) {
+                console.error('❌ Error loading users:', error);
+            }
+        }
+
+        // Update Admin Stats
+        function updateAdminStats(users) {
+            const totalUsers = users.length;
+            const assignedBots = users.filter(user => user.assigned_bot).length;
+            const pendingUsers = totalUsers - assignedBots;
+            
+            document.getElementById('totalUsers').textContent = totalUsers;
+            document.getElementById('assignedBots').textContent = assignedBots;
+            document.getElementById('pendingUsers').textContent = pendingUsers;
+        }
+
+        // Render Users List
+        function renderUsersList(users) {
+            const usersList = document.getElementById('usersList');
+            
+            if (users.length === 0) {
+                usersList.innerHTML = '<p>No users found</p>';
+                return;
+            }
+            
+            usersList.innerHTML = users.map(user => `
+                <div class="user-card">
+                    <div class="user-info">
+                        <div class="user-detail">
+                            <strong>Email</strong>
+                            ${user.email}
+                        </div>
+                        <div class="user-detail">
+                            <strong>User ID</strong>
+                            ${user.id}
+                        </div>
+                        <div class="user-detail">
+                            <strong>Login Time</strong>
+                            ${user.login_time ? new Date(user.login_time.seconds * 1000).toLocaleString() : 'N/A'}
+                        </div>
+                    </div>
+                    
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem;">
+                        <div>
+                            <strong>Current Status:</strong>
+                            <span class="status-badge ${user.assigned_bot ? 'status-assigned' : 'status-pending'}">
+                                ${user.assigned_bot ? `Assigned: ${user.assigned_bot}` : 'Pending Assignment'}
+                            </span>
+                        </div>
+                    </div>
+                    
+                    <div class="bot-assignment">
+                        <input 
+                            type="text" 
+                            class="bot-input" 
+                            id="bot-input-${user.id}" 
+                            placeholder="@your_bot_username"
+                            value="${user.assigned_bot || ''}"
+                        >
+                        <button 
+                            class="assign-btn" 
+                            onclick="assignBotToUser('${user.id}')"
+                        >
+                            ${user.assigned_bot ? 'Update Bot' : 'Assign Bot'}
+                        </button>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        // Assign Bot to User
+        window.assignBotToUser = async function(userId) {
+            const botUsername = document.getElementById(`bot-input-${userId}`).value.trim();
+            
+            if (!botUsername) {
+                showToast('Please enter bot username', 'error');
+                return;
+            }
+            
+            if (!botUsername.startsWith('@')) {
+                showToast('Bot username must start with @', 'error');
+                return;
+            }
+            
+            try {
+                const userRef = doc(db, 'users', userId);
+                await updateDoc(userRef, {
+                    assigned_bot: botUsername,
+                    bot_assigned_at: serverTimestamp()
+                });
+                
+                showToast('Bot assigned successfully!', 'success');
+                
+            } catch (error) {
+                console.error('❌ Error assigning bot:', error);
+                showToast('Failed to assign bot!', 'error');
+            }
+        }
+
         // Check authentication state
         onAuthStateChanged(auth, (user) => {
             if (user) {
                 currentUser = user;
                 console.log('✅ User logged in:', user.email);
                 updateConnectionStatus('connected', 'Connected');
+                
+                // 🎯 Save user to Firestore automatically
+                saveUserToFirestore(user);
                 
                 // Update UI with user info
                 document.getElementById('userName').textContent = user.displayName || user.email.split('@')[0];
