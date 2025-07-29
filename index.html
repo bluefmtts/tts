@@ -1040,7 +1040,6 @@
         import { getAuth, onAuthStateChanged, signOut } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js';
         import { getStorage, ref, uploadBytes, getDownloadURL } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-storage.js';
         import { getFirestore, doc, onSnapshot, collection, query, where, orderBy, limit } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js';
-        import { getFunctions, httpsCallable } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-functions.js';
 
         // ✅ Firebase configuration
         const firebaseConfig = {
@@ -1057,14 +1056,12 @@
         const auth = getAuth(app);
         const storage = getStorage(app);
         const db = getFirestore(app);
-        const functions = getFunctions(app);
 
         // Global variables
         let selectedVoice = null;
         let uploadedFile = null;
         let currentUser = null;
         let currentJobId = null;
-        let userListener = null;
         let jobListener = null;
         let currentDownloadUrl = null;
 
@@ -1106,9 +1103,6 @@
                 localStorage.setItem('userEmail', user.email);
                 localStorage.setItem('userId', user.uid);
                 
-                // 🆕 Start monitoring user document for audio status
-                startUserAudioMonitoring();
-                
                 // 🆕 Check for any active jobs
                 checkActiveJobs();
                 
@@ -1117,44 +1111,6 @@
                 window.location.href = 'login.html';
             }
         });
-
-        // 🆕 Start User Audio Monitoring (Main.py integration)
-        function startUserAudioMonitoring() {
-            if (userListener) {
-                userListener(); // Unsubscribe from previous listener
-            }
-            
-            const userRef = doc(db, "users", currentUser.uid);
-            
-            userListener = onSnapshot(userRef, (doc) => {
-                if (doc.exists()) {
-                    const userData = doc.data();
-                    console.log('👤 User document update:', userData);
-                    
-                    if (userData.status) {
-                        switch(userData.status) {
-                            case 'completed':
-                                if (userData.finalAudioUrl) {
-                                    currentDownloadUrl = userData.finalAudioUrl;
-                                    showDownloadSection(userData);
-                                }
-                                break;
-                                
-                            case 'failed':
-                                showError(userData.error || 'Processing failed');
-                                break;
-                                
-                            default:
-                                console.log('User status:', userData.status);
-                        }
-                    }
-                } else {
-                    console.log('User document does not exist');
-                }
-            }, (error) => {
-                console.error('❌ User monitoring error:', error);
-            });
-        }
 
         // 🆕 Check for Active Jobs
         async function checkActiveJobs() {
@@ -1329,7 +1285,7 @@
             }
         }
 
-        // ✅ Enhanced Generate Audio with Direct TTS Function Call
+        // ✅ Enhanced Generate Audio with Real-time Monitoring
         window.generateAudio = async function() {
             if (!selectedVoice || !uploadedFile) {
                 showToast('Please select a voice and upload a file!', 'error');
@@ -1337,53 +1293,49 @@
             }
             
             try {
-                // Read file content
-                const reader = new FileReader();
-                reader.onload = async function(e) {
-                    const textContent = e.target.result;
-                    
-                    // Show processing section
-                    showProcessingSection();
-                    updateStatus('Sending to processing server...', 1);
-                    
-                    try {
-                        // 🚀 Call Firebase function directly (Updated approach)
-                        const processTTS = httpsCallable(functions, 'processTTS');
-                        const result = await processTTS({
-                            textContent: textContent,
-                            voiceId: selectedVoice,
-                            referenceAudio: voiceToReference[selectedVoice]
-                        });
-                        
-                        console.log('✅ TTS function called:', result.data);
-                        currentJobId = result.data.jobId;
-                        
-                        updateStatus('Processing with AI server...', 2);
-                        
-                        // 🆕 Start job monitoring
-                        if (currentJobId) {
-                            startJobMonitoring(currentJobId);
-                        }
-                        
-                        showToast('Processing started! This may take 5-15 minutes.', 'success');
-                        
-                    } catch (error) {
-                        console.error('❌ Function call error:', error);
-                        showToast('Processing failed! Please try again.', 'error');
-                        resetToGenerateSection();
+                // Generate unique ID for this job
+                const jobId = Date.now().toString();
+                const userId = currentUser.uid;
+                currentJobId = jobId;
+                
+                // Show processing section
+                showProcessingSection();
+                updateStatus('Uploading files...', 1);
+                
+                // Upload text file with metadata
+                const textFileName = `${jobId}-${uploadedFile.name}`;
+                const textRef = ref(storage, `tts-requests/${userId}/${textFileName}`);
+                
+                // ✅ Upload with reference voice metadata
+                const metadata = {
+                    customMetadata: {
+                        userId: userId,
+                        voiceId: selectedVoice,
+                        voiceName: voiceNames[selectedVoice],
+                        referenceAudio: voiceToReference[selectedVoice],
+                        jobId: jobId,
+                        timestamp: new Date().toISOString()
                     }
                 };
                 
-                reader.readAsText(uploadedFile);
+                await uploadBytes(textRef, uploadedFile, metadata);
+                console.log('✅ Text file uploaded with reference voice info');
+                
+                updateStatus('Sending to processing server...', 2);
+                
+                // 🆕 Start real-time job monitoring
+                startJobMonitoring(jobId);
+                
+                showToast('Files uploaded! Processing started...', 'success');
                 
             } catch (error) {
-                console.error('❌ Generate audio error:', error);
-                showToast('Failed to start processing!', 'error');
+                console.error('❌ Upload error:', error);
+                showToast('Upload failed! Please try again.', 'error');
                 resetToGenerateSection();
             }
         }
 
-        // 🆕 Real-time Job Monitoring (Backup system)
+        // 🆕 Real-time Job Monitoring
         function startJobMonitoring(jobId) {
             if (jobListener) {
                 jobListener(); // Unsubscribe from previous listener
@@ -1406,8 +1358,10 @@
                             break;
                             
                         case 'completed':
-                            updateStatus('Uploading to cloud storage...', 4);
-                            // User document monitoring will handle final completion
+                            if (jobData.downloadUrl) {
+                                currentDownloadUrl = jobData.downloadUrl;
+                                showDownloadSection(jobData);
+                            }
                             break;
                             
                         case 'failed':
@@ -1451,8 +1405,8 @@
             document.getElementById('downloadSection').classList.remove('show');
         }
 
-        // 🆕 Show Download Section with User Document Data
-        function showDownloadSection(userData) {
+        // 🆕 Show Download Section with R2 Data
+        function showDownloadSection(jobData) {
             updateStatus('Audio ready for download!', 5);
             
             setTimeout(() => {
@@ -1460,21 +1414,22 @@
                 document.getElementById('downloadSection').classList.add('show');
                 
                 // Update audio details
-                document.getElementById('audioFileName').textContent = userData.fileName || uploadedFile.name.replace('.txt', '');
+                document.getElementById('audioFileName').textContent = uploadedFile.name.replace('.txt', '');
                 document.getElementById('audioVoice').textContent = voiceNames[selectedVoice];
                 document.getElementById('audioCharCount').textContent = document.getElementById('charCount').textContent;
                 
-                // Calculate expiry time (R2 URLs typically expire in 24 hours)
-                const expiryDate = new Date(Date.now() + 24 * 60 * 60 * 1000);
-                const hoursLeft = 24;
-                document.getElementById('audioExpiry').textContent = `${hoursLeft} hours`;
+                // Calculate expiry time
+                if (jobData.downloadUrlExpiresAt) {
+                    const expiryDate = jobData.downloadUrlExpiresAt.toDate();
+                    const now = new Date();
+                    const hoursLeft = Math.ceil((expiryDate - now) / (1000 * 60 * 60));
+                    document.getElementById('audioExpiry').textContent = `${hoursLeft} hours`;
+                }
                 
                 showToast('🎉 Audio generation completed!', 'success');
                 
                 // Get file size from R2 URL
-                if (currentDownloadUrl) {
-                    getFileSizeFromUrl(currentDownloadUrl);
-                }
+                getFileSizeFromUrl(currentDownloadUrl);
                 
             }, 1000);
         }
@@ -1563,7 +1518,7 @@
 
         // Reset Form
         window.resetForm = function() {
-            // Stop monitoring
+            // Stop job monitoring
             if (jobListener) {
                 jobListener();
                 jobListener = null;
