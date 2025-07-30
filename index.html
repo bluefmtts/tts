@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -26,23 +25,25 @@
             --gold: #fbbf24;
             --success: #10b981;
             --warning: #f59e0b;
+            --error: #ef4444;
             --glass-bg: rgba(255, 255, 255, 0.1);
             --glass-border: rgba(255, 255, 255, 0.2);
             --text-primary: #ffffff;
             --text-secondary: #e0e0ff;
             --shadow: rgba(37, 99, 235, 0.3);
+            --gradient-primary: linear-gradient(135deg, #1e3a8a 0%, #2563eb 50%, #3b82f6 100%);
         }
 
         body {
             font-family: 'Poppins', sans-serif;
             min-height: 100vh;
-            background: linear-gradient(135deg, #1e3a8a 0%, #2563eb 50%, #3b82f6 100%);
+            background: var(--gradient-primary);
             color: var(--text-primary);
             overflow-x: hidden;
             position: relative;
         }
 
-        /* Background Animation */
+        /* 🆕 Enhanced Background Animation */
         .bg-animation {
             position: fixed;
             width: 100%;
@@ -55,16 +56,101 @@
 
         .sound-wave {
             position: absolute;
-            width: 100%;
+            width: 200%;
             height: 100px;
             bottom: 0;
             background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1440 320"><path fill="%2360a5fa" fill-opacity="0.3" d="M0,160L48,170.7C96,181,192,203,288,197.3C384,192,480,160,576,165.3C672,171,768,213,864,213.3C960,213,1056,171,1152,160C1248,149,1344,171,1392,181.3L1440,192L1440,320L1392,320C1344,320,1248,320,1152,320C1056,320,960,320,864,320C768,320,672,320,576,320C480,320,384,320,288,320C192,320,96,320,48,320L0,320Z"></path></svg>');
             animation: wave 20s linear infinite;
         }
 
+        .floating-particles {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            top: 0;
+            left: 0;
+        }
+
+        .particle {
+            position: absolute;
+            background: rgba(96, 165, 250, 0.1);
+            border-radius: 50%;
+            animation: float 6s ease-in-out infinite;
+        }
+
         @keyframes wave {
             0% { transform: translateX(0); }
             100% { transform: translateX(-50%); }
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translateY(0px) rotate(0deg); opacity: 0.8; }
+            50% { transform: translateY(-20px) rotate(180deg); opacity: 0.4; }
+        }
+
+        /* 🆕 Connection Status Indicator */
+        .connection-status {
+            position: fixed;
+            top: 70px;
+            right: 20px;
+            z-index: 101;
+            padding: 0.5rem 1rem;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            backdrop-filter: blur(10px);
+            transition: all 0.3s ease;
+        }
+
+        .connection-status.connected {
+            background: rgba(16, 185, 129, 0.2);
+            border: 1px solid var(--success);
+            color: var(--success);
+        }
+
+        .connection-status.disconnected {
+            background: rgba(239, 68, 68, 0.2);
+            border: 1px solid var(--error);
+            color: var(--error);
+        }
+
+        .connection-status.connecting {
+            background: rgba(245, 158, 11, 0.2);
+            border: 1px solid var(--warning);
+            color: var(--warning);
+        }
+
+        .connection-status.waiting {
+            background: rgba(59, 130, 246, 0.2);
+            border: 1px solid var(--primary);
+            color: var(--primary);
+        }
+
+        .status-dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            animation: pulse 2s infinite;
+        }
+
+        .connected .status-dot {
+            background: var(--success);
+        }
+
+        .disconnected .status-dot {
+            background: var(--error);
+        }
+
+        .connecting .status-dot, .waiting .status-dot {
+            background: var(--warning);
+        }
+
+        @keyframes pulse {
+            0% { opacity: 1; transform: scale(1); }
+            50% { opacity: 0.5; transform: scale(1.2); }
+            100% { opacity: 1; transform: scale(1); }
         }
 
         /* Navigation */
@@ -95,10 +181,21 @@
             display: flex;
             align-items: center;
             gap: 0.5rem;
+            transition: all 0.3s ease;
+        }
+
+        .logo:hover {
+            transform: scale(1.05);
         }
 
         .logo i {
             color: var(--accent);
+            animation: glow 2s ease-in-out infinite alternate;
+        }
+
+        @keyframes glow {
+            from { text-shadow: 0 0 10px var(--accent); }
+            to { text-shadow: 0 0 20px var(--accent), 0 0 30px var(--accent); }
         }
 
         .nav-links {
@@ -120,6 +217,7 @@
         .nav-link:hover {
             color: var(--accent);
             background: rgba(255, 255, 255, 0.1);
+            transform: translateY(-2px);
         }
 
         .nav-link.premium {
@@ -164,6 +262,7 @@
 
         .user-btn:hover {
             background: rgba(255, 255, 255, 0.2);
+            transform: translateY(-2px);
         }
 
         .user-dropdown {
@@ -178,6 +277,7 @@
             padding: 0.5rem;
             min-width: 200px;
             display: none;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
         }
 
         .user-dropdown.show {
@@ -198,6 +298,12 @@
             border-radius: 20px;
             padding: 2rem;
             box-shadow: 0 8px 32px var(--shadow);
+            transition: all 0.3s ease;
+        }
+
+        .glass-container:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 12px 40px var(--shadow);
         }
 
         /* Main Content */
@@ -221,15 +327,27 @@
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
             background-clip: text;
+            animation: textGlow 3s ease-in-out infinite alternate;
+        }
+
+        @keyframes textGlow {
+            from { filter: drop-shadow(0 0 10px var(--accent)); }
+            to { filter: drop-shadow(0 0 20px var(--accent)); }
         }
 
         .hero-subtitle {
             font-size: 1.25rem;
             color: var(--text-secondary);
             margin-bottom: 2rem;
+            animation: fadeInUp 1s ease-out 0.5s both;
         }
 
-        /* Stats */
+        @keyframes fadeInUp {
+            from { opacity: 0; transform: translateY(30px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* 🆕 Enhanced Stats */
         .stats-container {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
@@ -243,12 +361,37 @@
             border-radius: 15px;
             text-align: center;
             border: 1px solid var(--glass-border);
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .stat-card::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: linear-gradient(45deg, transparent, rgba(255, 255, 255, 0.1), transparent);
+            transform: rotate(45deg);
+            transition: transform 0.6s;
+        }
+
+        .stat-card:hover::before {
+            transform: rotate(45deg) translate(50px, 50px);
+        }
+
+        .stat-card:hover {
+            transform: translateY(-5px);
+            border-color: var(--accent);
         }
 
         .stat-number {
             font-size: 2rem;
             font-weight: 700;
             color: var(--accent);
+            margin-bottom: 0.5rem;
         }
 
         .stat-label {
@@ -274,19 +417,38 @@
             cursor: pointer;
             transition: all 0.3s ease;
             position: relative;
+            overflow: hidden;
+        }
+
+        .audio-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.1), transparent);
+            transition: left 0.5s;
+        }
+
+        .audio-card:hover::before {
+            left: 100%;
         }
 
         .audio-card:hover {
-            transform: translateY(-5px);
+            transform: translateY(-8px);
         }
 
         .audio-card.selected {
             box-shadow: 0 0 30px var(--accent);
             border-color: var(--accent);
+            transform: translateY(-5px);
         }
 
         .audio-card-content {
             padding: 1.5rem;
+            position: relative;
+            z-index: 1;
         }
 
         .voice-avatar {
@@ -299,6 +461,12 @@
             justify-content: center;
             font-size: 2rem;
             background: linear-gradient(45deg, var(--primary), var(--secondary));
+            animation: avatarGlow 3s ease-in-out infinite alternate;
+        }
+
+        @keyframes avatarGlow {
+            from { box-shadow: 0 0 20px rgba(96, 165, 250, 0.3); }
+            to { box-shadow: 0 0 30px rgba(96, 165, 250, 0.6); }
         }
 
         .voice-name {
@@ -365,11 +533,13 @@
             border-radius: 50%;
             background: transparent;
             cursor: pointer;
+            transition: all 0.3s ease;
         }
 
         .audio-card.selected .radio-select {
             background: var(--accent);
             border-color: var(--accent);
+            box-shadow: 0 0 15px var(--accent);
         }
 
         .audio-card.selected .radio-select::after {
@@ -380,6 +550,7 @@
             transform: translate(-50%, -50%);
             color: white;
             font-size: 14px;
+            font-weight: bold;
         }
 
         /* Upload Section */
@@ -394,22 +565,32 @@
             text-align: center;
             transition: all 0.3s ease;
             position: relative;
+            background: rgba(255, 255, 255, 0.02);
         }
 
         .upload-area:hover {
             border-color: var(--accent);
             background: rgba(96, 165, 250, 0.1);
+            transform: translateY(-2px);
         }
 
         .upload-area.drag-over {
             border-color: var(--accent);
             background: rgba(96, 165, 250, 0.2);
+            transform: scale(1.02);
         }
 
         .upload-icon {
             font-size: 3rem;
             color: var(--accent);
             margin-bottom: 1rem;
+            animation: bounce 2s ease-in-out infinite;
+        }
+
+        @keyframes bounce {
+            0%, 20%, 50%, 80%, 100% { transform: translateY(0); }
+            40% { transform: translateY(-10px); }
+            60% { transform: translateY(-5px); }
         }
 
         .btn {
@@ -422,6 +603,24 @@
             display: inline-flex;
             align-items: center;
             gap: 0.5rem;
+            text-decoration: none;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .btn::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+            transition: left 0.5s;
+        }
+
+        .btn:hover::before {
+            left: 100%;
         }
 
         .btn-primary {
@@ -437,6 +636,7 @@
         .btn-primary:disabled {
             opacity: 0.5;
             cursor: not-allowed;
+            transform: none;
         }
 
         .btn-success {
@@ -449,16 +649,24 @@
             box-shadow: 0 10px 30px rgba(16, 185, 129, 0.4);
         }
 
+        /* 🆕 Enhanced File Info */
         .file-info {
             margin-top: 1rem;
             padding: 1rem;
-            background: rgba(255, 255, 255, 0.05);
+            background: rgba(16, 185, 129, 0.1);
             border-radius: 10px;
+            border: 1px solid var(--success);
             display: none;
+            animation: slideDown 0.3s ease-out;
         }
 
         .file-info.show {
             display: block;
+        }
+
+        @keyframes slideDown {
+            from { opacity: 0; transform: translateY(-10px); }
+            to { opacity: 1; transform: translateY(0); }
         }
 
         /* Generate Section */
@@ -468,14 +676,20 @@
             background: linear-gradient(45deg, rgba(37, 99, 235, 0.1), rgba(96, 165, 250, 0.1));
             border-radius: 20px;
             margin-bottom: 2rem;
+            border: 1px solid var(--glass-border);
         }
 
         .generate-btn {
             font-size: 1.25rem;
             padding: 1rem 3rem;
+            position: relative;
         }
 
-        /* Processing Status Section */
+        .generate-btn:disabled {
+            background: linear-gradient(45deg, #666, #888);
+        }
+
+        /* 🆕 Enhanced Processing Section */
         .processing-section {
             display: none;
             text-align: center;
@@ -484,16 +698,29 @@
             border-radius: 20px;
             margin-bottom: 2rem;
             border: 1px solid var(--warning);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .processing-section::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.1), transparent);
+            animation: shimmer 2s infinite;
+        }
+
+        @keyframes shimmer {
+            0% { left: -100%; }
+            100% { left: 100%; }
         }
 
         .processing-section.show {
             display: block;
             animation: slideDown 0.5s ease-out;
-        }
-
-        @keyframes slideDown {
-            from { opacity: 0; transform: translateY(-20px); }
-            to { opacity: 1; transform: translateY(0); }
         }
 
         .processing-icon {
@@ -528,7 +755,7 @@
             margin-top: 1rem;
         }
 
-        /* 🆕 Real-time Status Update Section */
+        /* 🆕 Enhanced Status Update Section */
         .status-update {
             background: rgba(59, 130, 246, 0.1);
             border: 1px solid var(--secondary);
@@ -548,21 +775,26 @@
             display: flex;
             align-items: center;
             gap: 0.5rem;
+            transition: all 0.3s ease;
         }
 
         .status-step.completed {
             color: var(--success);
+            transform: translateX(5px);
         }
 
         .status-step.current {
             color: var(--warning);
+            font-weight: 600;
+            transform: translateX(10px);
         }
 
         .status-step.pending {
             color: var(--text-secondary);
+            opacity: 0.7;
         }
 
-        /* Download Section */
+        /* 🆕 Enhanced Download Section */
         .download-section {
             display: none;
             text-align: center;
@@ -571,6 +803,24 @@
             border-radius: 20px;
             margin-bottom: 2rem;
             border: 1px solid var(--success);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .download-section::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(16, 185, 129, 0.2), transparent);
+            animation: successShimmer 3s infinite;
+        }
+
+        @keyframes successShimmer {
+            0% { left: -100%; }
+            100% { left: 100%; }
         }
 
         .download-section.show {
@@ -583,12 +833,6 @@
             color: var(--success);
             margin-bottom: 1rem;
             animation: bounce 2s infinite;
-        }
-
-        @keyframes bounce {
-            0%, 20%, 50%, 80%, 100% { transform: translateY(0); }
-            40% { transform: translateY(-10px); }
-            60% { transform: translateY(-5px); }
         }
 
         .download-title {
@@ -628,6 +872,12 @@
             display: flex;
             justify-content: space-between;
             margin-bottom: 0.5rem;
+            padding: 0.25rem 0;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .detail-row:last-child {
+            border-bottom: none;
         }
 
         .detail-label {
@@ -648,6 +898,7 @@
             padding: 1rem;
             background: rgba(255, 255, 255, 0.05);
             border-radius: 10px;
+            border: 1px solid var(--glass-border);
         }
 
         .char-count {
@@ -660,7 +911,7 @@
             color: var(--accent);
         }
 
-        /* Toast */
+        /* 🆕 Enhanced Toast */
         .toast {
             position: fixed;
             bottom: 2rem;
@@ -673,6 +924,8 @@
             display: none;
             animation: slideUp 0.3s ease-out;
             z-index: 1000;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+            max-width: 300px;
         }
 
         @keyframes slideUp {
@@ -690,13 +943,80 @@
         }
 
         .toast.error {
-            border-color: #ef4444;
-            color: #ef4444;
+            border-color: var(--error);
+            color: var(--error);
         }
 
         .toast.warning {
             border-color: var(--warning);
             color: var(--warning);
+        }
+
+        /* 🆕 Enhanced Audio Preview Modal */
+        .audio-preview-modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.8);
+            z-index: 2000;
+            backdrop-filter: blur(5px);
+            animation: fadeIn 0.3s ease-out;
+        }
+
+        .audio-preview-modal.show {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .modal-content {
+            background: var(--glass-bg);
+            backdrop-filter: blur(10px);
+            padding: 2rem;
+            border-radius: 20px;
+            max-width: 500px;
+            width: 90%;
+            border: 1px solid var(--glass-border);
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
+            animation: modalSlideIn 0.3s ease-out;
+        }
+
+        @keyframes modalSlideIn {
+            from { opacity: 0; transform: scale(0.8); }
+            to { opacity: 1; transform: scale(1); }
+        }
+
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1rem;
+        }
+
+        .modal-close {
+            background: none;
+            border: none;
+            color: var(--text-primary);
+            font-size: 1.5rem;
+            cursor: pointer;
+            padding: 0.5rem;
+            border-radius: 50%;
+            transition: all 0.3s ease;
+        }
+
+        .modal-close:hover {
+            background: rgba(255, 255, 255, 0.1);
+            transform: rotate(90deg);
+        }
+
+        .audio-player {
+            width: 100%;
+            margin-bottom: 1rem;
+            border-radius: 10px;
+            overflow: hidden;
         }
 
         /* Footer */
@@ -705,9 +1025,76 @@
             padding: 2rem;
             color: var(--text-secondary);
             border-top: 1px solid var(--glass-border);
+            background: rgba(255, 255, 255, 0.02);
         }
 
-        /* Responsive */
+        /* ✅ NEW: Waiting/Status Messages */
+        .status-message {
+            text-align: center;
+            padding: 3rem;
+            background: var(--glass-bg);
+            backdrop-filter: blur(10px);
+            border: 1px solid var(--glass-border);
+            border-radius: 20px;
+            margin-bottom: 2rem;
+        }
+
+        .status-icon {
+            font-size: 4rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .status-icon.waiting {
+            color: var(--warning);
+            animation: pulse 2s infinite;
+        }
+
+        .status-icon.approved {
+            color: var(--primary);
+        }
+
+        .status-icon.error {
+            color: var(--error);
+        }
+
+        .status-title {
+            font-size: 1.8rem;
+            font-weight: 600;
+            margin-bottom: 1rem;
+        }
+
+        .status-description {
+            color: var(--text-secondary);
+            margin-bottom: 2rem;
+            line-height: 1.6;
+        }
+
+        .status-details {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid var(--glass-border);
+            padding: 1.5rem;
+            border-radius: 10px;
+            margin-bottom: 2rem;
+        }
+
+        .countdown {
+            font-size: 1.5rem;
+            font-weight: 600;
+            color: var(--accent);
+            margin: 1rem 0;
+        }
+
+        /* 🆕 Enhanced Responsive Design */
+        @media (max-width: 1024px) {
+            .hero-title {
+                font-size: 2.5rem;
+            }
+            
+            .main-content {
+                padding: 5rem 1rem 2rem;
+            }
+        }
+
         @media (max-width: 768px) {
             .hero-title {
                 font-size: 2rem;
@@ -727,7 +1114,7 @@
             }
 
             .stats-container {
-                grid-template-columns: 1fr;
+                grid-template-columns: repeat(2, 1fr);
             }
 
             .download-options {
@@ -739,11 +1126,29 @@
                 width: 100%;
                 max-width: 300px;
             }
+
+            .connection-status {
+                top: 60px;
+                right: 10px;
+                font-size: 0.7rem;
+                padding: 0.25rem 0.5rem;
+            }
+
+            .glass-container {
+                padding: 1.5rem;
+            }
         }
 
         @media (max-width: 480px) {
-            .nav-links {
+            .nav-container {
                 flex-direction: column;
+                gap: 1rem;
+                padding: 0.5rem 0;
+            }
+
+            .nav-links {
+                flex-wrap: wrap;
+                justify-content: center;
                 gap: 0.25rem;
             }
 
@@ -751,6 +1156,56 @@
                 padding: 0.25rem 0.5rem;
                 font-size: 0.8rem;
             }
+
+            .hero-title {
+                font-size: 1.5rem;
+            }
+
+            .hero-subtitle {
+                font-size: 1rem;
+            }
+
+            .stats-container {
+                grid-template-columns: 1fr;
+            }
+
+            .main-content {
+                padding: 8rem 0.5rem 2rem;
+            }
+
+            .modal-content {
+                padding: 1rem;
+                margin: 1rem;
+            }
+        }
+
+        /* 🆕 Loading Animation */
+        .loading-spinner {
+            width: 40px;
+            height: 40px;
+            border: 4px solid rgba(255, 255, 255, 0.3);
+            border-top: 4px solid var(--accent);
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin: 0 auto;
+        }
+
+        /* 🆕 Progress Bar */
+        .progress-bar {
+            width: 100%;
+            height: 6px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 3px;
+            overflow: hidden;
+            margin: 1rem 0;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, var(--primary), var(--secondary));
+            width: 0%;
+            border-radius: 3px;
+            transition: width 0.3s ease;
         }
     </style>
 </head>
@@ -758,6 +1213,13 @@
     <!-- Background Animation -->
     <div class="bg-animation">
         <div class="sound-wave"></div>
+        <div class="floating-particles" id="particles"></div>
+    </div>
+
+    <!-- 🆕 Connection Status -->
+    <div class="connection-status connecting" id="connectionStatus">
+        <div class="status-dot"></div>
+        <span>Connecting...</span>
     </div>
 
     <!-- Navigation -->
@@ -797,222 +1259,8 @@
     </nav>
 
     <!-- Main Content -->
-    <main class="main-content">
-        <!-- Hero Section -->
-        <section class="hero-section">
-            <h1 class="hero-title">Transform Text to Natural Speech</h1>
-            <p class="hero-subtitle">Create professional voiceovers with AI-powered voices</p>
-        </section>
-
-        <!-- Stats Section -->
-        <section class="stats-container">
-            <div class="stat-card">
-                <div class="stat-number">4</div>
-                <div class="stat-label">Natural Voices</div>
-            </div>
-            <div class="stat-card">
-                <div class="stat-number">20+</div>
-                <div class="stat-label">Languages</div>
-            </div>
-            <div class="stat-card">
-                <div class="stat-number">500+</div>
-                <div class="stat-label">Users Joined</div>
-            </div>
-            <div class="stat-card">
-                <div class="stat-number">99.9%</div>
-                <div class="stat-label">Accuracy</div>
-            </div>
-        </section>
-
-        <!-- Voice Selection -->
-        <section class="glass-container">
-            <h2 class="section-title">Choose Your Voice</h2>
-            <div class="audio-grid">
-                <!-- Voice Card 1 -->
-                <div class="audio-card glass-container" onclick="selectVoice('voice1')">
-                    <div class="radio-select"></div>
-                    <div class="audio-card-content">
-                        <div class="voice-avatar">👨</div>
-                        <h3 class="voice-name">Professional Male</h3>
-                        <p class="voice-description">Clear, confident business voice</p>
-                        <div class="audio-controls">
-                            <button class="play-btn" onclick="playDemo(event, 'voice1')">
-                                <i class="fas fa-play"></i>
-                            </button>
-                            <div class="audio-wave">
-                                <div class="audio-progress"></div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Voice Card 2 -->
-                <div class="audio-card glass-container" onclick="selectVoice('voice2')">
-                    <div class="radio-select"></div>
-                    <div class="audio-card-content">
-                        <div class="voice-avatar">👩</div>
-                        <h3 class="voice-name">Friendly Female</h3>
-                        <p class="voice-description">Warm, engaging narrative voice</p>
-                        <div class="audio-controls">
-                            <button class="play-btn" onclick="playDemo(event, 'voice2')">
-                                <i class="fas fa-play"></i>
-                            </button>
-                            <div class="audio-wave">
-                                <div class="audio-progress"></div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Voice Card 3 -->
-                <div class="audio-card glass-container" onclick="selectVoice('voice3')">
-                    <div class="radio-select"></div>
-                    <div class="audio-card-content">
-                        <div class="voice-avatar">🎙</div>
-                        <h3 class="voice-name">News Anchor</h3>
-                        <p class="voice-description">Authoritative news reading voice</p>
-                        <div class="audio-controls">
-                            <button class="play-btn" onclick="playDemo(event, 'voice3')">
-                                <i class="fas fa-play"></i>
-                            </button>
-                            <div class="audio-wave">
-                                <div class="audio-progress"></div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Voice Card 4 -->
-                <div class="audio-card glass-container" onclick="selectVoice('voice4')">
-                    <div class="radio-select"></div>
-                    <div class="audio-card-content">
-                        <div class="voice-avatar">📚</div>
-                        <h3 class="voice-name">Storyteller</h3>
-                        <p class="voice-description">Expressive audiobook narration</p>
-                        <div class="audio-controls">
-                            <button class="play-btn" onclick="playDemo(event, 'voice4')">
-                                <i class="fas fa-play"></i>
-                            </button>
-                            <div class="audio-wave">
-                                <div class="audio-progress"></div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </section>
-
-        <!-- Upload Section -->
-        <section class="upload-section glass-container">
-            <h2 class="section-title">Upload Your Text</h2>
-            <div class="upload-area" id="uploadArea">
-                <div class="upload-icon">
-                    <i class="fas fa-file-alt"></i>
-                </div>
-                <p style="margin-bottom: 1rem;">Drag & drop your .txt file here or</p>
-                <button class="btn btn-primary" onclick="document.getElementById('fileInput').click()">
-                    <i class="fas fa-upload"></i> Browse Files
-                </button>
-                <input type="file" id="fileInput" style="display: none;" accept=".txt">
-                <div class="file-info" id="fileInfo">
-                    <i class="fas fa-check-circle" style="color: #10b981;"></i>
-                    <span id="fileName"></span>
-                </div>
-            </div>
-            <div class="character-info" id="charInfo" style="display: none;">
-                <span class="char-count">Characters: <span id="charCount">0</span></span>
-                <span class="char-limit">Monthly Limit: 5,000 (Free Plan)</span>
-            </div>
-        </section>
-
-        <!-- Generate Section -->
-        <section class="generate-section" id="generateSection">
-            <h3 style="margin-bottom: 1rem;">Ready to Create Your Audio?</h3>
-            <button class="btn btn-primary generate-btn" id="generateBtn" disabled onclick="generateAudio()">
-                <i class="fas fa-magic"></i> Generate Audio
-            </button>
-        </section>
-
-        <!-- 🆕 Enhanced Processing Section with Real-time Updates -->
-        <section class="processing-section" id="processingSection">
-            <div class="processing-icon">
-                <i class="fas fa-cog"></i>
-            </div>
-            <h3 class="processing-title">Processing Your Audio</h3>
-            <p class="processing-message" id="processingMessage">Starting audio generation...</p>
-            <div class="estimated-time">
-                <strong>⏱ Estimated Time: 5-15 minutes</strong>
-                <br>
-                <small>Processing time depends on file size and server load</small>
-            </div>
-            
-            <!-- 🆕 Real-time Status Updates -->
-            <div class="status-update">
-                <h4 style="margin-bottom: 1rem;">Processing Status:</h4>
-                <ul class="status-steps" id="statusSteps">
-                    <li class="status-step pending" id="step1">
-                        <i class="fas fa-clock"></i> Uploading files...
-                    </li>
-                    <li class="status-step pending" id="step2">
-                        <i class="fas fa-clock"></i> Sending to processing server...
-                    </li>
-                    <li class="status-step pending" id="step3">
-                        <i class="fas fa-clock"></i> Generating audio with AI...
-                    </li>
-                    <li class="status-step pending" id="step4">
-                        <i class="fas fa-clock"></i> Uploading to cloud storage...
-                    </li>
-                    <li class="status-step pending" id="step5">
-                        <i class="fas fa-clock"></i> Finalizing download...
-                    </li>
-                </ul>
-            </div>
-        </section>
-
-        <!-- 🆕 Enhanced Download Section with R2 Integration -->
-        <section class="download-section" id="downloadSection">
-            <div class="download-icon">
-                <i class="fas fa-download"></i>
-            </div>
-            <h3 class="download-title">Your Audio is Ready!</h3>
-            <p class="download-message">Your audio has been generated and is ready for download</p>
-            
-            <div class="download-options">
-                <button class="btn btn-success download-btn" onclick="downloadAudioFromR2()">
-                    <i class="fas fa-cloud-download-alt"></i> Download Audio
-                </button>
-                <button class="btn btn-success download-btn" onclick="previewAudio()">
-                    <i class="fas fa-play"></i> Preview Audio
-                </button>
-            </div>
-
-            <div class="audio-details">
-                <div class="detail-row">
-                    <span class="detail-label">File Name:</span>
-                    <span class="detail-value" id="audioFileName">my_audio_file</span>
-                </div>
-                <div class="detail-row">
-                    <span class="detail-label">Voice Used:</span>
-                    <span class="detail-value" id="audioVoice">Professional Male</span>
-                </div>
-                <div class="detail-row">
-                    <span class="detail-label">File Size:</span>
-                    <span class="detail-value" id="audioFileSize">Loading...</span>
-                </div>
-                <div class="detail-row">
-                    <span class="detail-label">Characters:</span>
-                    <span class="detail-value" id="audioCharCount">1,250</span>
-                </div>
-                <div class="detail-row">
-                    <span class="detail-label">Expires:</span>
-                    <span class="detail-value" id="audioExpiry">24 hours</span>
-                </div>
-            </div>
-
-            <button class="btn btn-primary" onclick="resetForm()" style="margin-top: 1rem;">
-                <i class="fas fa-plus"></i> Create Another Audio
-            </button>
-        </section>
+    <main class="main-content" id="mainContent">
+        <!-- Content will be dynamically loaded based on user status -->
     </main>
 
     <!-- Footer -->
@@ -1023,15 +1271,20 @@
     <!-- Toast -->
     <div class="toast" id="toast"></div>
 
-    <!-- 🆕 Audio Preview Modal -->
-    <div id="audioPreviewModal" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.8); z-index: 2000; display: flex; align-items: center; justify-content: center;">
-        <div style="background: var(--glass-bg); backdrop-filter: blur(10px); padding: 2rem; border-radius: 20px; max-width: 500px; width: 90%;">
-            <h3 style="margin-bottom: 1rem; text-align: center;">Audio Preview</h3>
-            <audio id="previewAudioPlayer" controls style="width: 100%; margin-bottom: 1rem;">
+    <!-- Enhanced Audio Preview Modal -->
+    <div class="audio-preview-modal" id="audioPreviewModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 style="margin: 0;">Audio Preview</h3>
+                <button class="modal-close" onclick="closePreview()">×</button>
+            </div>
+            <audio class="audio-player" id="previewAudioPlayer" controls>
                 Your browser does not support the audio element.
             </audio>
             <div style="text-align: center;">
-                <button class="btn btn-primary" onclick="closePreview()">Close</button>
+                <button class="btn btn-primary" onclick="closePreview()">
+                    <i class="fas fa-times"></i> Close
+                </button>
             </div>
         </div>
     </div>
@@ -1041,8 +1294,9 @@
         import { getAuth, onAuthStateChanged, signOut } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js';
         import { getStorage, ref, uploadBytes, getDownloadURL } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-storage.js';
         import { getFirestore, doc, onSnapshot, collection, query, where, orderBy, limit } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js';
+        import { getFunctions, httpsCallable } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-functions.js';
 
-        // ✅ Firebase configuration
+        // Firebase configuration
         const firebaseConfig = {
             apiKey: "AIzaSyCmBZmN-BCa3Qkb7f7K9TjXuK1_ma1ukbw",
             authDomain: "bluefm-tts.firebaseapp.com",
@@ -1057,6 +1311,11 @@
         const auth = getAuth(app);
         const storage = getStorage(app);
         const db = getFirestore(app);
+        const functions = getFunctions(app);
+
+        // ✅ Firebase Functions - Multi-User Support
+        const createUserAccount = httpsCallable(functions, 'createUserAccount');
+        const checkUserStatus = httpsCallable(functions, 'checkUserStatus');
 
         // Global variables
         let selectedVoice = null;
@@ -1065,6 +1324,7 @@
         let currentJobId = null;
         let jobListener = null;
         let currentDownloadUrl = null;
+        let connectionRetryCount = 0;
 
         // Voice names mapping
         const voiceNames = {
@@ -1074,7 +1334,7 @@
             'voice4': 'Storyteller'
         };
 
-        // ✅ Voice to Reference Audio mapping
+        // Voice to Reference Audio mapping
         const voiceToReference = {
             'voice1': 'professional-male.mp3',
             'voice2': 'friendly-female.mp3',
@@ -1082,7 +1342,7 @@
             'voice4': 'storyteller.mp3'
         };
 
-        // ✅ Demo audio URLs
+        // Demo audio URLs
         const demoAudioUrls = {
             'voice1': 'https://firebasestorage.googleapis.com/v0/b/bluefm-tts.firebasestorage.app/o/reference-voices%2Fprofessional-male.mp3?alt=media',
             'voice2': 'https://firebasestorage.googleapis.com/v0/b/bluefm-tts.firebasestorage.app/o/reference-voices%2Ffriendly-female.mp3?alt=media',
@@ -1090,41 +1350,428 @@
             'voice4': 'https://firebasestorage.googleapis.com/v0/b/bluefm-tts.firebasestorage.app/o/reference-voices%2Fstoryteller.mp3?alt=media'
         };
 
-        // Check authentication state
-        onAuthStateChanged(auth, (user) => {
+        // 🆕 Initialize Floating Particles
+        function initParticles() {
+            const particlesContainer = document.getElementById('particles');
+            for (let i = 0; i < 20; i++) {
+                const particle = document.createElement('div');
+                particle.className = 'particle';
+                particle.style.left = Math.random() * 100 + '%';
+                particle.style.top = Math.random() * 100 + '%';
+                particle.style.width = Math.random() * 10 + 5 + 'px';
+                particle.style.height = particle.style.width;
+                particle.style.animationDelay = Math.random() * 6 + 's';
+                particle.style.animationDuration = (Math.random() * 3 + 3) + 's';
+                particlesContainer.appendChild(particle);
+            }
+        }
+
+        // 🆕 Update Connection Status
+        function updateConnectionStatus(status, message) {
+            const statusEl = document.getElementById('connectionStatus');
+            statusEl.className = `connection-status ${status}`;
+            statusEl.querySelector('span').textContent = message;
+        }
+
+        // ✅ UPDATED: Check authentication state - Multi-User Support
+        onAuthStateChanged(auth, async (user) => {
             if (user) {
                 currentUser = user;
                 console.log('✅ User logged in:', user.email);
                 
-                // Update UI with user info
-                document.getElementById('userName').textContent = user.displayName || user.email.split('@')[0];
-                
-                // Store user data
-                localStorage.setItem('isLoggedIn', 'true');
-                localStorage.setItem('userEmail', user.email);
-                localStorage.setItem('userId', user.uid);
-                
-                // 🆕 Check for any active jobs
-                checkActiveJobs();
+                // Check user status and approval
+                await checkUserStatusAndSetup(user);
                 
             } else {
                 console.log('❌ User not logged in');
+                updateConnectionStatus('disconnected', 'Not logged in');
                 window.location.href = 'login.html';
             }
         });
 
-        // 🆕 Check for Active Jobs
-        async function checkActiveJobs() {
+        // ✅ NEW: Check user status and setup interface
+        async function checkUserStatusAndSetup(user) {
             try {
+                updateConnectionStatus('connecting', 'Checking account...');
+                
+                // Check if user exists and is approved
+                const result = await checkUserStatus();
+                const status = result.data;
+                
+                if (!status.exists) {
+                    // First time user - create account
+                    await createUserAccount();
+                    showWaitingMessage();
+                    return;
+                }
+                
+                if (!status.isApproved) {
+                    // User exists but not approved yet
+                    showWaitingMessage(status.waitTimeRemaining);
+                    return;
+                }
+                
+                if (!status.canUseService) {
+                    // Approved but bot not linked
+                    showBotNotLinkedMessage();
+                    return;
+                }
+                
+                // ✅ User is fully set up
+                updateConnectionStatus('connected', 'Connected');
+                document.getElementById('userName').textContent = user.displayName || user.email.split('@')[0];
+                
+                // Enable the interface
+                showNormalInterface();
+                checkActiveJobs();
+                
+            } catch (error) {
+                console.error('❌ User status check error:', error);
+                updateConnectionStatus('disconnected', 'Setup error');
+                showToast('Error checking account status', 'error');
+            }
+        }
+
+        // ✅ NEW: Show waiting message for approval
+        function showWaitingMessage(timeRemaining = null) {
+            const mainContent = document.getElementById('mainContent');
+            mainContent.innerHTML = `
+                <div class="status-message">
+                    <div class="status-icon waiting">
+                        <i class="fas fa-clock"></i>
+                    </div>
+                    <h2 class="status-title" style="color: var(--warning);">Account Under Review</h2>
+                    <p class="status-description">
+                        Your account has been created and is waiting for admin approval.
+                        <br>Please wait 24 hours for manual review.
+                    </p>
+                    ${timeRemaining ? `
+                        <div class="status-details">
+                            <div class="countdown">Time Remaining: ${formatTime(timeRemaining)}</div>
+                            <p style="font-size: 0.9rem; color: var(--text-secondary);">
+                                You will receive access once admin approves your account.
+                            </p>
+                        </div>
+                    ` : ''}
+                    <p style="font-size: 0.9rem; color: var(--text-secondary);">
+                        You will receive access once admin approves your account.
+                        <br>Thank you for your patience!
+                    </p>
+                    <button class="btn btn-primary" onclick="location.reload()" style="margin-top: 1rem;">
+                        <i class="fas fa-refresh"></i> Refresh Status
+                    </button>
+                </div>
+            `;
+            updateConnectionStatus('waiting', 'Waiting approval');
+        }
+
+        // ✅ NEW: Show bot not linked message
+        function showBotNotLinkedMessage() {
+            const mainContent = document.getElementById('mainContent');
+            mainContent.innerHTML = `
+                <div class="status-message">
+                    <div class="status-icon approved">
+                        <i class="fas fa-robot"></i>
+                    </div>
+                    <h2 class="status-title" style="color: var(--primary);">Account Approved!</h2>
+                    <p class="status-description">
+                        Your account has been approved but admin is still setting up your personal bot.
+                        <br>Please wait a few more minutes.
+                    </p>
+                    <div class="status-details">
+                        <div style="display: flex; align-items: center; gap: 0.5rem; justify-content: center;">
+                            <div class="loading-spinner" style="width: 20px; height: 20px;"></div>
+                            <span>Setting up your personal TTS bot...</span>
+                        </div>
+                    </div>
+                    <button class="btn btn-primary" onclick="location.reload()">
+                        <i class="fas fa-refresh"></i> Refresh Page
+                    </button>
+                </div>
+            `;
+            updateConnectionStatus('connecting', 'Setting up bot');
+        }
+
+        // ✅ NEW: Show normal interface for approved users
+        function showNormalInterface() {
+            const mainContent = document.getElementById('mainContent');
+            mainContent.innerHTML = `
+                <!-- Hero Section -->
+                <section class="hero-section">
+                    <h1 class="hero-title">Transform Text to Natural Speech</h1>
+                    <p class="hero-subtitle">Create professional voiceovers with AI-powered voices</p>
+                </section>
+
+                <!-- Stats Section -->
+                <section class="stats-container">
+                    <div class="stat-card">
+                        <div class="stat-number">4</div>
+                        <div class="stat-label">Natural Voices</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-number">20+</div>
+                        <div class="stat-label">Languages</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-number">500+</div>
+                        <div class="stat-label">Users Joined</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-number">99.9%</div>
+                        <div class="stat-label">Accuracy</div>
+                    </div>
+                </section>
+
+                <!-- Voice Selection -->
+                <section class="glass-container">
+                    <h2 class="section-title">Choose Your Voice</h2>
+                    <div class="audio-grid">
+                        <!-- Voice Card 1 -->
+                        <div class="audio-card glass-container" onclick="selectVoice('voice1')">
+                            <div class="radio-select"></div>
+                            <div class="audio-card-content">
+                                <div class="voice-avatar">👨</div>
+                                <h3 class="voice-name">Professional Male</h3>
+                                <p class="voice-description">Clear, confident business voice</p>
+                                <div class="audio-controls">
+                                    <button class="play-btn" onclick="playDemo(event, 'voice1')">
+                                        <i class="fas fa-play"></i>
+                                    </button>
+                                    <div class="audio-wave">
+                                        <div class="audio-progress"></div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Voice Card 2 -->
+                        <div class="audio-card glass-container" onclick="selectVoice('voice2')">
+                            <div class="radio-select"></div>
+                            <div class="audio-card-content">
+                                <div class="voice-avatar">👩</div>
+                                <h3 class="voice-name">Friendly Female</h3>
+                                <p class="voice-description">Warm, engaging narrative voice</p>
+                                <div class="audio-controls">
+                                    <button class="play-btn" onclick="playDemo(event, 'voice2')">
+                                        <i class="fas fa-play"></i>
+                                    </button>
+                                    <div class="audio-wave">
+                                        <div class="audio-progress"></div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Voice Card 3 -->
+                        <div class="audio-card glass-container" onclick="selectVoice('voice3')">
+                            <div class="radio-select"></div>
+                            <div class="audio-card-content">
+                                <div class="voice-avatar">🎙</div>
+                                <h3 class="voice-name">News Anchor</h3>
+                                <p class="voice-description">Authoritative news reading voice</p>
+                                <div class="audio-controls">
+                                    <button class="play-btn" onclick="playDemo(event, 'voice3')">
+                                        <i class="fas fa-play"></i>
+                                    </button>
+                                    <div class="audio-wave">
+                                        <div class="audio-progress"></div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Voice Card 4 -->
+                        <div class="audio-card glass-container" onclick="selectVoice('voice4')">
+                            <div class="radio-select"></div>
+                            <div class="audio-card-content">
+                                <div class="voice-avatar">📚</div>
+                                <h3 class="voice-name">Storyteller</h3>
+                                <p class="voice-description">Expressive audiobook narration</p>
+                                <div class="audio-controls">
+                                    <button class="play-btn" onclick="playDemo(event, 'voice4')">
+                                        <i class="fas fa-play"></i>
+                                    </button>
+                                    <div class="audio-wave">
+                                        <div class="audio-progress"></div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Upload Section -->
+                <section class="upload-section glass-container">
+                    <h2 class="section-title">Upload Your Text</h2>
+                    <div class="upload-area" id="uploadArea">
+                        <div class="upload-icon">
+                            <i class="fas fa-file-alt"></i>
+                        </div>
+                        <p style="margin-bottom: 1rem;">Drag & drop your .txt file here or</p>
+                        <button class="btn btn-primary" onclick="document.getElementById('fileInput').click()">
+                            <i class="fas fa-upload"></i> Browse Files
+                        </button>
+                        <input type="file" id="fileInput" style="display: none;" accept=".txt">
+                        <div class="file-info" id="fileInfo">
+                            <i class="fas fa-check-circle" style="color: var(--success);"></i>
+                            <span id="fileName"></span>
+                        </div>
+                    </div>
+                    <div class="character-info" id="charInfo" style="display: none;">
+                        <span class="char-count">Characters: <span id="charCount">0</span></span>
+                        <span class="char-limit">Monthly Limit: 5,000 (Free Plan)</span>
+                    </div>
+                </section>
+
+                <!-- Generate Section -->
+                <section class="generate-section" id="generateSection">
+                    <h3 style="margin-bottom: 1rem;">Ready to Create Your Audio?</h3>
+                    <button class="btn btn-primary generate-btn" id="generateBtn" disabled onclick="generateAudio()">
+                        <i class="fas fa-magic"></i> Generate Audio
+                    </button>
+                </section>
+
+                <!-- Enhanced Processing Section -->
+                <section class="processing-section" id="processingSection">
+                    <div class="processing-icon">
+                        <i class="fas fa-cog"></i>
+                    </div>
+                    <h3 class="processing-title">Processing Your Audio</h3>
+                    <p class="processing-message" id="processingMessage">Starting audio generation...</p>
+                    
+                    <!-- 🆕 Progress Bar -->
+                    <div class="progress-bar">
+                        <div class="progress-fill" id="progressFill"></div>
+                    </div>
+                    
+                    <div class="estimated-time">
+                        <strong>⏱ Estimated Time: 5-15 minutes</strong>
+                        <br>
+                        <small>Processing time depends on file size and server load</small>
+                    </div>
+                    
+                    <!-- Real-time Status Updates -->
+                    <div class="status-update">
+                        <h4 style="margin-bottom: 1rem;">Processing Status:</h4>
+                        <ul class="status-steps" id="statusSteps">
+                            <li class="status-step pending" id="step1">
+                                <i class="fas fa-clock"></i> Uploading files...
+                            </li>
+                            <li class="status-step pending" id="step2">
+                                <i class="fas fa-clock"></i> Sending to processing server...
+                            </li>
+                            <li class="status-step pending" id="step3">
+                                <i class="fas fa-clock"></i> Generating audio with AI...
+                            </li>
+                            <li class="status-step pending" id="step4">
+                                <i class="fas fa-clock"></i> Uploading to cloud storage...
+                            </li>
+                            <li class="status-step pending" id="step5">
+                                <i class="fas fa-clock"></i> Finalizing download...
+                            </li>
+                        </ul>
+                    </div>
+                </section>
+
+                <!-- Enhanced Download Section -->
+                <section class="download-section" id="downloadSection">
+                    <div class="download-icon">
+                        <i class="fas fa-download"></i>
+                    </div>
+                    <h3 class="download-title">Your Audio is Ready!</h3>
+                    <p class="download-message">Your audio has been generated and is ready for download</p>
+                    
+                    <div class="download-options">
+                        <button class="btn btn-success download-btn" onclick="downloadAudioFromR2()">
+                            <i class="fas fa-cloud-download-alt"></i> Download Audio
+                        </button>
+                        <button class="btn btn-success download-btn" onclick="previewAudio()">
+                            <i class="fas fa-play"></i> Preview Audio
+                        </button>
+                    </div>
+
+                    <div class="audio-details">
+                        <div class="detail-row">
+                            <span class="detail-label">File Name:</span>
+                            <span class="detail-value" id="audioFileName">my_audio_file</span>
+                        </div>
+                        <div class="detail-row">
+                            <span class="detail-label">Voice Used:</span>
+                            <span class="detail-value" id="audioVoice">Professional Male</span>
+                        </div>
+                        <div class="detail-row">
+                            <span class="detail-label">File Size:</span>
+                            <span class="detail-value" id="audioFileSize">Loading...</span>
+                        </div>
+                        <div class="detail-row">
+                            <span class="detail-label">Characters:</span>
+                            <span class="detail-value" id="audioCharCount">1,250</span>
+                        </div>
+                        <div class="detail-row">
+                            <span class="detail-label">Expires:</span>
+                            <span class="detail-value" id="audioExpiry">24 hours</span>
+                        </div>
+                    </div>
+
+                    <button class="btn btn-primary" onclick="resetForm()" style="margin-top: 1rem;">
+                        <i class="fas fa-plus"></i> Create Another Audio
+                    </button>
+                </section>
+            `;
+            
+            // Re-initialize event listeners
+            initializeFileUpload();
+            updateConnectionStatus('connected', 'Ready');
+        }
+
+        // Initialize file upload after interface is loaded
+        function initializeFileUpload() {
+            const fileInput = document.getElementById('fileInput');
+            const uploadArea = document.getElementById('uploadArea');
+            
+            if (fileInput && uploadArea) {
+                fileInput.addEventListener('change', handleFileSelect);
+                
+                uploadArea.addEventListener('dragover', (e) => {
+                    e.preventDefault();
+                    uploadArea.classList.add('drag-over');
+                });
+                
+                uploadArea.addEventListener('dragleave', () => {
+                    uploadArea.classList.remove('drag-over');
+                });
+                
+                uploadArea.addEventListener('drop', (e) => {
+                    e.preventDefault();
+                    uploadArea.classList.remove('drag-over');
+                    
+                    const files = e.dataTransfer.files;
+                    if (files.length > 0) {
+                        handleFile(files[0]);
+                    }
+                });
+            }
+        }
+
+        // ✅ UPDATED: Enhanced Check for Active Jobs - Multi-User Support
+        async function checkActiveJobs() {
+            if (!currentUser) return;
+            
+            try {
+                updateConnectionStatus('connecting', 'Checking jobs...');
+                
+                // ✅ Check for jobs for current user
                 const q = query(
                     collection(db, "tts_jobs"),
-                    where("userId", "==", currentUser.uid),
+                    where("userId", "==", currentUser.uid), // ✅ Use actual user ID
                     where("status", "in", ["processing", "sent_to_telegram"]),
                     orderBy("createdAt", "desc"),
                     limit(1)
                 );
                 
                 const unsubscribe = onSnapshot(q, (querySnapshot) => {
+                    updateConnectionStatus('connected', 'Connected');
+                    
                     if (!querySnapshot.empty) {
                         const latestJob = querySnapshot.docs[0];
                         const jobData = latestJob.data();
@@ -1137,11 +1784,16 @@
                         
                         // Show processing section
                         showProcessingSection();
+                        updateStatus('Resuming processing...', 3);
                     }
+                }, (error) => {
+                    console.error('❌ Error checking active jobs:', error);
+                    updateConnectionStatus('disconnected', 'Connection error');
                 });
                 
             } catch (error) {
                 console.error('❌ Error checking active jobs:', error);
+                updateConnectionStatus('disconnected', 'Error');
             }
         }
 
@@ -1157,7 +1809,7 @@
             showToast(`Voice selected: ${voiceNames[voiceId]}!`);
         }
 
-        // ✅ Enhanced Play Demo with Real Audio
+        // Enhanced Play Demo with Real Audio
         window.playDemo = function(event, voiceId) {
             event.stopPropagation();
             const btn = event.currentTarget;
@@ -1216,31 +1868,6 @@
             }
         }
 
-        // File Upload
-        const fileInput = document.getElementById('fileInput');
-        const uploadArea = document.getElementById('uploadArea');
-        
-        fileInput.addEventListener('change', handleFileSelect);
-        
-        uploadArea.addEventListener('dragover', (e) => {
-            e.preventDefault();
-            uploadArea.classList.add('drag-over');
-        });
-        
-        uploadArea.addEventListener('dragleave', () => {
-            uploadArea.classList.remove('drag-over');
-        });
-        
-        uploadArea.addEventListener('drop', (e) => {
-            e.preventDefault();
-            uploadArea.classList.remove('drag-over');
-            
-            const files = e.dataTransfer.files;
-            if (files.length > 0) {
-                handleFile(files[0]);
-            }
-        });
-
         function handleFileSelect(e) {
             const file = e.target.files[0];
             if (file) {
@@ -1279,38 +1906,46 @@
         // Check Generate Button
         function checkGenerateButton() {
             const btn = document.getElementById('generateBtn');
-            if (selectedVoice && uploadedFile && currentUser) {
+            if (btn && selectedVoice && uploadedFile && currentUser) {
                 btn.disabled = false;
-            } else {
+            } else if (btn) {
                 btn.disabled = true;
             }
         }
 
-        // ✅ Enhanced Generate Audio with Real-time Monitoring
+        // ✅ UPDATED: Enhanced Generate Audio - Multi-User Support
         window.generateAudio = async function() {
             if (!selectedVoice || !uploadedFile) {
                 showToast('Please select a voice and upload a file!', 'error');
                 return;
             }
             
+            if (!currentUser) {
+                showToast('Please login first!', 'error');
+                return;
+            }
+            
             try {
+                updateConnectionStatus('connecting', 'Starting...');
+                
                 // Generate unique ID for this job
                 const jobId = Date.now().toString();
-                const userId = currentUser.uid;
+                const userId = currentUser.uid; // ✅ Use actual user ID
                 currentJobId = jobId;
                 
                 // Show processing section
                 showProcessingSection();
                 updateStatus('Uploading files...', 1);
+                updateProgress(20);
                 
                 // Upload text file with metadata
                 const textFileName = `${jobId}-${uploadedFile.name}`;
-                const textRef = ref(storage, `tts-requests/${userId}/${textFileName}`);
+                const textRef = ref(storage, `tts-requests/${userId}/${textFileName}`); // ✅ User-specific path
                 
-                // ✅ Upload with reference voice metadata
+                // Upload with reference voice metadata
                 const metadata = {
                     customMetadata: {
-                        userId: userId,
+                        userId: userId, // ✅ Actual user ID
                         voiceId: selectedVoice,
                         voiceName: voiceNames[selectedVoice],
                         referenceAudio: voiceToReference[selectedVoice],
@@ -1320,11 +1955,13 @@
                 };
                 
                 await uploadBytes(textRef, uploadedFile, metadata);
-                console.log('✅ Text file uploaded with reference voice info');
+                console.log('✅ Text file uploaded for user:', userId);
                 
                 updateStatus('Sending to processing server...', 2);
+                updateProgress(40);
+                updateConnectionStatus('connected', 'Processing...');
                 
-                // 🆕 Start real-time job monitoring
+                // Start real-time job monitoring
                 startJobMonitoring(jobId);
                 
                 showToast('Files uploaded! Processing started...', 'success');
@@ -1332,11 +1969,20 @@
             } catch (error) {
                 console.error('❌ Upload error:', error);
                 showToast('Upload failed! Please try again.', 'error');
+                updateConnectionStatus('disconnected', 'Upload failed');
                 resetToGenerateSection();
             }
         }
 
-        // 🆕 Real-time Job Monitoring
+        // 🆕 Update Progress Bar
+        function updateProgress(percentage) {
+            const progressFill = document.getElementById('progressFill');
+            if (progressFill) {
+                progressFill.style.width = percentage + '%';
+            }
+        }
+
+        // Real-time Job Monitoring
         function startJobMonitoring(jobId) {
             if (jobListener) {
                 jobListener(); // Unsubscribe from previous listener
@@ -1352,20 +1998,27 @@
                     switch(jobData.status) {
                         case 'processing':
                             updateStatus('AI is generating your audio...', 3);
+                            updateProgress(60);
+                            updateConnectionStatus('connected', 'AI Processing...');
                             break;
                             
                         case 'sent_to_telegram':
                             updateStatus('Processing on AI server...', 3);
+                            updateProgress(70);
+                            updateConnectionStatus('connected', 'AI Server...');
                             break;
                             
                         case 'completed':
                             if (jobData.downloadUrl) {
                                 currentDownloadUrl = jobData.downloadUrl;
+                                updateProgress(100);
+                                updateConnectionStatus('connected', 'Completed');
                                 showDownloadSection(jobData);
                             }
                             break;
                             
                         case 'failed':
+                            updateConnectionStatus('disconnected', 'Failed');
                             showError(jobData.error || 'Processing failed');
                             break;
                     }
@@ -1374,179 +2027,153 @@
                 }
             }, (error) => {
                 console.error('❌ Job monitoring error:', error);
+                updateConnectionStatus('disconnected', 'Monitoring error');
             });
         }
 
-        // 🆕 Update Processing Status
+        // Update Processing Status
         function updateStatus(message, step) {
-            document.getElementById('processingMessage').textContent = message;
+            const messageEl = document.getElementById('processingMessage');
+            if (messageEl) {
+                messageEl.textContent = message;
+            }
             
             // Update step indicators
             for (let i = 1; i <= 5; i++) {
                 const stepEl = document.getElementById(`step${i}`);
-                const icon = stepEl.querySelector('i');
-                
-                if (i < step) {
-                    stepEl.className = 'status-step completed';
-                    icon.className = 'fas fa-check-circle';
-                } else if (i === step) {
-                    stepEl.className = 'status-step current';
-                    icon.className = 'fas fa-spinner fa-spin';
-                } else {
-                    stepEl.className = 'status-step pending';
-                    icon.className = 'fas fa-clock';
+                if (stepEl) {
+                    const icon = stepEl.querySelector('i');
+                    
+                    if (i < step) {
+                        stepEl.className = 'status-step completed';
+                        icon.className = 'fas fa-check-circle';
+                    } else if (i === step) {
+                        stepEl.className = 'status-step current';
+                        icon.className = 'fas fa-spinner fa-spin';
+                    } else {
+                        stepEl.className = 'status-step pending';
+                        icon.className = 'fas fa-clock';
+                    }
                 }
             }
         }
 
-        // 🆕 Show Processing Section
+        // Show Processing Section
         function showProcessingSection() {
-            document.getElementById('generateSection').style.display = 'none';
-            document.getElementById('processingSection').classList.add('show');
-            document.getElementById('downloadSection').classList.remove('show');
+            const generateSection = document.getElementById('generateSection');
+            const processingSection = document.getElementById('processingSection');
+            const downloadSection = document.getElementById('downloadSection');
+            
+            if (generateSection) generateSection.style.display = 'none';
+            if (processingSection) processingSection.classList.add('show');
+            if (downloadSection) downloadSection.classList.remove('show');
         }
 
-        // 🆕 Show Download Section with R2 Data
+        // Show Download Section with R2 Data
         function showDownloadSection(jobData) {
-            updateStatus('Audio ready for download!', 5);
+            const generateSection = document.getElementById('generateSection');
+            const processingSection = document.getElementById('processingSection');
+            const downloadSection = document.getElementById('downloadSection');
             
-            setTimeout(() => {
-                document.getElementById('processingSection').classList.remove('show');
-                document.getElementById('downloadSection').classList.add('show');
+            if (generateSection) generateSection.style.display = 'none';
+            if (processingSection) processingSection.classList.remove('show');
+            if (downloadSection) {
+                downloadSection.classList.add('show');
                 
-                // Update audio details
-                document.getElementById('audioFileName').textContent = uploadedFile.name.replace('.txt', '');
-                document.getElementById('audioVoice').textContent = voiceNames[selectedVoice];
-                document.getElementById('audioCharCount').textContent = document.getElementById('charCount').textContent;
-                
-                // Calculate expiry time
-                if (jobData.downloadUrlExpiresAt) {
-                    const expiryDate = jobData.downloadUrlExpiresAt.toDate();
-                    const now = new Date();
-                    const hoursLeft = Math.ceil((expiryDate - now) / (1000 * 60 * 60));
-                    document.getElementById('audioExpiry').textContent = `${hoursLeft} hours`;
+                // Update download details
+                if (document.getElementById('audioFileName')) {
+                    document.getElementById('audioFileName').textContent = `audio_${currentJobId}.mp3`;
                 }
-                
-                showToast('🎉 Audio generation completed!', 'success');
-                
-                // Get file size from R2 URL
-                getFileSizeFromUrl(currentDownloadUrl);
-                
-            }, 1000);
-        }
-
-        // 🆕 Get File Size from R2 URL
-        async function getFileSizeFromUrl(url) {
-            try {
-                const response = await fetch(url, { method: 'HEAD' });
-                const contentLength = response.headers.get('content-length');
-                if (contentLength) {
-                    const sizeInMB = (parseInt(contentLength) / (1024 * 1024)).toFixed(1);
-                    document.getElementById('audioFileSize').textContent = `${sizeInMB} MB`;
+                if (document.getElementById('audioVoice')) {
+                    document.getElementById('audioVoice').textContent = voiceNames[selectedVoice] || 'Unknown';
                 }
-            } catch (error) {
-                console.log('Could not get file size:', error);
-                document.getElementById('audioFileSize').textContent = 'Unknown';
+                if (document.getElementById('audioCharCount')) {
+                    document.getElementById('audioCharCount').textContent = document.getElementById('charCount')?.textContent || '0';
+                }
             }
         }
 
-        // 🆕 Download Audio from R2
-        window.downloadAudioFromR2 = async function() {
-            if (!currentDownloadUrl) {
-                showToast('Download URL not available!', 'error');
-                return;
-            }
+        // Show Error
+        function showError(message) {
+            showToast(`Error: ${message}`, 'error');
+            resetToGenerateSection();
+        }
+
+        // Reset to Generate Section
+        function resetToGenerateSection() {
+            const generateSection = document.getElementById('generateSection');
+            const processingSection = document.getElementById('processingSection');
+            const downloadSection = document.getElementById('downloadSection');
             
-            try {
-                showToast('Starting download...', 'success');
-                
-                // Create download link
+            if (generateSection) generateSection.style.display = 'block';
+            if (processingSection) processingSection.classList.remove('show');
+            if (downloadSection) downloadSection.classList.remove('show');
+        }
+
+        // Download Audio
+        window.downloadAudioFromR2 = function() {
+            if (currentDownloadUrl) {
                 const link = document.createElement('a');
                 link.href = currentDownloadUrl;
-                link.download = `${uploadedFile.name.replace('.txt', '')}_${selectedVoice}.wav`;
-                link.target = '_blank';
-                
-                // Trigger download
+                link.download = `audio_${currentJobId}.mp3`;
                 document.body.appendChild(link);
                 link.click();
                 document.body.removeChild(link);
                 
                 showToast('Download started!', 'success');
-                
-            } catch (error) {
-                console.error('❌ Download error:', error);
-                showToast('Download failed! Please try again.', 'error');
+            } else {
+                showToast('Download URL not available', 'error');
             }
         }
 
-        // 🆕 Preview Audio
+        // Preview Audio
         window.previewAudio = function() {
-            if (!currentDownloadUrl) {
-                showToast('Audio not available for preview!', 'error');
-                return;
+            if (currentDownloadUrl) {
+                const modal = document.getElementById('audioPreviewModal');
+                const player = document.getElementById('previewAudioPlayer');
+                
+                player.src = currentDownloadUrl;
+                modal.classList.add('show');
+            } else {
+                showToast('Audio not available for preview', 'error');
             }
-            
-            const modal = document.getElementById('audioPreviewModal');
-            const player = document.getElementById('previewAudioPlayer');
-            
-            player.src = currentDownloadUrl;
-            modal.style.display = 'flex';
         }
 
-        // 🆕 Close Preview
+        // Close Preview
         window.closePreview = function() {
             const modal = document.getElementById('audioPreviewModal');
             const player = document.getElementById('previewAudioPlayer');
             
             player.pause();
-            player.currentTime = 0;
-            modal.style.display = 'none';
-        }
-
-        // Show Error
-        function showError(error) {
-            document.getElementById('processingSection').classList.remove('show');
-            resetToGenerateSection();
-            showToast(`Processing failed: ${error}`, 'error');
-        }
-
-        // Reset to Generate Section
-        function resetToGenerateSection() {
-            document.getElementById('generateSection').style.display = 'block';
-            document.getElementById('processingSection').classList.remove('show');
-            document.getElementById('downloadSection').classList.remove('show');
+            player.src = '';
+            modal.classList.remove('show');
         }
 
         // Reset Form
         window.resetForm = function() {
-            // Stop job monitoring
-            if (jobListener) {
-                jobListener();
-                jobListener = null;
-            }
-            
-            // Reset variables
             selectedVoice = null;
             uploadedFile = null;
             currentJobId = null;
             currentDownloadUrl = null;
             
             // Reset UI
-            resetToGenerateSection();
-            
             document.querySelectorAll('.audio-card').forEach(card => {
                 card.classList.remove('selected');
             });
             
-            document.getElementById('fileInfo').classList.remove('show');
-            document.getElementById('charInfo').style.display = 'none';
-            document.getElementById('fileInput').value = '';
+            const fileInfo = document.getElementById('fileInfo');
+            const charInfo = document.getElementById('charInfo');
+            const fileInput = document.getElementById('fileInput');
+            
+            if (fileInfo) fileInfo.classList.remove('show');
+            if (charInfo) charInfo.style.display = 'none';
+            if (fileInput) fileInput.value = '';
             
             checkGenerateButton();
-            showToast('Ready for new audio generation!');
+            resetToGenerateSection();
         }
 
-        // User Menu
+        // Toggle User Menu
         window.toggleUserMenu = function() {
             const dropdown = document.getElementById('userDropdown');
             dropdown.classList.toggle('show');
@@ -1556,22 +2183,25 @@
         window.logout = async function() {
             try {
                 await signOut(auth);
-                
-                localStorage.removeItem('isLoggedIn');
-                localStorage.removeItem('userEmail');
-                localStorage.removeItem('userId');
-                localStorage.removeItem('userName');
-                
-                showToast('Logged out successfully!');
                 window.location.href = 'login.html';
-                
             } catch (error) {
                 console.error('Logout error:', error);
-                showToast('Logout failed!', 'error');
+                showToast('Error logging out', 'error');
             }
         }
 
-        // Toast
+        // Utility functions
+        function formatTime(milliseconds) {
+            const hours = Math.floor(milliseconds / (1000 * 60 * 60));
+            const minutes = Math.floor((milliseconds % (1000 * 60 * 60)) / (1000 * 60));
+            
+            if (hours > 0) {
+                return `${hours}h ${minutes}m`;
+            } else {
+                return `${minutes}m`;
+            }
+        }
+
         function showToast(message, type = 'success') {
             const toast = document.getElementById('toast');
             toast.textContent = message;
@@ -1582,20 +2212,20 @@
             }, 3000);
         }
 
-        // Close dropdown when clicking outside
-        window.addEventListener('click', (e) => {
-            if (!e.target.closest('.user-menu')) {
-                document.getElementById('userDropdown').classList.remove('show');
-            }
-            
-            // Close preview modal when clicking outside
-            if (e.target.id === 'audioPreviewModal') {
+        // Initialize particles on load
+        initParticles();
+
+        // Close modals and dropdowns when clicking outside
+        document.addEventListener('click', (e) => {
+            if (e.target.classList.contains('audio-preview-modal')) {
                 closePreview();
             }
+            
+            if (!e.target.closest('.user-menu')) {
+                const dropdown = document.getElementById('userDropdown');
+                if (dropdown) dropdown.classList.remove('show');
+            }
         });
-
-        // Make functions available globally
-        window.checkGenerateButton = checkGenerateButton;
     </script>
 </body>
 </html>
