@@ -1,0 +1,953 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Blue FM TTS - Admin Panel</title>
+    
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+    
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --primary: #2563eb;
+            --secondary: #3b82f6;
+            --accent: #60a5fa;
+            --success: #10b981;
+            --warning: #f59e0b;
+            --error: #ef4444;
+            --glass-bg: rgba(255, 255, 255, 0.1);
+            --glass-border: rgba(255, 255, 255, 0.2);
+            --text-primary: #ffffff;
+            --text-secondary: #e0e0ff;
+            --gradient-primary: linear-gradient(135deg, #1e3a8a 0%, #2563eb 50%, #3b82f6 100%);
+        }
+
+        body {
+            font-family: 'Poppins', sans-serif;
+            min-height: 100vh;
+            background: var(--gradient-primary);
+            color: var(--text-primary);
+            overflow-x: hidden;
+        }
+
+        /* Navigation */
+        nav {
+            position: fixed;
+            top: 0;
+            width: 100%;
+            z-index: 100;
+            background: var(--glass-bg);
+            backdrop-filter: blur(10px);
+            padding: 1rem 2rem;
+            border-bottom: 1px solid var(--glass-border);
+        }
+
+        .nav-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo {
+            font-size: 1.75rem;
+            font-weight: 700;
+            color: var(--text-primary);
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .logo i {
+            color: var(--accent);
+        }
+
+        .nav-links {
+            display: flex;
+            align-items: center;
+            gap: 1.5rem;
+        }
+
+        .nav-link {
+            color: var(--text-primary);
+            text-decoration: none;
+            font-weight: 500;
+            transition: all 0.3s ease;
+            padding: 0.5rem 1rem;
+            border-radius: 25px;
+        }
+
+        .nav-link:hover {
+            color: var(--accent);
+            background: rgba(255, 255, 255, 0.1);
+        }
+
+        .nav-link.admin {
+            background: linear-gradient(45deg, var(--error), #dc2626);
+            color: white;
+            font-weight: 600;
+        }
+
+        /* Main Content */
+        .main-content {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 6rem 1rem 2rem;
+        }
+
+        .glass-container {
+            background: var(--glass-bg);
+            backdrop-filter: blur(10px);
+            border: 1px solid var(--glass-border);
+            border-radius: 20px;
+            padding: 2rem;
+            box-shadow: 0 8px 32px rgba(37, 99, 235, 0.3);
+            margin-bottom: 2rem;
+        }
+
+        .section-title {
+            font-size: 2rem;
+            margin-bottom: 2rem;
+            text-align: center;
+            background: linear-gradient(45deg, var(--text-primary), var(--accent));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        /* Stats Cards */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1rem;
+            margin-bottom: 3rem;
+        }
+
+        .stat-card {
+            background: rgba(255, 255, 255, 0.05);
+            padding: 1.5rem;
+            border-radius: 15px;
+            text-align: center;
+            border: 1px solid var(--glass-border);
+            transition: all 0.3s ease;
+        }
+
+        .stat-card:hover {
+            transform: translateY(-5px);
+            border-color: var(--accent);
+        }
+
+        .stat-number {
+            font-size: 2rem;
+            font-weight: 700;
+            color: var(--accent);
+            margin-bottom: 0.5rem;
+        }
+
+        .stat-label {
+            font-size: 0.9rem;
+            color: var(--text-secondary);
+        }
+
+        /* Tabs */
+        .tab-container {
+            display: flex;
+            gap: 0.5rem;
+            margin-bottom: 2rem;
+            background: rgba(255, 255, 255, 0.05);
+            padding: 0.5rem;
+            border-radius: 15px;
+        }
+
+        .tab-btn {
+            flex: 1;
+            padding: 1rem;
+            background: transparent;
+            border: none;
+            color: var(--text-secondary);
+            font-weight: 600;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .tab-btn.active {
+            background: var(--primary);
+            color: white;
+        }
+
+        .tab-content {
+            display: none;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        /* User Table */
+        .user-table {
+            width: 100%;
+            border-collapse: collapse;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 15px;
+            overflow: hidden;
+        }
+
+        .user-table th,
+        .user-table td {
+            padding: 1rem;
+            text-align: left;
+            border-bottom: 1px solid var(--glass-border);
+        }
+
+        .user-table th {
+            background: rgba(255, 255, 255, 0.1);
+            font-weight: 600;
+            color: var(--accent);
+        }
+
+        .user-table tr:hover {
+            background: rgba(255, 255, 255, 0.05);
+        }
+
+        /* Status Badges */
+        .status-badge {
+            padding: 0.25rem 0.75rem;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            font-weight: 600;
+        }
+
+        .status-pending {
+            background: rgba(245, 158, 11, 0.2);
+            color: var(--warning);
+            border: 1px solid var(--warning);
+        }
+
+        .status-approved {
+            background: rgba(16, 185, 129, 0.2);
+            color: var(--success);
+            border: 1px solid var(--success);
+        }
+
+        .status-bot-linked {
+            background: rgba(59, 130, 246, 0.2);
+            color: var(--accent);
+            border: 1px solid var(--accent);
+        }
+
+        /* Buttons */
+        .btn {
+            padding: 0.5rem 1rem;
+            border: none;
+            border-radius: 25px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            text-decoration: none;
+            font-size: 0.9rem;
+        }
+
+        .btn-primary {
+            background: linear-gradient(45deg, var(--primary), var(--secondary));
+            color: white;
+        }
+
+        .btn-success {
+            background: linear-gradient(45deg, var(--success), #059669);
+            color: white;
+        }
+
+        .btn-danger {
+            background: linear-gradient(45deg, var(--error), #dc2626);
+            color: white;
+        }
+
+        .btn-warning {
+            background: linear-gradient(45deg, var(--warning), #d97706);
+            color: white;
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+        }
+
+        .btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        /* Modal */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.8);
+            z-index: 2000;
+            backdrop-filter: blur(5px);
+        }
+
+        .modal.show {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .modal-content {
+            background: var(--glass-bg);
+            backdrop-filter: blur(10px);
+            padding: 2rem;
+            border-radius: 20px;
+            max-width: 500px;
+            width: 90%;
+            border: 1px solid var(--glass-border);
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
+        }
+
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1rem;
+        }
+
+        .modal-close {
+            background: none;
+            border: none;
+            color: var(--text-primary);
+            font-size: 1.5rem;
+            cursor: pointer;
+            padding: 0.5rem;
+            border-radius: 50%;
+            transition: all 0.3s ease;
+        }
+
+        .modal-close:hover {
+            background: rgba(255, 255, 255, 0.1);
+        }
+
+        /* Form */
+        .form-group {
+            margin-bottom: 1rem;
+        }
+
+        .form-label {
+            display: block;
+            margin-bottom: 0.5rem;
+            color: var(--text-secondary);
+            font-weight: 600;
+        }
+
+        .form-input {
+            width: 100%;
+            padding: 0.75rem;
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid var(--glass-border);
+            border-radius: 10px;
+            color: var(--text-primary);
+            font-size: 1rem;
+        }
+
+        .form-input:focus {
+            outline: none;
+            border-color: var(--accent);
+            background: rgba(255, 255, 255, 0.15);
+        }
+
+        .form-input::placeholder {
+            color: var(--text-secondary);
+        }
+
+        /* Loading */
+        .loading {
+            display: none;
+            text-align: center;
+            padding: 2rem;
+        }
+
+        .loading.show {
+            display: block;
+        }
+
+        .spinner {
+            width: 40px;
+            height: 40px;
+            border: 4px solid rgba(255, 255, 255, 0.3);
+            border-top: 4px solid var(--accent);
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 1rem;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        /* Toast */
+        .toast {
+            position: fixed;
+            bottom: 2rem;
+            right: 2rem;
+            background: var(--glass-bg);
+            backdrop-filter: blur(10px);
+            padding: 1rem 2rem;
+            border-radius: 10px;
+            border: 1px solid var(--glass-border);
+            display: none;
+            z-index: 1000;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+            max-width: 300px;
+        }
+
+        .toast.show {
+            display: block;
+            animation: slideUp 0.3s ease-out;
+        }
+
+        @keyframes slideUp {
+            from { transform: translateY(100px); opacity: 0; }
+            to { transform: translateY(0); opacity: 1; }
+        }
+
+        .toast.success {
+            border-color: var(--success);
+            color: var(--success);
+        }
+
+        .toast.error {
+            border-color: var(--error);
+            color: var(--error);
+        }
+
+        .toast.warning {
+            border-color: var(--warning);
+            color: var(--warning);
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .nav-container {
+                flex-direction: column;
+                gap: 1rem;
+            }
+
+            .main-content {
+                padding: 8rem 0.5rem 2rem;
+            }
+
+            .user-table {
+                font-size: 0.9rem;
+            }
+
+            .user-table th,
+            .user-table td {
+                padding: 0.5rem;
+            }
+
+            .modal-content {
+                padding: 1rem;
+                margin: 1rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Navigation -->
+    <nav>
+        <div class="nav-container">
+            <a href="index.html" class="logo">
+                <i class="fas fa-microphone-alt"></i>
+                Blue FM TTS - Admin
+            </a>
+            <div class="nav-links">
+                <a href="index.html" class="nav-link">
+                    <i class="fas fa-home"></i> Home
+                </a>
+                <a href="#" class="nav-link admin">
+                    <i class="fas fa-shield-alt"></i> Admin Panel
+                </a>
+                <button class="btn btn-danger" onclick="logout()">
+                    <i class="fas fa-sign-out-alt"></i> Logout
+                </button>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <main class="main-content">
+        <!-- Stats Section -->
+        <section class="glass-container">
+            <h1 class="section-title">Admin Dashboard</h1>
+            <div class="stats-grid" id="statsGrid">
+                <div class="stat-card">
+                    <div class="stat-number" id="totalUsers">-</div>
+                    <div class="stat-label">Total Users</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-number" id="pendingUsers">-</div>
+                    <div class="stat-label">Pending Approval</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-number" id="approvedUsers">-</div>
+                    <div class="stat-label">Approved Users</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-number" id="botsLinked">-</div>
+                    <div class="stat-label">Bots Linked</div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Tabs Section -->
+        <section class="glass-container">
+            <div class="tab-container">
+                <button class="tab-btn active" onclick="switchTab('pending')">
+                    <i class="fas fa-clock"></i> Pending Users
+                </button>
+                <button class="tab-btn" onclick="switchTab('approved')">
+                    <i class="fas fa-check-circle"></i> Approved Users
+                </button>
+                <button class="tab-btn" onclick="switchTab('all')">
+                    <i class="fas fa-users"></i> All Users
+                </button>
+            </div>
+
+            <!-- Pending Users Tab -->
+            <div class="tab-content active" id="pending-tab">
+                <div class="loading" id="pendingLoading">
+                    <div class="spinner"></div>
+                    <p>Loading pending users...</p>
+                </div>
+                <div id="pendingUsersContainer"></div>
+            </div>
+
+            <!-- Approved Users Tab -->
+            <div class="tab-content" id="approved-tab">
+                <div class="loading" id="approvedLoading">
+                    <div class="spinner"></div>
+                    <p>Loading approved users...</p>
+                </div>
+                <div id="approvedUsersContainer"></div>
+            </div>
+
+            <!-- All Users Tab -->
+            <div class="tab-content" id="all-tab">
+                <div class="loading" id="allLoading">
+                    <div class="spinner"></div>
+                    <p>Loading all users...</p>
+                </div>
+                <div id="allUsersContainer"></div>
+            </div>
+        </section>
+    </main>
+
+    <!-- Approve User Modal -->
+    <div class="modal" id="approveModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>Approve User & Link Bot</h3>
+                <button class="modal-close" onclick="closeApproveModal()">×</button>
+            </div>
+            <form id="approveForm">
+                <input type="hidden" id="approveUserId">
+                <div class="form-group">
+                    <label class="form-label">User Email:</label>
+                    <input type="text" id="approveUserEmail" class="form-input" readonly>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Bot Token:</label>
+                    <input type="text" id="botToken" class="form-input" placeholder="Bot token from BotFather" required>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Bot Username:</label>
+                    <input type="text" id="botUsername" class="form-input" placeholder="@your_bot_name" required>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Webhook URL:</label>
+                    <input type="text" id="webhookUrl" class="form-input" placeholder="https://your-bot.herokuapp.com/webhook" required>
+                </div>
+                <div style="display: flex; gap: 1rem; margin-top: 2rem;">
+                    <button type="submit" class="btn btn-success" style="flex: 1;">
+                        <i class="fas fa-check"></i> Approve & Link Bot
+                    </button>
+                    <button type="button" class="btn btn-danger" onclick="closeApproveModal()">
+                        <i class="fas fa-times"></i> Cancel
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Toast -->
+    <div class="toast" id="toast"></div>
+
+    <script type="module">
+        import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js';
+        import { getAuth, onAuthStateChanged, signOut } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js';
+        import { getFunctions, httpsCallable } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-functions.js';
+
+        // Firebase configuration
+        const firebaseConfig = {
+            apiKey: "AIzaSyCmBZmN-BCa3Qkb7f7K9TjXuK1_ma1ukbw",
+            authDomain: "bluefm-tts.firebaseapp.com",
+            projectId: "bluefm-tts",
+            storageBucket: "bluefm-tts.firebasestorage.app",
+            messagingSenderId: "184060585228",
+            appId: "1:184060585228:web:045fdd4e5d4429fc7e9529",
+            measurementId: "G-ZTZNZG8YSJ"
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const auth = getAuth(app);
+        const functions = getFunctions(app);
+
+        // Global variables
+        let currentUser = null;
+        let allUsers = [];
+        let stats = { total: 0, pending: 0, approved: 0, botsLinked: 0 };
+
+        // Firebase functions
+        const getPendingUsers = httpsCallable(functions, 'getPendingUsers');
+        const getAllUsers = httpsCallable(functions, 'getAllUsers');
+        const approveUserWithBot = httpsCallable(functions, 'approveUserWithBot');
+        const deleteUser = httpsCallable(functions, 'deleteUser');
+
+        // Check authentication
+        onAuthStateChanged(auth, (user) => {
+            if (user) {
+                currentUser = user;
+                console.log('✅ Admin logged in:', user.email);
+                
+                // Check if admin (simple check - you can enhance this)
+                if (!user.email.includes('admin')) {
+                    showToast('Access denied. Admin access required.', 'error');
+                    setTimeout(() => {
+                        window.location.href = 'index.html';
+                    }, 2000);
+                    return;
+                }
+                
+                // Load data
+                loadDashboardData();
+                
+            } else {
+                console.log('❌ User not logged in');
+                window.location.href = 'login.html';
+            }
+        });
+
+        // Load dashboard data
+        async function loadDashboardData() {
+            try {
+                showLoadingForTab('pending');
+                await loadAllUsers();
+                await loadPendingUsers();
+                updateStats();
+            } catch (error) {
+                console.error('❌ Error loading dashboard:', error);
+                showToast('Error loading dashboard data', 'error');
+            }
+        }
+
+        // Load all users
+        async function loadAllUsers() {
+            try {
+                const result = await getAllUsers({ limit: 100 });
+                allUsers = result.data.users;
+                console.log('✅ Loaded users:', allUsers.length);
+            } catch (error) {
+                console.error('❌ Error loading users:', error);
+                throw error;
+            }
+        }
+
+        // Load pending users
+        async function loadPendingUsers() {
+            try {
+                const result = await getPendingUsers();
+                const pendingUsers = result.data.pendingUsers;
+                
+                displayUsers(pendingUsers, 'pending');
+                hideLoadingForTab('pending');
+                
+            } catch (error) {
+                console.error('❌ Error loading pending users:', error);
+                hideLoadingForTab('pending');
+                showToast('Error loading pending users', 'error');
+            }
+        }
+
+        // Update stats
+        function updateStats() {
+            stats.total = allUsers.length;
+            stats.pending = allUsers.filter(u => !u.isApproved).length;
+            stats.approved = allUsers.filter(u => u.isApproved).length;
+            stats.botsLinked = allUsers.filter(u => u.botLinked).length;
+
+            document.getElementById('totalUsers').textContent = stats.total;
+            document.getElementById('pendingUsers').textContent = stats.pending;
+            document.getElementById('approvedUsers').textContent = stats.approved;
+            document.getElementById('botsLinked').textContent = stats.botsLinked;
+        }
+
+        // Display users
+        function displayUsers(users, containerId) {
+            const container = document.getElementById(`${containerId}UsersContainer`);
+            
+            if (users.length === 0) {
+                container.innerHTML = `
+                    <div style="text-align: center; padding: 2rem; color: var(--text-secondary);">
+                        <i class="fas fa-inbox" style="font-size: 3rem; margin-bottom: 1rem; opacity: 0.5;"></i>
+                        <p>No users found</p>
+                    </div>
+                `;
+                return;
+            }
+
+            const tableHTML = `
+                <table class="user-table">
+                    <thead>
+                        <tr>
+                            <th>User</th>
+                            <th>Status</th>
+                            <th>Created</th>
+                            <th>Bot</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        ${users.map(user => `
+                            <tr>
+                                <td>
+                                    <div>
+                                        <strong>${user.email}</strong>
+                                        <br>
+                                        <small style="color: var(--text-secondary);">${user.userId}</small>
+                                    </div>
+                                </td>
+                                <td>
+                                    ${getStatusBadge(user)}
+                                </td>
+                                <td>
+                                    ${formatDate(user.createdAt)}
+                                    <br>
+                                    <small style="color: var(--text-secondary);">
+                                        ${getWaitingTime(user.createdAt)}
+                                    </small>
+                                </td>
+                                <td>
+                                    ${user.botLinked ? 
+                                        `<span class="status-badge status-bot-linked">@${user.botUsername}</span>` :
+                                        '<span style="color: var(--text-secondary);">Not linked</span>'
+                                    }
+                                </td>
+                                <td>
+                                    ${getActionButtons(user)}
+                                </td>
+                            </tr>
+                        `).join('')}
+                    </tbody>
+                </table>
+            `;
+            
+            container.innerHTML = tableHTML;
+        }
+
+        // Get status badge
+        function getStatusBadge(user) {
+            if (!user.isApproved) {
+                return '<span class="status-badge status-pending">Pending</span>';
+            } else if (user.botLinked) {
+                return '<span class="status-badge status-bot-linked">Bot Linked</span>';
+            } else {
+                return '<span class="status-badge status-approved">Approved</span>';
+            }
+        }
+
+        // Get action buttons
+        function getActionButtons(user) {
+            if (!user.isApproved) {
+                return `
+                    <button class="btn btn-success" onclick="openApproveModal('${user.userId}', '${user.email}')">
+                        <i class="fas fa-check"></i> Approve
+                    </button>
+                `;
+            } else {
+                return `
+                    <button class="btn btn-danger" onclick="deleteUserConfirm('${user.userId}', '${user.email}')">
+                        <i class="fas fa-trash"></i> Delete
+                    </button>
+                `;
+            }
+        }
+
+        // Format date
+        function formatDate(timestamp) {
+            if (!timestamp) return 'Unknown';
+            const date = timestamp.toDate ? timestamp.toDate() : new Date(timestamp);
+            return date.toLocaleDateString() + ' ' + date.toLocaleTimeString();
+        }
+
+        // Get waiting time
+        function getWaitingTime(timestamp) {
+            if (!timestamp) return '';
+            const now = new Date();
+            const created = timestamp.toDate ? timestamp.toDate() : new Date(timestamp);
+            const diff = now - created;
+            const hours = Math.floor(diff / (1000 * 60 * 60));
+            const days = Math.floor(hours / 24);
+            
+            if (days > 0) {
+                return `${days} days ago`;
+            } else {
+                return `${hours} hours ago`;
+            }
+        }
+
+        // Tab switching
+        window.switchTab = function(tabName) {
+            // Update tab buttons
+            document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
+            event.target.classList.add('active');
+            
+            // Update tab content
+            document.querySelectorAll('.tab-content').forEach(content => content.classList.remove('active'));
+            document.getElementById(`${tabName}-tab`).classList.add('active');
+            
+            // Load data based on tab
+            if (tabName === 'approved') {
+                const approvedUsers = allUsers.filter(u => u.isApproved);
+                displayUsers(approvedUsers, 'approved');
+                hideLoadingForTab('approved');
+            } else if (tabName === 'all') {
+                displayUsers(allUsers, 'all');
+                hideLoadingForTab('all');
+            }
+        }
+
+        // Show/hide loading
+        function showLoadingForTab(tab) {
+            document.getElementById(`${tab}Loading`).classList.add('show');
+        }
+
+        function hideLoadingForTab(tab) {
+            document.getElementById(`${tab}Loading`).classList.remove('show');
+        }
+
+        // Open approve modal
+        window.openApproveModal = function(userId, email) {
+            document.getElementById('approveUserId').value = userId;
+            document.getElementById('approveUserEmail').value = email;
+            document.getElementById('approveModal').classList.add('show');
+        }
+
+        // Close approve modal
+        window.closeApproveModal = function() {
+            document.getElementById('approveModal').classList.remove('show');
+            document.getElementById('approveForm').reset();
+        }
+
+        // Handle approve form
+        document.getElementById('approveForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            
+            const userId = document.getElementById('approveUserId').value;
+            const botToken = document.getElementById('botToken').value;
+            const botUsername = document.getElementById('botUsername').value;
+            const webhookUrl = document.getElementById('webhookUrl').value;
+            
+            try {
+                showToast('Approving user...', 'warning');
+                
+                await approveUserWithBot({
+                    userId,
+                    botToken,
+                    botUsername,
+                    webhookUrl
+                });
+                
+                showToast('User approved successfully!', 'success');
+                closeApproveModal();
+                
+                // Reload data
+                await loadDashboardData();
+                
+            } catch (error) {
+                console.error('❌ Error approving user:', error);
+                showToast('Error approving user: ' + error.message, 'error');
+            }
+        });
+
+        // Delete user confirmation
+        window.deleteUserConfirm = function(userId, email) {
+            if (confirm(`Are you sure you want to delete user: ${email}?\n\nThis will permanently delete:\n- User account\n- All their audio files\n- All their TTS jobs\n\nThis action cannot be undone.`)) {
+                deleteUserById(userId, email);
+            }
+        }
+
+        // Delete user
+        async function deleteUserById(userId, email) {
+            try {
+                showToast('Deleting user...', 'warning');
+                
+                await deleteUser({ userId });
+                
+                showToast(`User ${email} deleted successfully!`, 'success');
+                
+                // Reload data
+                await loadDashboardData();
+                
+            } catch (error) {
+                console.error('❌ Error deleting user:', error);
+                showToast('Error deleting user: ' + error.message, 'error');
+            }
+        }
+
+        // Show toast
+        function showToast(message, type = 'success') {
+            const toast = document.getElementById('toast');
+            toast.textContent = message;
+            toast.className = `toast ${type} show`;
+            
+            setTimeout(() => {
+                toast.classList.remove('show');
+            }, 5000);
+        }
+
+        // Logout
+        window.logout = async function() {
+            try {
+                await signOut(auth);
+                window.location.href = 'login.html';
+            } catch (error) {
+                console.error('❌ Logout error:', error);
+                showToast('Error logging out', 'error');
+            }
+        }
+
+        // Initial load
+        console.log('🚀 Admin Panel loaded');
+    </script>
+</body>
+</html>
