@@ -1,18 +1,17 @@
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
+    <!-- Same head content as before -->
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Blue FM TTS - Text to Speech Platform</title>
     
-    <!-- Google Fonts -->
+    <!-- All your existing styles remain the same -->
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
-    
-    <!-- Font Awesome -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     
     <style>
+        /* All your existing styles remain exactly the same */
         * {
             margin: 0;
             padding: 0;
@@ -42,7 +41,62 @@
             position: relative;
         }
 
-        /* Background Animation */
+        /* 🆕 Waiting Section Styles */
+        .waiting-section {
+            display: none;
+            text-align: center;
+            padding: 3rem;
+            background: linear-gradient(45deg, rgba(245, 158, 11, 0.1), rgba(251, 191, 36, 0.1));
+            border-radius: 20px;
+            margin: 2rem 0;
+            border: 1px solid var(--warning);
+        }
+
+        .waiting-section.show {
+            display: block;
+            animation: slideDown 0.5s ease-out;
+        }
+
+        .waiting-icon {
+            font-size: 4rem;
+            color: var(--warning);
+            margin-bottom: 1rem;
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+        }
+
+        .waiting-title {
+            font-size: 2rem;
+            color: var(--warning);
+            margin-bottom: 1rem;
+        }
+
+        .waiting-message {
+            font-size: 1.1rem;
+            color: var(--text-secondary);
+            margin-bottom: 2rem;
+            line-height: 1.6;
+        }
+
+        .time-remaining {
+            background: rgba(245, 158, 11, 0.2);
+            border: 1px solid var(--warning);
+            padding: 1.5rem;
+            border-radius: 15px;
+            margin-bottom: 2rem;
+        }
+
+        .countdown {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--warning);
+        }
+
+        /* All your other existing styles remain the same... */
         .bg-animation {
             position: fixed;
             width: 100%;
@@ -67,7 +121,6 @@
             100% { transform: translateX(-50%); }
         }
 
-        /* Navigation */
         nav {
             position: fixed;
             top: 0;
@@ -144,7 +197,6 @@
             box-shadow: 0 5px 20px rgba(16, 185, 129, 0.4);
         }
 
-        /* User Menu */
         .user-menu {
             position: relative;
         }
@@ -190,7 +242,6 @@
             to { opacity: 1; transform: translateY(0); }
         }
 
-        /* Glass Container */
         .glass-container {
             background: var(--glass-bg);
             backdrop-filter: blur(10px);
@@ -200,14 +251,12 @@
             box-shadow: 0 8px 32px var(--shadow);
         }
 
-        /* Main Content */
         .main-content {
             max-width: 1200px;
             margin: 0 auto;
             padding: 6rem 1rem 2rem;
         }
 
-        /* Hero Section */
         .hero-section {
             text-align: center;
             margin-bottom: 3rem;
@@ -229,7 +278,6 @@
             margin-bottom: 2rem;
         }
 
-        /* Stats */
         .stats-container {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
@@ -256,7 +304,6 @@
             color: var(--text-secondary);
         }
 
-        /* Audio Cards */
         .section-title {
             font-size: 2rem;
             margin-bottom: 2rem;
@@ -382,7 +429,6 @@
             font-size: 14px;
         }
 
-        /* Upload Section */
         .upload-section {
             margin-bottom: 3rem;
         }
@@ -461,7 +507,6 @@
             display: block;
         }
 
-        /* Generate Section */
         .generate-section {
             text-align: center;
             padding: 2rem;
@@ -475,7 +520,6 @@
             padding: 1rem 3rem;
         }
 
-        /* Processing Status Section */
         .processing-section {
             display: none;
             text-align: center;
@@ -528,7 +572,6 @@
             margin-top: 1rem;
         }
 
-        /* 🆕 Real-time Status Update Section */
         .status-update {
             background: rgba(59, 130, 246, 0.1);
             border: 1px solid var(--secondary);
@@ -562,7 +605,6 @@
             color: var(--text-secondary);
         }
 
-        /* Download Section */
         .download-section {
             display: none;
             text-align: center;
@@ -639,7 +681,6 @@
             font-weight: 600;
         }
 
-        /* Character Counter */
         .character-info {
             display: flex;
             justify-content: space-between;
@@ -660,7 +701,6 @@
             color: var(--accent);
         }
 
-        /* Toast */
         .toast {
             position: fixed;
             bottom: 2rem;
@@ -699,7 +739,6 @@
             color: var(--warning);
         }
 
-        /* Footer */
         footer {
             text-align: center;
             padding: 2rem;
@@ -707,7 +746,6 @@
             border-top: 1px solid var(--glass-border);
         }
 
-        /* Responsive */
         @media (max-width: 768px) {
             .hero-title {
                 font-size: 2rem;
@@ -798,221 +836,254 @@
 
     <!-- Main Content -->
     <main class="main-content">
-        <!-- Hero Section -->
-        <section class="hero-section">
-            <h1 class="hero-title">Transform Text to Natural Speech</h1>
-            <p class="hero-subtitle">Create professional voiceovers with AI-powered voices</p>
-        </section>
-
-        <!-- Stats Section -->
-        <section class="stats-container">
-            <div class="stat-card">
-                <div class="stat-number">4</div>
-                <div class="stat-label">Natural Voices</div>
+        <!-- 🆕 User Waiting Section (24h wait + approval) -->
+        <section class="waiting-section glass-container" id="waitingSection">
+            <div class="waiting-icon">
+                <i class="fas fa-clock"></i>
             </div>
-            <div class="stat-card">
-                <div class="stat-number">20+</div>
-                <div class="stat-label">Languages</div>
-            </div>
-            <div class="stat-card">
-                <div class="stat-number">500+</div>
-                <div class="stat-label">Users Joined</div>
-            </div>
-            <div class="stat-card">
-                <div class="stat-number">99.9%</div>
-                <div class="stat-label">Accuracy</div>
-            </div>
-        </section>
-
-        <!-- Voice Selection -->
-        <section class="glass-container">
-            <h2 class="section-title">Choose Your Voice</h2>
-            <div class="audio-grid">
-                <!-- Voice Card 1 -->
-                <div class="audio-card glass-container" onclick="selectVoice('voice1')">
-                    <div class="radio-select"></div>
-                    <div class="audio-card-content">
-                        <div class="voice-avatar">👨</div>
-                        <h3 class="voice-name">Professional Male</h3>
-                        <p class="voice-description">Clear, confident business voice</p>
-                        <div class="audio-controls">
-                            <button class="play-btn" onclick="playDemo(event, 'voice1')">
-                                <i class="fas fa-play"></i>
-                            </button>
-                            <div class="audio-wave">
-                                <div class="audio-progress"></div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Voice Card 2 -->
-                <div class="audio-card glass-container" onclick="selectVoice('voice2')">
-                    <div class="radio-select"></div>
-                    <div class="audio-card-content">
-                        <div class="voice-avatar">👩</div>
-                        <h3 class="voice-name">Friendly Female</h3>
-                        <p class="voice-description">Warm, engaging narrative voice</p>
-                        <div class="audio-controls">
-                            <button class="play-btn" onclick="playDemo(event, 'voice2')">
-                                <i class="fas fa-play"></i>
-                            </button>
-                            <div class="audio-wave">
-                                <div class="audio-progress"></div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Voice Card 3 -->
-                <div class="audio-card glass-container" onclick="selectVoice('voice3')">
-                    <div class="radio-select"></div>
-                    <div class="audio-card-content">
-                        <div class="voice-avatar">🎙</div>
-                        <h3 class="voice-name">News Anchor</h3>
-                        <p class="voice-description">Authoritative news reading voice</p>
-                        <div class="audio-controls">
-                            <button class="play-btn" onclick="playDemo(event, 'voice3')">
-                                <i class="fas fa-play"></i>
-                            </button>
-                            <div class="audio-wave">
-                                <div class="audio-progress"></div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Voice Card 4 -->
-                <div class="audio-card glass-container" onclick="selectVoice('voice4')">
-                    <div class="radio-select"></div>
-                    <div class="audio-card-content">
-                        <div class="voice-avatar">📚</div>
-                        <h3 class="voice-name">Storyteller</h3>
-                        <p class="voice-description">Expressive audiobook narration</p>
-                        <div class="audio-controls">
-                            <button class="play-btn" onclick="playDemo(event, 'voice4')">
-                                <i class="fas fa-play"></i>
-                            </button>
-                            <div class="audio-wave">
-                                <div class="audio-progress"></div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </section>
-
-        <!-- Upload Section -->
-        <section class="upload-section glass-container">
-            <h2 class="section-title">Upload Your Text</h2>
-            <div class="upload-area" id="uploadArea">
-                <div class="upload-icon">
-                    <i class="fas fa-file-alt"></i>
-                </div>
-                <p style="margin-bottom: 1rem;">Drag & drop your .txt file here or</p>
-                <button class="btn btn-primary" onclick="document.getElementById('fileInput').click()">
-                    <i class="fas fa-upload"></i> Browse Files
-                </button>
-                <input type="file" id="fileInput" style="display: none;" accept=".txt">
-                <div class="file-info" id="fileInfo">
-                    <i class="fas fa-check-circle" style="color: #10b981;"></i>
-                    <span id="fileName"></span>
-                </div>
-            </div>
-            <div class="character-info" id="charInfo" style="display: none;">
-                <span class="char-count">Characters: <span id="charCount">0</span></span>
-                <span class="char-limit">Monthly Limit: 5,000 (Free Plan)</span>
-            </div>
-        </section>
-
-        <!-- Generate Section -->
-        <section class="generate-section" id="generateSection">
-            <h3 style="margin-bottom: 1rem;">Ready to Create Your Audio?</h3>
-            <button class="btn btn-primary generate-btn" id="generateBtn" disabled onclick="generateAudio()">
-                <i class="fas fa-magic"></i> Generate Audio
-            </button>
-        </section>
-
-        <!-- 🆕 Enhanced Processing Section with Real-time Updates -->
-        <section class="processing-section" id="processingSection">
-            <div class="processing-icon">
-                <i class="fas fa-cog"></i>
-            </div>
-            <h3 class="processing-title">Processing Your Audio</h3>
-            <p class="processing-message" id="processingMessage">Starting audio generation...</p>
-            <div class="estimated-time">
-                <strong>⏱ Estimated Time: 5-15 minutes</strong>
-                <br>
-                <small>Processing time depends on file size and server load</small>
-            </div>
+            <h2 class="waiting-title">Account Under Review</h2>
+            <p class="waiting-message">
+                Welcome! Your account is being reviewed by our admin team.<br>
+                You'll be able to create audio files once your account is approved.
+            </p>
             
-            <!-- 🆕 Real-time Status Updates -->
-            <div class="status-update">
-                <h4 style="margin-bottom: 1rem;">Processing Status:</h4>
-                <ul class="status-steps" id="statusSteps">
-                    <li class="status-step pending" id="step1">
-                        <i class="fas fa-clock"></i> Uploading files...
-                    </li>
-                    <li class="status-step pending" id="step2">
-                        <i class="fas fa-clock"></i> Sending to processing server...
-                    </li>
-                    <li class="status-step pending" id="step3">
-                        <i class="fas fa-clock"></i> Generating audio with AI...
-                    </li>
-                    <li class="status-step pending" id="step4">
-                        <i class="fas fa-clock"></i> Uploading to cloud storage...
-                    </li>
-                    <li class="status-step pending" id="step5">
-                        <i class="fas fa-clock"></i> Finalizing download...
-                    </li>
+            <div class="time-remaining" id="timeRemainingBox">
+                <div style="margin-bottom: 0.5rem;">Time Remaining:</div>
+                <div class="countdown" id="countdownTimer">Calculating...</div>
+                <div style="margin-top: 0.5rem; font-size: 0.9rem; color: var(--text-secondary);">
+                    Admin approval required after 24 hours
+                </div>
+            </div>
+
+            <div style="background: rgba(255, 255, 255, 0.05); padding: 1.5rem; border-radius: 15px;">
+                <h4 style="margin-bottom: 1rem; color: var(--accent);">What happens next?</h4>
+                <ul style="text-align: left; color: var(--text-secondary); line-height: 1.8;">
+                    <li>⏱ Wait for 24 hours after registration</li>
+                    <li>👤 Admin will review and approve your account</li>
+                    <li>🤖 You'll get your personal Telegram bot</li>
+                    <li>🎵 Start creating unlimited audio files</li>
                 </ul>
             </div>
         </section>
 
-        <!-- 🆕 Enhanced Download Section with R2 Integration -->
-        <section class="download-section" id="downloadSection">
-            <div class="download-icon">
-                <i class="fas fa-download"></i>
-            </div>
-            <h3 class="download-title">Your Audio is Ready!</h3>
-            <p class="download-message">Your audio has been generated and is ready for download</p>
-            
-            <div class="download-options">
-                <button class="btn btn-success download-btn" onclick="downloadAudioFromR2()">
-                    <i class="fas fa-cloud-download-alt"></i> Download Audio
-                </button>
-                <button class="btn btn-success download-btn" onclick="previewAudio()">
-                    <i class="fas fa-play"></i> Preview Audio
-                </button>
-            </div>
+        <!-- 🆕 Main Content (Hidden until approved) -->
+        <div id="mainAppContent" style="display: none;">
+            <!-- Hero Section -->
+            <section class="hero-section">
+                <h1 class="hero-title">Transform Text to Natural Speech</h1>
+                <p class="hero-subtitle">Create professional voiceovers with AI-powered voices</p>
+            </section>
 
-            <div class="audio-details">
-                <div class="detail-row">
-                    <span class="detail-label">File Name:</span>
-                    <span class="detail-value" id="audioFileName">my_audio_file</span>
+            <!-- Stats Section -->
+            <section class="stats-container">
+                <div class="stat-card">
+                    <div class="stat-number">4</div>
+                    <div class="stat-label">Natural Voices</div>
                 </div>
-                <div class="detail-row">
-                    <span class="detail-label">Voice Used:</span>
-                    <span class="detail-value" id="audioVoice">Professional Male</span>
+                <div class="stat-card">
+                    <div class="stat-number">20+</div>
+                    <div class="stat-label">Languages</div>
                 </div>
-                <div class="detail-row">
-                    <span class="detail-label">File Size:</span>
-                    <span class="detail-value" id="audioFileSize">Loading...</span>
+                <div class="stat-card">
+                    <div class="stat-number">500+</div>
+                    <div class="stat-label">Users Joined</div>
                 </div>
-                <div class="detail-row">
-                    <span class="detail-label">Characters:</span>
-                    <span class="detail-value" id="audioCharCount">1,250</span>
+                <div class="stat-card">
+                    <div class="stat-number">99.9%</div>
+                    <div class="stat-label">Accuracy</div>
                 </div>
-                <div class="detail-row">
-                    <span class="detail-label">Expires:</span>
-                    <span class="detail-value" id="audioExpiry">24 hours</span>
-                </div>
-            </div>
+            </section>
 
-            <button class="btn btn-primary" onclick="resetForm()" style="margin-top: 1rem;">
-                <i class="fas fa-plus"></i> Create Another Audio
-            </button>
-        </section>
+            <!-- Voice Selection -->
+            <section class="glass-container">
+                <h2 class="section-title">Choose Your Voice</h2>
+                <div class="audio-grid">
+                    <!-- Voice Cards remain the same -->
+                    <div class="audio-card glass-container" onclick="selectVoice('voice1')">
+                        <div class="radio-select"></div>
+                        <div class="audio-card-content">
+                            <div class="voice-avatar">👨</div>
+                            <h3 class="voice-name">Professional Male</h3>
+                            <p class="voice-description">Clear, confident business voice</p>
+                            <div class="audio-controls">
+                                <button class="play-btn" onclick="playDemo(event, 'voice1')">
+                                    <i class="fas fa-play"></i>
+                                </button>
+                                <div class="audio-wave">
+                                    <div class="audio-progress"></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="audio-card glass-container" onclick="selectVoice('voice2')">
+                        <div class="radio-select"></div>
+                        <div class="audio-card-content">
+                            <div class="voice-avatar">👩</div>
+                            <h3 class="voice-name">Friendly Female</h3>
+                            <p class="voice-description">Warm, engaging narrative voice</p>
+                            <div class="audio-controls">
+                                <button class="play-btn" onclick="playDemo(event, 'voice2')">
+                                    <i class="fas fa-play"></i>
+                                </button>
+                                <div class="audio-wave">
+                                    <div class="audio-progress"></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="audio-card glass-container" onclick="selectVoice('voice3')">
+                        <div class="radio-select"></div>
+                        <div class="audio-card-content">
+                            <div class="voice-avatar">🎙</div>
+                            <h3 class="voice-name">News Anchor</h3>
+                            <p class="voice-description">Authoritative news reading voice</p>
+                            <div class="audio-controls">
+                                <button class="play-btn" onclick="playDemo(event, 'voice3')">
+                                    <i class="fas fa-play"></i>
+                                </button>
+                                <div class="audio-wave">
+                                    <div class="audio-progress"></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="audio-card glass-container" onclick="selectVoice('voice4')">
+                        <div class="radio-select"></div>
+                        <div class="audio-card-content">
+                            <div class="voice-avatar">📚</div>
+                            <h3 class="voice-name">Storyteller</h3>
+                            <p class="voice-description">Expressive audiobook narration</p>
+                            <div class="audio-controls">
+                                <button class="play-btn" onclick="playDemo(event, 'voice4')">
+                                    <i class="fas fa-play"></i>
+                                </button>
+                                <div class="audio-wave">
+                                    <div class="audio-progress"></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Upload Section -->
+            <section class="upload-section glass-container">
+                <h2 class="section-title">Upload Your Text</h2>
+                <div class="upload-area" id="uploadArea">
+                    <div class="upload-icon">
+                        <i class="fas fa-file-alt"></i>
+                    </div>
+                    <p style="margin-bottom: 1rem;">Drag & drop your .txt file here or</p>
+                    <button class="btn btn-primary" onclick="document.getElementById('fileInput').click()">
+                        <i class="fas fa-upload"></i> Browse Files
+                    </button>
+                    <input type="file" id="fileInput" style="display: none;" accept=".txt">
+                    <div class="file-info" id="fileInfo">
+                        <i class="fas fa-check-circle" style="color: #10b981;"></i>
+                        <span id="fileName"></span>
+                    </div>
+                </div>
+                <div class="character-info" id="charInfo" style="display: none;">
+                    <span class="char-count">Characters: <span id="charCount">0</span></span>
+                    <span class="char-limit">Monthly Limit: 5,000 (Free Plan)</span>
+                </div>
+            </section>
+
+            <!-- Generate Section -->
+            <section class="generate-section" id="generateSection">
+                <h3 style="margin-bottom: 1rem;">Ready to Create Your Audio?</h3>
+                <button class="btn btn-primary generate-btn" id="generateBtn" disabled onclick="generateAudio()">
+                    <i class="fas fa-magic"></i> Generate Audio
+                </button>
+            </section>
+
+            <!-- Processing Section -->
+            <section class="processing-section" id="processingSection">
+                <div class="processing-icon">
+                    <i class="fas fa-cog"></i>
+                </div>
+                <h3 class="processing-title">Processing Your Audio</h3>
+                <p class="processing-message" id="processingMessage">Starting audio generation...</p>
+                <div class="estimated-time">
+                    <strong>⏱ Estimated Time: 5-15 minutes</strong>
+                    <br>
+                    <small>Processing time depends on file size and server load</small>
+                </div>
+                
+                <div class="status-update">
+                    <h4 style="margin-bottom: 1rem;">Processing Status:</h4>
+                    <ul class="status-steps" id="statusSteps">
+                        <li class="status-step pending" id="step1">
+                            <i class="fas fa-clock"></i> Uploading files...
+                        </li>
+                        <li class="status-step pending" id="step2">
+                            <i class="fas fa-clock"></i> Sending to your personal bot...
+                        </li>
+                        <li class="status-step pending" id="step3">
+                            <i class="fas fa-clock"></i> Generating audio with AI...
+                        </li>
+                        <li class="status-step pending" id="step4">
+                            <i class="fas fa-clock"></i> Uploading to cloud storage...
+                        </li>
+                        <li class="status-step pending" id="step5">
+                            <i class="fas fa-clock"></i> Finalizing download...
+                        </li>
+                    </ul>
+                </div>
+            </section>
+
+            <!-- Download Section -->
+            <section class="download-section" id="downloadSection">
+                <div class="download-icon">
+                    <i class="fas fa-download"></i>
+                </div>
+                <h3 class="download-title">Your Audio is Ready!</h3>
+                <p class="download-message">Your audio has been generated and is ready for download</p>
+                
+                <div class="download-options">
+                    <button class="btn btn-success download-btn" onclick="downloadAudioFromR2()">
+                        <i class="fas fa-cloud-download-alt"></i> Download Audio
+                    </button>
+                    <button class="btn btn-success download-btn" onclick="previewAudio()">
+                        <i class="fas fa-play"></i> Preview Audio
+                    </button>
+                </div>
+
+                <div class="audio-details">
+                    <div class="detail-row">
+                        <span class="detail-label">File Name:</span>
+                        <span class="detail-value" id="audioFileName">my_audio_file</span>
+                    </div>
+                    <div class="detail-row">
+                        <span class="detail-label">Voice Used:</span>
+                        <span class="detail-value" id="audioVoice">Professional Male</span>
+                    </div>
+                    <div class="detail-row">
+                        <span class="detail-label">Personal Bot:</span>
+                        <span class="detail-value" id="userBot">@your_bot</span>
+                    </div>
+                    <div class="detail-row">
+                        <span class="detail-label">File Size:</span>
+                        <span class="detail-value" id="audioFileSize">Loading...</span>
+                    </div>
+                    <div class="detail-row">
+                        <span class="detail-label">Characters:</span>
+                        <span class="detail-value" id="audioCharCount">1,250</span>
+                    </div>
+                    <div class="detail-row">
+                        <span class="detail-label">Expires:</span>
+                        <span class="detail-value" id="audioExpiry">24 hours</span>
+                    </div>
+                </div>
+
+                <button class="btn btn-primary" onclick="resetForm()" style="margin-top: 1rem;">
+                    <i class="fas fa-plus"></i> Create Another Audio
+                </button>
+            </section>
+        </div>
     </main>
 
     <!-- Footer -->
@@ -1023,7 +1094,7 @@
     <!-- Toast -->
     <div class="toast" id="toast"></div>
 
-    <!-- 🆕 Audio Preview Modal -->
+    <!-- Audio Preview Modal -->
     <div id="audioPreviewModal" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.8); z-index: 2000; display: flex; align-items: center; justify-content: center;">
         <div style="background: var(--glass-bg); backdrop-filter: blur(10px); padding: 2rem; border-radius: 20px; max-width: 500px; width: 90%;">
             <h3 style="margin-bottom: 1rem; text-align: center;">Audio Preview</h3>
@@ -1040,9 +1111,9 @@
         import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js';
         import { getAuth, onAuthStateChanged, signOut } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js';
         import { getStorage, ref, uploadBytes, getDownloadURL } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-storage.js';
-        import { getFirestore, doc, onSnapshot, collection, query, where, orderBy, limit } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js';
+        import { getFirestore, doc, onSnapshot, collection, query, where, orderBy, limit, setDoc, getDoc } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js';
 
-        // ✅ Firebase configuration
+        // Firebase configuration
         const firebaseConfig = {
             apiKey: "AIzaSyCmBZmN-BCa3Qkb7f7K9TjXuK1_ma1ukbw",
             authDomain: "bluefm-tts.firebaseapp.com",
@@ -1065,6 +1136,9 @@
         let currentJobId = null;
         let jobListener = null;
         let currentDownloadUrl = null;
+        let userBotToken = null;
+        let userBotUsername = null;
+        let countdownInterval = null;
 
         // Voice names mapping
         const voiceNames = {
@@ -1074,7 +1148,6 @@
             'voice4': 'Storyteller'
         };
 
-        // ✅ Voice to Reference Audio mapping
         const voiceToReference = {
             'voice1': 'professional-male.mp3',
             'voice2': 'friendly-female.mp3',
@@ -1082,7 +1155,6 @@
             'voice4': 'storyteller.mp3'
         };
 
-        // ✅ Demo audio URLs
         const demoAudioUrls = {
             'voice1': 'https://firebasestorage.googleapis.com/v0/b/bluefm-tts.firebasestorage.app/o/reference-voices%2Fprofessional-male.mp3?alt=media',
             'voice2': 'https://firebasestorage.googleapis.com/v0/b/bluefm-tts.firebasestorage.app/o/reference-voices%2Ffriendly-female.mp3?alt=media',
@@ -1090,7 +1162,7 @@
             'voice4': 'https://firebasestorage.googleapis.com/v0/b/bluefm-tts.firebasestorage.app/o/reference-voices%2Fstoryteller.mp3?alt=media'
         };
 
-        // Check authentication state
+        // 🆕 Check authentication state with user approval
         onAuthStateChanged(auth, (user) => {
             if (user) {
                 currentUser = user;
@@ -1104,8 +1176,8 @@
                 localStorage.setItem('userEmail', user.email);
                 localStorage.setItem('userId', user.uid);
                 
-                // 🆕 Check for any active jobs
-                checkActiveJobs();
+                // 🆕 Check user approval status
+                checkUserApprovalStatus();
                 
             } else {
                 console.log('❌ User not logged in');
@@ -1113,7 +1185,131 @@
             }
         });
 
-        // 🆕 Check for Active Jobs
+        // 🆕 Check User Approval Status
+        async function checkUserApprovalStatus() {
+            try {
+                const userDocRef = doc(db, 'users', currentUser.uid);
+                let userDoc = await getDoc(userDocRef);
+
+                if (!userDoc.exists()) {
+                    // 🆕 New user - create document
+                    console.log('📝 Creating new user document');
+                    await setDoc(userDocRef, {
+                        email: currentUser.email,
+                        registrationTime: new Date(),
+                        isApproved: false,
+                        telegramBotToken: null,
+                        telegramBotUsername: null,
+                        createdAt: new Date()
+                    });
+                    
+                    // Fetch the document again
+                    userDoc = await getDoc(userDocRef);
+                }
+
+                const userData = userDoc.data();
+                console.log('👤 User data:', userData);
+
+                if (userData.isApproved && userData.telegramBotToken) {
+                    // ✅ User is approved and has bot
+                    userBotToken = userData.telegramBotToken;
+                    userBotUsername = userData.telegramBotUsername;
+                    
+                    showMainApp();
+                    checkActiveJobs();
+                    
+                } else if (!userData.isApproved) {
+                    // ⏱ User needs to wait and get approval
+                    const registrationTime = userData.registrationTime.toDate ? 
+                        userData.registrationTime.toDate() : 
+                        new Date(userData.registrationTime);
+                    
+                    const now = new Date();
+                    const hoursPassed = (now - registrationTime) / (1000 * 60 * 60);
+
+                    if (hoursPassed < 24) {
+                        // Still in 24h waiting period
+                        showWaitingSection(24 - hoursPassed);
+                    } else {
+                        // 24h passed, waiting for admin approval
+                        showWaitingSection(0);
+                    }
+                } else {
+                    // Edge case: approved but no bot token
+                    showWaitingSection(0);
+                }
+
+            } catch (error) {
+                console.error('❌ Error checking user status:', error);
+                showToast('Error checking account status', 'error');
+            }
+        }
+
+        // 🆕 Show Waiting Section
+        function showWaitingSection(hoursLeft) {
+            document.getElementById('waitingSection').classList.add('show');
+            document.getElementById('mainAppContent').style.display = 'none';
+
+            if (hoursLeft > 0) {
+                // Still waiting
+                startCountdown(hoursLeft);
+            } else {
+                // Waiting for admin approval
+                document.getElementById('countdownTimer').textContent = 'Waiting for admin approval...';
+                document.getElementById('timeRemainingBox').innerHTML = `
+                    <div style="margin-bottom: 0.5rem;">Status:</div>
+                    <div class="countdown">Pending Admin Approval</div>
+                    <div style="margin-top: 0.5rem; font-size: 0.9rem; color: var(--text-secondary);">
+                        Your 24-hour waiting period is complete. Admin will approve your account soon.
+                    </div>
+                `;
+            }
+        }
+
+        // 🆕 Start Countdown Timer
+        function startCountdown(hoursLeft) {
+            let timeLeft = hoursLeft * 60 * 60; // Convert to seconds
+            
+            if (countdownInterval) {
+                clearInterval(countdownInterval);
+            }
+
+            countdownInterval = setInterval(() => {
+                const hours = Math.floor(timeLeft / 3600);
+                const minutes = Math.floor((timeLeft % 3600) / 60);
+                const seconds = Math.floor(timeLeft % 60);
+
+                document.getElementById('countdownTimer').textContent = 
+                    `${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+
+                timeLeft--;
+
+                if (timeLeft < 0) {
+                    clearInterval(countdownInterval);
+                    // Check status again
+                    checkUserApprovalStatus();
+                }
+            }, 1000);
+        }
+
+        // 🆕 Show Main App (when approved)
+        function showMainApp() {
+            document.getElementById('waitingSection').classList.remove('show');
+            document.getElementById('mainAppContent').style.display = 'block';
+            
+            if (countdownInterval) {
+                clearInterval(countdownInterval);
+            }
+
+            // Update bot info in download section
+            if (userBotUsername) {
+                document.getElementById('userBot').textContent = userBotUsername;
+            }
+
+            showToast('🎉 Welcome! Your account is approved!', 'success');
+        }
+
+        // 🆕 Check for Active Jobs (only if approved)
         async function checkActiveJobs() {
             try {
                 const q = query(
@@ -1127,15 +1323,11 @@
                 const unsubscribe = onSnapshot(q, (querySnapshot) => {
                     if (!querySnapshot.empty) {
                         const latestJob = querySnapshot.docs[0];
-                        const jobData = latestJob.data();
                         
                         console.log('🔄 Found active job:', latestJob.id);
                         
-                        // Resume monitoring this job
                         currentJobId = latestJob.id;
                         startJobMonitoring(latestJob.id);
-                        
-                        // Show processing section
                         showProcessingSection();
                     }
                 });
@@ -1157,7 +1349,7 @@
             showToast(`Voice selected: ${voiceNames[voiceId]}!`);
         }
 
-        // ✅ Enhanced Play Demo with Real Audio
+        // Play Demo
         window.playDemo = function(event, voiceId) {
             event.stopPropagation();
             const btn = event.currentTarget;
@@ -1166,29 +1358,24 @@
             
             if (icon.classList.contains('fa-play')) {
                 try {
-                    // Create audio element
                     const audio = new Audio(demoAudioUrls[voiceId]);
                     
                     icon.classList.remove('fa-play');
                     icon.classList.add('fa-pause');
                     
-                    // Play audio
                     audio.play();
                     
-                    // Update progress bar
                     audio.addEventListener('timeupdate', () => {
                         const progress = (audio.currentTime / audio.duration) * 100;
                         progressBar.style.width = progress + '%';
                     });
                     
-                    // Reset when audio ends
                     audio.addEventListener('ended', () => {
                         icon.classList.remove('fa-pause');
                         icon.classList.add('fa-play');
                         progressBar.style.width = '0%';
                     });
                     
-                    // Handle errors
                     audio.addEventListener('error', () => {
                         console.log('Audio demo not available yet');
                         icon.classList.remove('fa-pause');
@@ -1199,7 +1386,6 @@
                     
                 } catch (error) {
                     console.log('Demo audio error:', error);
-                    // Fallback to animated demo
                     let progress = 0;
                     const interval = setInterval(() => {
                         progress += 2;
@@ -1258,7 +1444,6 @@
             document.getElementById('fileName').textContent = file.name;
             document.getElementById('fileInfo').classList.add('show');
             
-            // Read file to count characters
             const reader = new FileReader();
             reader.onload = function(e) {
                 const text = e.target.result;
@@ -1276,58 +1461,61 @@
             showToast('File uploaded successfully!');
         }
 
-        // Check Generate Button
         function checkGenerateButton() {
             const btn = document.getElementById('generateBtn');
-            if (selectedVoice && uploadedFile && currentUser) {
+            if (selectedVoice && uploadedFile && currentUser && userBotToken) {
                 btn.disabled = false;
             } else {
                 btn.disabled = true;
             }
         }
 
-        // ✅ Enhanced Generate Audio with Real-time Monitoring
+        // 🆕 Enhanced Generate Audio with Bot Token
         window.generateAudio = async function() {
             if (!selectedVoice || !uploadedFile) {
                 showToast('Please select a voice and upload a file!', 'error');
                 return;
             }
+
+            if (!userBotToken) {
+                showToast('Your personal bot is not configured yet!', 'error');
+                return;
+            }
             
             try {
-                // Generate unique ID for this job
                 const jobId = Date.now().toString();
                 const userId = currentUser.uid;
                 currentJobId = jobId;
                 
-                // Show processing section
                 showProcessingSection();
                 updateStatus('Uploading files...', 1);
                 
-                // Upload text file with metadata
                 const textFileName = `${jobId}-${uploadedFile.name}`;
                 const textRef = ref(storage, `tts-requests/${userId}/${textFileName}`);
                 
-                // ✅ Upload with reference voice metadata
+                // 🆕 Upload with user's bot token in metadata
                 const metadata = {
                     customMetadata: {
                         userId: userId,
+                        userEmail: currentUser.email,
                         voiceId: selectedVoice,
                         voiceName: voiceNames[selectedVoice],
                         referenceAudio: voiceToReference[selectedVoice],
                         jobId: jobId,
+                        telegramBotToken: userBotToken,
+                        telegramBotUsername: userBotUsername,
                         timestamp: new Date().toISOString()
                     }
                 };
                 
                 await uploadBytes(textRef, uploadedFile, metadata);
-                console.log('✅ Text file uploaded with reference voice info');
+                console.log('✅ Text file uploaded with user bot info');
                 
-                updateStatus('Sending to processing server...', 2);
+                updateStatus('Sending to your personal bot...', 2);
                 
-                // 🆕 Start real-time job monitoring
                 startJobMonitoring(jobId);
                 
-                showToast('Files uploaded! Processing started...', 'success');
+                showToast('Files uploaded! Processing on your personal bot...', 'success');
                 
             } catch (error) {
                 console.error('❌ Upload error:', error);
@@ -1336,10 +1524,10 @@
             }
         }
 
-        // 🆕 Real-time Job Monitoring
+        // Real-time Job Monitoring
         function startJobMonitoring(jobId) {
             if (jobListener) {
-                jobListener(); // Unsubscribe from previous listener
+                jobListener();
             }
             
             const jobRef = doc(db, "tts_jobs", jobId);
@@ -1355,7 +1543,7 @@
                             break;
                             
                         case 'sent_to_telegram':
-                            updateStatus('Processing on AI server...', 3);
+                            updateStatus('Processing on your personal AI server...', 3);
                             break;
                             
                         case 'completed':
@@ -1377,11 +1565,9 @@
             });
         }
 
-        // 🆕 Update Processing Status
         function updateStatus(message, step) {
             document.getElementById('processingMessage').textContent = message;
             
-            // Update step indicators
             for (let i = 1; i <= 5; i++) {
                 const stepEl = document.getElementById(`step${i}`);
                 const icon = stepEl.querySelector('i');
@@ -1399,14 +1585,12 @@
             }
         }
 
-        // 🆕 Show Processing Section
         function showProcessingSection() {
             document.getElementById('generateSection').style.display = 'none';
             document.getElementById('processingSection').classList.add('show');
             document.getElementById('downloadSection').classList.remove('show');
         }
 
-        // 🆕 Show Download Section with R2 Data
         function showDownloadSection(jobData) {
             updateStatus('Audio ready for download!', 5);
             
@@ -1414,12 +1598,10 @@
                 document.getElementById('processingSection').classList.remove('show');
                 document.getElementById('downloadSection').classList.add('show');
                 
-                // Update audio details
                 document.getElementById('audioFileName').textContent = uploadedFile.name.replace('.txt', '');
                 document.getElementById('audioVoice').textContent = voiceNames[selectedVoice];
                 document.getElementById('audioCharCount').textContent = document.getElementById('charCount').textContent;
                 
-                // Calculate expiry time
                 if (jobData.downloadUrlExpiresAt) {
                     const expiryDate = jobData.downloadUrlExpiresAt.toDate();
                     const now = new Date();
@@ -1428,14 +1610,11 @@
                 }
                 
                 showToast('🎉 Audio generation completed!', 'success');
-                
-                // Get file size from R2 URL
                 getFileSizeFromUrl(currentDownloadUrl);
                 
             }, 1000);
         }
 
-        // 🆕 Get File Size from R2 URL
         async function getFileSizeFromUrl(url) {
             try {
                 const response = await fetch(url, { method: 'HEAD' });
@@ -1450,7 +1629,6 @@
             }
         }
 
-        // 🆕 Download Audio from R2
         window.downloadAudioFromR2 = async function() {
             if (!currentDownloadUrl) {
                 showToast('Download URL not available!', 'error');
@@ -1460,13 +1638,11 @@
             try {
                 showToast('Starting download...', 'success');
                 
-                // Create download link
                 const link = document.createElement('a');
                 link.href = currentDownloadUrl;
                 link.download = `${uploadedFile.name.replace('.txt', '')}_${selectedVoice}.wav`;
                 link.target = '_blank';
                 
-                // Trigger download
                 document.body.appendChild(link);
                 link.click();
                 document.body.removeChild(link);
@@ -1479,7 +1655,6 @@
             }
         }
 
-        // 🆕 Preview Audio
         window.previewAudio = function() {
             if (!currentDownloadUrl) {
                 showToast('Audio not available for preview!', 'error');
@@ -1493,7 +1668,6 @@
             modal.style.display = 'flex';
         }
 
-        // 🆕 Close Preview
         window.closePreview = function() {
             const modal = document.getElementById('audioPreviewModal');
             const player = document.getElementById('previewAudioPlayer');
@@ -1503,35 +1677,29 @@
             modal.style.display = 'none';
         }
 
-        // Show Error
         function showError(error) {
             document.getElementById('processingSection').classList.remove('show');
             resetToGenerateSection();
             showToast(`Processing failed: ${error}`, 'error');
         }
 
-        // Reset to Generate Section
         function resetToGenerateSection() {
             document.getElementById('generateSection').style.display = 'block';
             document.getElementById('processingSection').classList.remove('show');
             document.getElementById('downloadSection').classList.remove('show');
         }
 
-        // Reset Form
         window.resetForm = function() {
-            // Stop job monitoring
             if (jobListener) {
                 jobListener();
                 jobListener = null;
             }
             
-            // Reset variables
             selectedVoice = null;
             uploadedFile = null;
             currentJobId = null;
             currentDownloadUrl = null;
             
-            // Reset UI
             resetToGenerateSection();
             
             document.querySelectorAll('.audio-card').forEach(card => {
@@ -1546,13 +1714,11 @@
             showToast('Ready for new audio generation!');
         }
 
-        // User Menu
         window.toggleUserMenu = function() {
             const dropdown = document.getElementById('userDropdown');
             dropdown.classList.toggle('show');
         }
 
-        // Logout
         window.logout = async function() {
             try {
                 await signOut(auth);
@@ -1561,6 +1727,10 @@
                 localStorage.removeItem('userEmail');
                 localStorage.removeItem('userId');
                 localStorage.removeItem('userName');
+                
+                if (countdownInterval) {
+                    clearInterval(countdownInterval);
+                }
                 
                 showToast('Logged out successfully!');
                 window.location.href = 'login.html';
@@ -1571,7 +1741,6 @@
             }
         }
 
-        // Toast
         function showToast(message, type = 'success') {
             const toast = document.getElementById('toast');
             toast.textContent = message;
@@ -1582,19 +1751,16 @@
             }, 3000);
         }
 
-        // Close dropdown when clicking outside
         window.addEventListener('click', (e) => {
             if (!e.target.closest('.user-menu')) {
                 document.getElementById('userDropdown').classList.remove('show');
             }
             
-            // Close preview modal when clicking outside
             if (e.target.id === 'audioPreviewModal') {
                 closePreview();
             }
         });
 
-        // Make functions available globally
         window.checkGenerateButton = checkGenerateButton;
     </script>
 </body>
