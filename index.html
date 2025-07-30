@@ -1313,9 +1313,16 @@
         const db = getFirestore(app);
         const functions = getFunctions(app);
 
-        // ✅ Firebase Functions - Multi-User Support
+        // ✅ UPDATED: Firebase Functions - New Endpoints (All Working Functions)
+        const API_BASE_URL = 'https://us-central1-bluefm-tts.cloudfunctions.net';
+        
+        // User Management Functions
         const createUserAccount = httpsCallable(functions, 'createUserAccount');
         const checkUserStatus = httpsCallable(functions, 'checkUserStatus');
+        const getUserAudioFiles = httpsCallable(functions, 'getUserAudioFiles');
+        const getAudioUrl = httpsCallable(functions, 'getAudioUrl');
+        const getUserAudioHistory = httpsCallable(functions, 'getUserAudioHistory');
+        const testFunction = httpsCallable(functions, 'testFunction');
 
         // Global variables
         let selectedVoice = null;
@@ -1389,19 +1396,20 @@
             }
         });
 
-        // ✅ NEW: Check user status and setup interface
+        // ✅ UPDATED: Check user status and setup interface - V2 Functions
         async function checkUserStatusAndSetup(user) {
             try {
                 updateConnectionStatus('connecting', 'Checking account...');
                 
-                // Check if user exists and is approved
-                const result = await checkUserStatus();
+                // ✅ Call V2 Function: checkUserStatus
+                const result = await checkUserStatus({ userId: user.uid });
                 const status = result.data;
+                
+                console.log('📊 User Status:', status);
                 
                 if (!status.exists) {
                     // First time user - create account
-                    await createUserAccount();
-                    showWaitingMessage();
+                    await createUserAccountFlow(user);
                     return;
                 }
                 
@@ -1429,6 +1437,32 @@
                 console.error('❌ User status check error:', error);
                 updateConnectionStatus('disconnected', 'Setup error');
                 showToast('Error checking account status', 'error');
+            }
+        }
+
+        // ✅ NEW: Create user account flow - V2 Functions
+        async function createUserAccountFlow(user) {
+            try {
+                updateConnectionStatus('connecting', 'Creating account...');
+                
+                // ✅ Call V2 Function: createUserAccount
+                const result = await createUserAccount({ 
+                    email: user.email, 
+                    uid: user.uid 
+                });
+                
+                console.log('✅ Account creation result:', result.data);
+                
+                if (result.data.success) {
+                    showWaitingMessage();
+                } else {
+                    showToast(result.data.message || 'Account creation failed', 'error');
+                }
+                
+            } catch (error) {
+                console.error('❌ Account creation error:', error);
+                showToast('Error creating account', 'error');
+                updateConnectionStatus('disconnected', 'Account creation failed');
             }
         }
 
@@ -1753,14 +1787,14 @@
             }
         }
 
-        // ✅ UPDATED: Enhanced Check for Active Jobs - Multi-User Support
+        // ✅ UPDATED: Enhanced Check for Active Jobs - Multi-User Support (V2 Function compatible)
         async function checkActiveJobs() {
             if (!currentUser) return;
             
             try {
                 updateConnectionStatus('connecting', 'Checking jobs...');
                 
-                // ✅ Check for jobs for current user
+                // ✅ Check for jobs for current user using Firestore query
                 const q = query(
                     collection(db, "tts_jobs"),
                     where("userId", "==", currentUser.uid), // ✅ Use actual user ID
@@ -1913,7 +1947,7 @@
             }
         }
 
-        // ✅ UPDATED: Enhanced Generate Audio - Multi-User Support
+        // ✅ UPDATED: Enhanced Generate Audio - Multi-User Support (V2 Compatible)
         window.generateAudio = async function() {
             if (!selectedVoice || !uploadedFile) {
                 showToast('Please select a voice and upload a file!', 'error');
@@ -1938,9 +1972,9 @@
                 updateStatus('Uploading files...', 1);
                 updateProgress(20);
                 
-                // Upload text file with metadata
+                // ✅ Upload text file with metadata (triggers processTTSRequest function)
                 const textFileName = `${jobId}-${uploadedFile.name}`;
-                const textRef = ref(storage, `tts-requests/${userId}/${textFileName}`); // ✅ User-specific path
+                const textRef = ref(storage, `tts-requests/${textFileName}`); // ✅ Storage trigger will process this
                 
                 // Upload with reference voice metadata
                 const metadata = {
@@ -1956,6 +1990,7 @@
                 
                 await uploadBytes(textRef, uploadedFile, metadata);
                 console.log('✅ Text file uploaded for user:', userId);
+                console.log('✅ This will trigger processTTSRequest function automatically');
                 
                 updateStatus('Sending to processing server...', 2);
                 updateProgress(40);
@@ -1982,7 +2017,7 @@
             }
         }
 
-        // Real-time Job Monitoring
+        // ✅ UPDATED: Real-time Job Monitoring (Compatible with V2 Functions)
         function startJobMonitoring(jobId) {
             if (jobListener) {
                 jobListener(); // Unsubscribe from previous listener
@@ -2110,7 +2145,7 @@
             if (downloadSection) downloadSection.classList.remove('show');
         }
 
-        // Download Audio
+        // ✅ UPDATED: Download Audio (R2 Public URL)
         window.downloadAudioFromR2 = function() {
             if (currentDownloadUrl) {
                 const link = document.createElement('a');
@@ -2212,8 +2247,29 @@
             }, 3000);
         }
 
+        // ✅ NEW: Test function call for debugging
+        async function testApiConnection() {
+            try {
+                const result = await testFunction();
+                console.log('✅ API Test Result:', result.data);
+                updateConnectionStatus('connected', 'API Connected');
+                return true;
+            } catch (error) {
+                console.error('❌ API Test Failed:', error);
+                updateConnectionStatus('disconnected', 'API Error');
+                return false;
+            }
+        }
+
         // Initialize particles on load
         initParticles();
+
+        // Test API connection on load
+        setTimeout(() => {
+            if (currentUser) {
+                testApiConnection();
+            }
+        }, 2000);
 
         // Close modals and dropdowns when clicking outside
         document.addEventListener('click', (e) => {
