@@ -1,2231 +1,1879 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Blue FM TTS - Text to Speech Platform</title>
-    
-    <!-- Google Fonts -->
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
-    
-    <!-- Font Awesome -->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    
-    <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
+<!DOCTYPE html><html lang="en"> <head> <meta charset="UTF-8"> <meta name="viewport" content="width=device-width, initial-scale=1.0"> <title>Blue FM TTS - Text to Speech Platform</title>
+text
 
-        :root {
-            --primary: #2563eb;
-            --secondary: #3b82f6;
-            --accent: #60a5fa;
-            --gold: #fbbf24;
-            --success: #10b981;
-            --warning: #f59e0b;
-            --error: #ef4444;
-            --glass-bg: rgba(255, 255, 255, 0.1);
-            --glass-border: rgba(255, 255, 255, 0.2);
-            --text-primary: #ffffff;
-            --text-secondary: #e0e0ff;
-            --shadow: rgba(37, 99, 235, 0.3);
-            --gradient-primary: linear-gradient(135deg, #1e3a8a 0%, #2563eb 50%, #3b82f6 100%);
-        }
+<!-- Google Fonts -->
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
 
-        body {
-            font-family: 'Poppins', sans-serif;
-            min-height: 100vh;
-            background: var(--gradient-primary);
-            color: var(--text-primary);
-            overflow-x: hidden;
-            position: relative;
-        }
+<!-- Font Awesome -->
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 
-        /* 🆕 Enhanced Background Animation */
-        .bg-animation {
-            position: fixed;
-            width: 100%;
-            height: 100%;
-            top: 0;
-            left: 0;
-            z-index: -1;
-            overflow: hidden;
-        }
+<style>
+    * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+    }
 
-        .sound-wave {
-            position: absolute;
-            width: 200%;
-            height: 100px;
-            bottom: 0;
-            background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1440 320"><path fill="%2360a5fa" fill-opacity="0.3" d="M0,160L48,170.7C96,181,192,203,288,197.3C384,192,480,160,576,165.3C672,171,768,213,864,213.3C960,213,1056,171,1152,160C1248,149,1344,171,1392,181.3L1440,192L1440,320L1392,320C1344,320,1248,320,1152,320C1056,320,960,320,864,320C768,320,672,320,576,320C480,320,384,320,288,320C192,320,96,320,48,320L0,320Z"></path></svg>');
-            animation: wave 20s linear infinite;
-        }
+    :root {
+        --primary: #2563eb;
+        --secondary: #3b82f6;
+        --accent: #60a5fa;
+        --gold: #fbbf24;
+        --success: #10b981;
+        --warning: #f59e0b;
+        --error: #ef4444;
+        --glass-bg: rgba(255, 255, 255, 0.1);
+        --glass-border: rgba(255, 255, 255, 0.2);
+        --text-primary: #ffffff;
+        --text-secondary: #e0e0ff;
+        --shadow: rgba(37, 99, 235, 0.3);
+        --gradient-primary: linear-gradient(135deg, #1e3a8a 0%, #2563eb 50%, #3b82f6 100%);
+    }
 
-        .floating-particles {
-            position: absolute;
-            width: 100%;
-            height: 100%;
-            top: 0;
-            left: 0;
-        }
+    body {
+        font-family: 'Poppins', sans-serif;
+        min-height: 100vh;
+        background: var(--gradient-primary);
+        color: var(--text-primary);
+        overflow-x: hidden;
+        position: relative;
+    }
 
-        .particle {
-            position: absolute;
-            background: rgba(96, 165, 250, 0.1);
-            border-radius: 50%;
-            animation: float 6s ease-in-out infinite;
-        }
+    /* 🆕 Enhanced Background Animation */
+    .bg-animation {
+        position: fixed;
+        width: 100%;
+        height: 100%;
+        top: 0;
+        left: 0;
+        z-index: -1;
+        overflow: hidden;
+    }
 
-        @keyframes wave {
-            0% { transform: translateX(0); }
-            100% { transform: translateX(-50%); }
-        }
+    .sound-wave {
+        position: absolute;
+        width: 200%;
+        height: 100px;
+        bottom: 0;
+        background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1440 320"><path fill="%2360a5fa" fill-opacity="0.3" d="M0,160L48,170.7C96,181,192,203,288,197.3C384,192,480,160,576,165.3C672,171,768,213,864,213.3C960,213,1056,171,1152,160C1248,149,1344,171,1392,181.3L1440,192L1440,320L1392,320C1344,320,1248,320,1152,320C1056,320,960,320,864,320C768,320,672,320,576,320C480,320,384,320,288,320C192,320,96,320,48,320L0,320Z"></path></svg>');
+        animation: wave 20s linear infinite;
+    }
 
-        @keyframes float {
-            0%, 100% { transform: translateY(0px) rotate(0deg); opacity: 0.8; }
-            50% { transform: translateY(-20px) rotate(180deg); opacity: 0.4; }
-        }
+    .floating-particles {
+        position: absolute;
+        width: 100%;
+        height: 100%;
+        top: 0;
+        left: 0;
+    }
 
-        /* 🆕 Connection Status Indicator */
-        .connection-status {
-            position: fixed;
-            top: 70px;
-            right: 20px;
-            z-index: 101;
-            padding: 0.5rem 1rem;
-            border-radius: 20px;
-            font-size: 0.8rem;
-            display: flex;
-            align-items: center;
-            gap: 0.5rem;
-            backdrop-filter: blur(10px);
-            transition: all 0.3s ease;
-        }
+    .particle {
+        position: absolute;
+        background: rgba(96, 165, 250, 0.1);
+        border-radius: 50%;
+        animation: float 6s ease-in-out infinite;
+    }
 
-        .connection-status.connected {
-            background: rgba(16, 185, 129, 0.2);
-            border: 1px solid var(--success);
-            color: var(--success);
-        }
+    @keyframes wave {
+        0% { transform: translateX(0); }
+        100% { transform: translateX(-50%); }
+    }
 
-        .connection-status.disconnected {
-            background: rgba(239, 68, 68, 0.2);
-            border: 1px solid var(--error);
-            color: var(--error);
-        }
+    @keyframes float {
+        0%, 100% { transform: translateY(0px) rotate(0deg); opacity: 0.8; }
+        50% { transform: translateY(-20px) rotate(180deg); opacity: 0.4; }
+    }
 
-        .connection-status.connecting {
-            background: rgba(245, 158, 11, 0.2);
-            border: 1px solid var(--warning);
-            color: var(--warning);
-        }
+    /* 🆕 Connection Status Indicator */
+    .connection-status {
+        position: fixed;
+        top: 70px;
+        right: 20px;
+        z-index: 101;
+        padding: 0.5rem 1rem;
+        border-radius: 20px;
+        font-size: 0.8rem;
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        backdrop-filter: blur(10px);
+        transition: all 0.3s ease;
+    }
 
-        .connection-status.waiting {
-            background: rgba(59, 130, 246, 0.2);
-            border: 1px solid var(--primary);
-            color: var(--primary);
-        }
+    .connection-status.connected {
+        background: rgba(16, 185, 129, 0.2);
+        border: 1px solid var(--success);
+        color: var(--success);
+    }
 
-        .status-dot {
-            width: 8px;
-            height: 8px;
-            border-radius: 50%;
-            animation: pulse 2s infinite;
-        }
+    .connection-status.disconnected {
+        background: rgba(239, 68, 68, 0.2);
+        border: 1px solid var(--error);
+        color: var(--error);
+    }
 
-        .connected .status-dot {
-            background: var(--success);
-        }
+    .connection-status.connecting {
+        background: rgba(245, 158, 11, 0.2);
+        border: 1px solid var(--warning);
+        color: var(--warning);
+    }
 
-        .disconnected .status-dot {
-            background: var(--error);
-        }
+    .status-dot {
+        width: 8px;
+        height: 8px;
+        border-radius: 50%;
+        animation: pulse 2s infinite;
+    }
 
-        .connecting .status-dot, .waiting .status-dot {
-            background: var(--warning);
-        }
+    .connected .status-dot {
+        background: var(--success);
+    }
 
-        @keyframes pulse {
-            0% { opacity: 1; transform: scale(1); }
-            50% { opacity: 0.5; transform: scale(1.2); }
-            100% { opacity: 1; transform: scale(1); }
-        }
+    .disconnected .status-dot {
+        background: var(--error);
+    }
 
-        /* Navigation */
-        nav {
-            position: fixed;
-            top: 0;
-            width: 100%;
-            z-index: 100;
-            background: var(--glass-bg);
-            backdrop-filter: blur(10px);
-            padding: 1rem 2rem;
-            border-bottom: 1px solid var(--glass-border);
-        }
+    .connecting .status-dot {
+        background: var(--warning);
+    }
 
-        .nav-container {
-            max-width: 1200px;
-            margin: 0 auto;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
+    @keyframes pulse {
+        0% { opacity: 1; transform: scale(1); }
+        50% { opacity: 0.5; transform: scale(1.2); }
+        100% { opacity: 1; transform: scale(1); }
+    }
 
-        .logo {
-            font-size: 1.75rem;
-            font-weight: 700;
-            color: var(--text-primary);
-            text-decoration: none;
-            display: flex;
-            align-items: center;
-            gap: 0.5rem;
-            transition: all 0.3s ease;
-        }
+    /* Navigation */
+    nav {
+        position: fixed;
+        top: 0;
+        width: 100%;
+        z-index: 100;
+        background: var(--glass-bg);
+        backdrop-filter: blur(10px);
+        padding: 1rem 2rem;
+        border-bottom: 1px solid var(--glass-border);
+    }
 
-        .logo:hover {
-            transform: scale(1.05);
-        }
+    .nav-container {
+        max-width: 1200px;
+        margin: 0 auto;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
 
-        .logo i {
-            color: var(--accent);
-            animation: glow 2s ease-in-out infinite alternate;
-        }
+    .logo {
+        font-size: 1.75rem;
+        font-weight: 700;
+        color: var(--text-primary);
+        text-decoration: none;
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        transition: all 0.3s ease;
+    }
 
-        @keyframes glow {
-            from { text-shadow: 0 0 10px var(--accent); }
-            to { text-shadow: 0 0 20px var(--accent), 0 0 30px var(--accent); }
+    .logo:hover {
+        transform: scale(1.05);
+    }
+
+    .logo i {
+        color: var(--accent);
+        animation: glow 2s ease-in-out infinite alternate;
+    }
+
+    @keyframes glow {
+        from { text-shadow: 0 0 10px var(--accent); }
+        to { text-shadow: 0 0 20px var(--accent), 0 0 30px var(--accent); }
+    }
+
+    .nav-links {
+        display: flex;
+        align-items: center;
+        gap: 1.5rem;
+    }
+
+    .nav-link {
+        color: var(--text-primary);
+        text-decoration: none;
+        font-weight: 500;
+        transition: all 0.3s ease;
+        position: relative;
+        padding: 0.5rem 1rem;
+        border-radius: 25px;
+    }
+
+    .nav-link:hover {
+        color: var(--accent);
+        background: rgba(255, 255, 255, 0.1);
+        transform: translateY(-2px);
+    }
+
+    .nav-link.premium {
+        background: linear-gradient(45deg, var(--gold), #f59e0b);
+        color: #1f2937;
+        font-weight: 600;
+    }
+
+    .nav-link.premium:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 5px 20px rgba(251, 191, 36, 0.4);
+    }
+
+    .nav-link.audio-link {
+        background: linear-gradient(45deg, var(--success), #059669);
+        color: white;
+        font-weight: 600;
+    }
+
+    .nav-link.audio-link:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 5px 20px rgba(16, 185, 129, 0.4);
+    }
+
+    /* User Menu */
+    .user-menu {
+        position: relative;
+    }
+
+    .user-btn {
+        background: var(--glass-bg);
+        border: 1px solid var(--glass-border);
+        padding: 0.5rem 1rem;
+        border-radius: 25px;
+        color: var(--text-primary);
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        transition: all 0.3s ease;
+    }
+
+    .user-btn:hover {
+        background: rgba(255, 255, 255, 0.2);
+        transform: translateY(-2px);
+    }
+
+    .user-dropdown {
+        position: absolute;
+        top: 100%;
+        right: 0;
+        margin-top: 0.5rem;
+        background: var(--glass-bg);
+        backdrop-filter: blur(10px);
+        border: 1px solid var(--glass-border);
+        border-radius: 10px;
+        padding: 0.5rem;
+        min-width: 200px;
+        display: none;
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+    }
+
+    .user-dropdown.show {
+        display: block;
+        animation: fadeIn 0.3s ease-out;
+    }
+
+    @keyframes fadeIn {
+        from { opacity: 0; transform: translateY(-10px); }
+        to { opacity: 1; transform: translateY(0); }
+    }
+
+    /* Glass Container */
+    .glass-container {
+        background: var(--glass-bg);
+        backdrop-filter: blur(10px);
+        border: 1px solid var(--glass-border);
+        border-radius: 20px;
+        padding: 2rem;
+        box-shadow: 0 8px 32px var(--shadow);
+        transition: all 0.3s ease;
+    }
+
+    .glass-container:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 12px 40px var(--shadow);
+    }
+
+    /* Main Content */
+    .main-content {
+        max-width: 1200px;
+        margin: 0 auto;
+        padding: 6rem 1rem 2rem;
+    }
+
+    /* Hero Section */
+    .hero-section {
+        text-align: center;
+        margin-bottom: 3rem;
+    }
+
+    .hero-title {
+        font-size: 3rem;
+        font-weight: 700;
+        margin-bottom: 1rem;
+        background: linear-gradient(45deg, var(--text-primary), var(--accent));
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+        animation: textGlow 3s ease-in-out infinite alternate;
+    }
+
+    @keyframes textGlow {
+        from { filter: drop-shadow(0 0 10px var(--accent)); }
+        to { filter: drop-shadow(0 0 20px var(--accent)); }
+    }
+
+    .hero-subtitle {
+        font-size: 1.25rem;
+        color: var(--text-secondary);
+        margin-bottom: 2rem;
+        animation: fadeInUp 1s ease-out 0.5s both;
+    }
+
+    @keyframes fadeInUp {
+        from { opacity: 0; transform: translateY(30px); }
+        to { opacity: 1; transform: translateY(0); }
+    }
+
+    /* 🆕 Enhanced Stats */
+    .stats-container {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+        gap: 1rem;
+        margin-bottom: 3rem;
+    }
+
+    .stat-card {
+        background: rgba(255, 255, 255, 0.05);
+        padding: 1.5rem;
+        border-radius: 15px;
+        text-align: center;
+        border: 1px solid var(--glass-border);
+        transition: all 0.3s ease;
+        position: relative;
+        overflow: hidden;
+    }
+
+    .stat-card::before {
+        content: '';
+        position: absolute;
+        top: -50%;
+        left: -50%;
+        width: 200%;
+        height: 200%;
+        background: linear-gradient(45deg, transparent, rgba(255, 255, 255, 0.1), transparent);
+        transform: rotate(45deg);
+        transition: transform 0.6s;
+    }
+
+    .stat-card:hover::before {
+        transform: rotate(45deg) translate(50px, 50px);
+    }
+
+    .stat-card:hover {
+        transform: translateY(-5px);
+        border-color: var(--accent);
+    }
+
+    .stat-number {
+        font-size: 2rem;
+        font-weight: 700;
+        color: var(--accent);
+        margin-bottom: 0.5rem;
+    }
+
+    .stat-label {
+        font-size: 0.9rem;
+        color: var(--text-secondary);
+    }
+
+    /* Audio Cards */
+    .section-title {
+        font-size: 2rem;
+        margin-bottom: 2rem;
+        text-align: center;
+    }
+
+    .audio-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+        gap: 2rem;
+        margin-bottom: 3rem;
+    }
+
+    .audio-card {
+        cursor: pointer;
+        transition: all 0.3s ease;
+        position: relative;
+        overflow: hidden;
+    }
+
+    .audio-card::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: -100%;
+        width: 100%;
+        height: 100%;
+        background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.1), transparent);
+        transition: left 0.5s;
+    }
+
+    .audio-card:hover::before {
+        left: 100%;
+    }
+
+    .audio-card:hover {
+        transform: translateY(-8px);
+    }
+
+    .audio-card.selected {
+        box-shadow: 0 0 30px var(--accent);
+        border-color: var(--accent);
+        transform: translateY(-5px);
+    }
+
+    .audio-card-content {
+        padding: 1.5rem;
+        position: relative;
+        z-index: 1;
+    }
+
+    .voice-avatar {
+        width: 80px;
+        height: 80px;
+        border-radius: 50%;
+        margin: 0 auto 1rem;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 2rem;
+        background: linear-gradient(45deg, var(--primary), var(--secondary));
+        animation: avatarGlow 3s ease-in-out infinite alternate;
+    }
+
+    @keyframes avatarGlow {
+        from { box-shadow: 0 0 20px rgba(96, 165, 250, 0.3); }
+        to { box-shadow: 0 0 30px rgba(96, 165, 250, 0.6); }
+    }
+
+    .voice-name {
+        font-size: 1.25rem;
+        font-weight: 600;
+        margin-bottom: 0.5rem;
+    }
+
+    .voice-description {
+        font-size: 0.9rem;
+        color: var(--text-secondary);
+        margin-bottom: 1rem;
+    }
+
+    .audio-controls {
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+    }
+
+    .play-btn {
+        background: var(--primary);
+        border: none;
+        color: white;
+        width: 40px;
+        height: 40px;
+        border-radius: 50%;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        transition: all 0.3s ease;
+    }
+
+    .play-btn:hover {
+        background: var(--secondary);
+        transform: scale(1.1);
+    }
+
+    .audio-wave {
+        flex: 1;
+        height: 40px;
+        background: rgba(255, 255, 255, 0.1);
+        border-radius: 20px;
+        position: relative;
+        overflow: hidden;
+    }
+
+    .audio-progress {
+        height: 100%;
+        background: linear-gradient(90deg, var(--primary), var(--secondary));
+        width: 0%;
+        border-radius: 20px;
+        transition: width 0.3s ease;
+    }
+
+    .radio-select {
+        position: absolute;
+        top: 1rem;
+        right: 1rem;
+        width: 24px;
+        height: 24px;
+        border: 2px solid var(--glass-border);
+        border-radius: 50%;
+        background: transparent;
+        cursor: pointer;
+        transition: all 0.3s ease;
+    }
+
+    .audio-card.selected .radio-select {
+        background: var(--accent);
+        border-color: var(--accent);
+        box-shadow: 0 0 15px var(--accent);
+    }
+
+    .audio-card.selected .radio-select::after {
+        content: '✓';
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        color: white;
+        font-size: 14px;
+        font-weight: bold;
+    }
+
+    /* Upload Section */
+    .upload-section {
+        margin-bottom: 3rem;
+    }
+
+    .upload-area {
+        border: 2px dashed var(--glass-border);
+        border-radius: 20px;
+        padding: 3rem;
+        text-align: center;
+        transition: all 0.3s ease;
+        position: relative;
+        background: rgba(255, 255, 255, 0.02);
+    }
+
+    .upload-area:hover {
+        border-color: var(--accent);
+        background: rgba(96, 165, 250, 0.1);
+        transform: translateY(-2px);
+    }
+
+    .upload-area.drag-over {
+        border-color: var(--accent);
+        background: rgba(96, 165, 250, 0.2);
+        transform: scale(1.02);
+    }
+
+    .upload-icon {
+        font-size: 3rem;
+        color: var(--accent);
+        margin-bottom: 1rem;
+        animation: bounce 2s ease-in-out infinite;
+    }
+
+    @keyframes bounce {
+        0%, 20%, 50%, 80%, 100% { transform: translateY(0); }
+        40% { transform: translateY(-10px); }
+        60% { transform: translateY(-5px); }
+    }
+
+    .btn {
+        padding: 0.75rem 2rem;
+        border: none;
+        border-radius: 50px;
+        font-weight: 600;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+        text-decoration: none;
+        position: relative;
+        overflow: hidden;
+    }
+
+    .btn::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: -100%;
+        width: 100%;
+        height: 100%;
+        background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+        transition: left 0.5s;
+    }
+
+    .btn:hover::before {
+        left: 100%;
+    }
+
+    .btn-primary {
+        background: linear-gradient(45deg, var(--primary), var(--secondary));
+        color: white;
+    }
+
+    .btn-primary:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 10px 30px var(--shadow);
+    }
+
+    .btn-primary:disabled {
+        opacity: 0.5;
+        cursor: not-allowed;
+        transform: none;
+    }
+
+    .btn-success {
+        background: linear-gradient(45deg, var(--success), #059669);
+        color: white;
+    }
+
+    .btn-success:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 10px 30px rgba(16, 185, 129, 0.4);
+    }
+
+    /* 🆕 Enhanced File Info */
+    .file-info {
+        margin-top: 1rem;
+        padding: 1rem;
+        background: rgba(16, 185, 129, 0.1);
+        border-radius: 10px;
+        border: 1px solid var(--success);
+        display: none;
+        animation: slideDown 0.3s ease-out;
+    }
+
+    .file-info.show {
+        display: block;
+    }
+
+    @keyframes slideDown {
+        from { opacity: 0; transform: translateY(-10px); }
+        to { opacity: 1; transform: translateY(0); }
+    }
+
+    /* Generate Section */
+    .generate-section {
+        text-align: center;
+        padding: 2rem;
+        background: linear-gradient(45deg, rgba(37, 99, 235, 0.1), rgba(96, 165, 250, 0.1));
+        border-radius: 20px;
+        margin-bottom: 2rem;
+        border: 1px solid var(--glass-border);
+    }
+
+    .generate-btn {
+        font-size: 1.25rem;
+        padding: 1rem 3rem;
+        position: relative;
+    }
+
+    .generate-btn:disabled {
+        background: linear-gradient(45deg, #666, #888);
+    }
+
+    /* 🆕 Enhanced Processing Section */
+    .processing-section {
+        display: none;
+        text-align: center;
+        padding: 2rem;
+        background: linear-gradient(45deg, rgba(245, 158, 11, 0.1), rgba(251, 191, 36, 0.1));
+        border-radius: 20px;
+        margin-bottom: 2rem;
+        border: 1px solid var(--warning);
+        position: relative;
+        overflow: hidden;
+    }
+
+    .processing-section::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: -100%;
+        width: 100%;
+        height: 100%;
+        background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.1), transparent);
+        animation: shimmer 2s infinite;
+    }
+
+    @keyframes shimmer {
+        0% { left: -100%; }
+        100% { left: 100%; }
+    }
+
+    .processing-section.show {
+        display: block;
+        animation: slideDown 0.5s ease-out;
+    }
+
+    .processing-icon {
+        font-size: 3rem;
+        color: var(--warning);
+        margin-bottom: 1rem;
+        animation: spin 2s linear infinite;
+    }
+
+    @keyframes spin {
+        0% { transform: rotate(0deg); }
+        100% { transform: rotate(360deg); }
+    }
+
+    .processing-title {
+        font-size: 1.5rem;
+        color: var(--warning);
+        margin-bottom: 0.5rem;
+    }
+
+    .processing-message {
+        color: var(--text-secondary);
+        font-size: 1rem;
+        margin-bottom: 1rem;
+    }
+
+    .estimated-time {
+        background: rgba(245, 158, 11, 0.2);
+        border: 1px solid var(--warning);
+        padding: 1rem;
+        border-radius: 10px;
+        margin-top: 1rem;
+    }
+
+    /* 🆕 Enhanced Status Update Section */
+    .status-update {
+        background: rgba(59, 130, 246, 0.1);
+        border: 1px solid var(--secondary);
+        padding: 1rem;
+        border-radius: 10px;
+        margin-top: 1rem;
+        text-align: left;
+    }
+
+    .status-steps {
+        list-style: none;
+        padding: 0;
+    }
+
+    .status-step {
+        padding: 0.5rem 0;
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        transition: all 0.3s ease;
+    }
+
+    .status-step.completed {
+        color: var(--success);
+        transform: translateX(5px);
+    }
+
+    .status-step.current {
+        color: var(--warning);
+        font-weight: 600;
+        transform: translateX(10px);
+    }
+
+    .status-step.pending {
+        color: var(--text-secondary);
+        opacity: 0.7;
+    }
+
+    /* 🆕 Enhanced Download Section */
+    .download-section {
+        display: none;
+        text-align: center;
+        padding: 2rem;
+        background: linear-gradient(45deg, rgba(16, 185, 129, 0.1), rgba(5, 150, 105, 0.1));
+        border-radius: 20px;
+        margin-bottom: 2rem;
+        border: 1px solid var(--success);
+        position: relative;
+        overflow: hidden;
+    }
+
+    .download-section::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: -100%;
+        width: 100%;
+        height: 100%;
+        background: linear-gradient(90deg, transparent, rgba(16, 185, 129, 0.2), transparent);
+        animation: successShimmer 3s infinite;
+    }
+
+    @keyframes successShimmer {
+        0% { left: -100%; }
+        100% { left: 100%; }
+    }
+
+    .download-section.show {
+        display: block;
+        animation: slideDown 0.5s ease-out;
+    }
+
+    .download-icon {
+        font-size: 3rem;
+        color: var(--success);
+        margin-bottom: 1rem;
+        animation: bounce 2s infinite;
+    }
+
+    .download-title {
+        font-size: 1.5rem;
+        color: var(--success);
+        margin-bottom: 0.5rem;
+    }
+
+    .download-message {
+        color: var(--text-secondary);
+        margin-bottom: 2rem;
+    }
+
+    .download-options {
+        display: flex;
+        justify-content: center;
+        gap: 1rem;
+        margin-bottom: 1rem;
+        flex-wrap: wrap;
+    }
+
+    .download-btn {
+        padding: 0.75rem 1.5rem;
+        font-size: 1rem;
+    }
+
+    .audio-details {
+        background: rgba(16, 185, 129, 0.1);
+        border: 1px solid var(--success);
+        padding: 1rem;
+        border-radius: 10px;
+        margin-top: 1rem;
+        text-align: left;
+    }
+
+    .detail-row {
+        display: flex;
+        justify-content: space-between;
+        margin-bottom: 0.5rem;
+        padding: 0.25rem 0;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    }
+
+    .detail-row:last-child {
+        border-bottom: none;
+    }
+
+    .detail-label {
+        color: var(--text-secondary);
+    }
+
+    .detail-value {
+        color: var(--text-primary);
+        font-weight: 600;
+    }
+
+    /* Character Counter */
+    .character-info {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-top: 1rem;
+        padding: 1rem;
+        background: rgba(255, 255, 255, 0.05);
+        border-radius: 10px;
+        border: 1px solid var(--glass-border);
+    }
+
+    .char-count {
+        font-size: 0.9rem;
+        color: var(--text-secondary);
+    }
+
+    .char-limit {
+        font-size: 0.9rem;
+        color: var(--accent);
+    }
+
+    /* 🆕 Enhanced Toast */
+    .toast {
+        position: fixed;
+        bottom: 2rem;
+        right: 2rem;
+        background: var(--glass-bg);
+        backdrop-filter: blur(10px);
+        padding: 1rem 2rem;
+        border-radius: 10px;
+        border: 1px solid var(--glass-border);
+        display: none;
+        animation: slideUp 0.3s ease-out;
+        z-index: 1000;
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+        max-width: 300px;
+    }
+
+    @keyframes slideUp {
+        from { transform: translateY(100px); opacity: 0; }
+        to { transform: translateY(0); opacity: 1; }
+    }
+
+    .toast.show {
+        display: block;
+    }
+
+    .toast.success {
+        border-color: var(--success);
+        color: var(--success);
+    }
+
+    .toast.error {
+        border-color: var(--error);
+        color: var(--error);
+    }
+
+    .toast.warning {
+        border-color: var(--warning);
+        color: var(--warning);
+    }
+
+    /* 🆕 Enhanced Audio Preview Modal */
+    .audio-preview-modal {
+        display: none;
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: rgba(0, 0, 0, 0.8);
+        z-index: 2000;
+        backdrop-filter: blur(5px);
+        animation: fadeIn 0.3s ease-out;
+    }
+
+    .audio-preview-modal.show {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+
+    .modal-content {
+        background: var(--glass-bg);
+        backdrop-filter: blur(10px);
+        padding: 2rem;
+        border-radius: 20px;
+        max-width: 500px;
+        width: 90%;
+        border: 1px solid var(--glass-border);
+        box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
+        animation: modalSlideIn 0.3s ease-out;
+    }
+
+    @keyframes modalSlideIn {
+        from { opacity: 0; transform: scale(0.8); }
+        to { opacity: 1; transform: scale(1); }
+    }
+
+    .modal-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 1rem;
+    }
+
+    .modal-close {
+        background: none;
+        border: none;
+        color: var(--text-primary);
+        font-size: 1.5rem;
+        cursor: pointer;
+        padding: 0.5rem;
+        border-radius: 50%;
+        transition: all 0.3s ease;
+    }
+
+    .modal-close:hover {
+        background: rgba(255, 255, 255, 0.1);
+        transform: rotate(90deg);
+    }
+
+    .audio-player {
+        width: 100%;
+        margin-bottom: 1rem;
+        border-radius: 10px;
+        overflow: hidden;
+    }
+
+    /* Footer */
+    footer {
+        text-align: center;
+        padding: 2rem;
+        color: var(--text-secondary);
+        border-top: 1px solid var(--glass-border);
+        background: rgba(255, 255, 255, 0.02);
+    }
+
+    /* 🆕 Enhanced Responsive Design */
+    @media (max-width: 1024px) {
+        .hero-title {
+            font-size: 2.5rem;
+        }
+        
+        .main-content {
+            padding: 5rem 1rem 2rem;
+        }
+    }
+
+    @media (max-width: 768px) {
+        .hero-title {
+            font-size: 2rem;
         }
 
         .nav-links {
-            display: flex;
-            align-items: center;
-            gap: 1.5rem;
+            gap: 0.5rem;
         }
 
         .nav-link {
-            color: var(--text-primary);
-            text-decoration: none;
-            font-weight: 500;
-            transition: all 0.3s ease;
-            position: relative;
-            padding: 0.5rem 1rem;
-            border-radius: 25px;
-        }
-
-        .nav-link:hover {
-            color: var(--accent);
-            background: rgba(255, 255, 255, 0.1);
-            transform: translateY(-2px);
-        }
-
-        .nav-link.premium {
-            background: linear-gradient(45deg, var(--gold), #f59e0b);
-            color: #1f2937;
-            font-weight: 600;
-        }
-
-        .nav-link.premium:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 5px 20px rgba(251, 191, 36, 0.4);
-        }
-
-        .nav-link.audio-link {
-            background: linear-gradient(45deg, var(--success), #059669);
-            color: white;
-            font-weight: 600;
-        }
-
-        .nav-link.audio-link:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 5px 20px rgba(16, 185, 129, 0.4);
-        }
-
-        /* User Menu */
-        .user-menu {
-            position: relative;
-        }
-
-        .user-btn {
-            background: var(--glass-bg);
-            border: 1px solid var(--glass-border);
-            padding: 0.5rem 1rem;
-            border-radius: 25px;
-            color: var(--text-primary);
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            gap: 0.5rem;
-            transition: all 0.3s ease;
-        }
-
-        .user-btn:hover {
-            background: rgba(255, 255, 255, 0.2);
-            transform: translateY(-2px);
-        }
-
-        .user-dropdown {
-            position: absolute;
-            top: 100%;
-            right: 0;
-            margin-top: 0.5rem;
-            background: var(--glass-bg);
-            backdrop-filter: blur(10px);
-            border: 1px solid var(--glass-border);
-            border-radius: 10px;
-            padding: 0.5rem;
-            min-width: 200px;
-            display: none;
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
-        }
-
-        .user-dropdown.show {
-            display: block;
-            animation: fadeIn 0.3s ease-out;
-        }
-
-        @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(-10px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
-
-        /* Glass Container */
-        .glass-container {
-            background: var(--glass-bg);
-            backdrop-filter: blur(10px);
-            border: 1px solid var(--glass-border);
-            border-radius: 20px;
-            padding: 2rem;
-            box-shadow: 0 8px 32px var(--shadow);
-            transition: all 0.3s ease;
-        }
-
-        .glass-container:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 12px 40px var(--shadow);
-        }
-
-        /* Main Content */
-        .main-content {
-            max-width: 1200px;
-            margin: 0 auto;
-            padding: 6rem 1rem 2rem;
-        }
-
-        /* Hero Section */
-        .hero-section {
-            text-align: center;
-            margin-bottom: 3rem;
-        }
-
-        .hero-title {
-            font-size: 3rem;
-            font-weight: 700;
-            margin-bottom: 1rem;
-            background: linear-gradient(45deg, var(--text-primary), var(--accent));
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-clip: text;
-            animation: textGlow 3s ease-in-out infinite alternate;
-        }
-
-        @keyframes textGlow {
-            from { filter: drop-shadow(0 0 10px var(--accent)); }
-            to { filter: drop-shadow(0 0 20px var(--accent)); }
-        }
-
-        .hero-subtitle {
-            font-size: 1.25rem;
-            color: var(--text-secondary);
-            margin-bottom: 2rem;
-            animation: fadeInUp 1s ease-out 0.5s both;
-        }
-
-        @keyframes fadeInUp {
-            from { opacity: 0; transform: translateY(30px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
-
-        /* 🆕 Enhanced Stats */
-        .stats-container {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-            gap: 1rem;
-            margin-bottom: 3rem;
-        }
-
-        .stat-card {
-            background: rgba(255, 255, 255, 0.05);
-            padding: 1.5rem;
-            border-radius: 15px;
-            text-align: center;
-            border: 1px solid var(--glass-border);
-            transition: all 0.3s ease;
-            position: relative;
-            overflow: hidden;
-        }
-
-        .stat-card::before {
-            content: '';
-            position: absolute;
-            top: -50%;
-            left: -50%;
-            width: 200%;
-            height: 200%;
-            background: linear-gradient(45deg, transparent, rgba(255, 255, 255, 0.1), transparent);
-            transform: rotate(45deg);
-            transition: transform 0.6s;
-        }
-
-        .stat-card:hover::before {
-            transform: rotate(45deg) translate(50px, 50px);
-        }
-
-        .stat-card:hover {
-            transform: translateY(-5px);
-            border-color: var(--accent);
-        }
-
-        .stat-number {
-            font-size: 2rem;
-            font-weight: 700;
-            color: var(--accent);
-            margin-bottom: 0.5rem;
-        }
-
-        .stat-label {
+            padding: 0.5rem 0.75rem;
             font-size: 0.9rem;
-            color: var(--text-secondary);
-        }
-
-        /* Audio Cards */
-        .section-title {
-            font-size: 2rem;
-            margin-bottom: 2rem;
-            text-align: center;
         }
 
         .audio-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-            gap: 2rem;
-            margin-bottom: 3rem;
+            grid-template-columns: 1fr;
         }
 
-        .audio-card {
-            cursor: pointer;
-            transition: all 0.3s ease;
-            position: relative;
-            overflow: hidden;
-        }
-
-        .audio-card::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: -100%;
-            width: 100%;
-            height: 100%;
-            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.1), transparent);
-            transition: left 0.5s;
-        }
-
-        .audio-card:hover::before {
-            left: 100%;
-        }
-
-        .audio-card:hover {
-            transform: translateY(-8px);
-        }
-
-        .audio-card.selected {
-            box-shadow: 0 0 30px var(--accent);
-            border-color: var(--accent);
-            transform: translateY(-5px);
-        }
-
-        .audio-card-content {
-            padding: 1.5rem;
-            position: relative;
-            z-index: 1;
-        }
-
-        .voice-avatar {
-            width: 80px;
-            height: 80px;
-            border-radius: 50%;
-            margin: 0 auto 1rem;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 2rem;
-            background: linear-gradient(45deg, var(--primary), var(--secondary));
-            animation: avatarGlow 3s ease-in-out infinite alternate;
-        }
-
-        @keyframes avatarGlow {
-            from { box-shadow: 0 0 20px rgba(96, 165, 250, 0.3); }
-            to { box-shadow: 0 0 30px rgba(96, 165, 250, 0.6); }
-        }
-
-        .voice-name {
-            font-size: 1.25rem;
-            font-weight: 600;
-            margin-bottom: 0.5rem;
-        }
-
-        .voice-description {
-            font-size: 0.9rem;
-            color: var(--text-secondary);
-            margin-bottom: 1rem;
-        }
-
-        .audio-controls {
-            display: flex;
-            align-items: center;
-            gap: 1rem;
-        }
-
-        .play-btn {
-            background: var(--primary);
-            border: none;
-            color: white;
-            width: 40px;
-            height: 40px;
-            border-radius: 50%;
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            transition: all 0.3s ease;
-        }
-
-        .play-btn:hover {
-            background: var(--secondary);
-            transform: scale(1.1);
-        }
-
-        .audio-wave {
-            flex: 1;
-            height: 40px;
-            background: rgba(255, 255, 255, 0.1);
-            border-radius: 20px;
-            position: relative;
-            overflow: hidden;
-        }
-
-        .audio-progress {
-            height: 100%;
-            background: linear-gradient(90deg, var(--primary), var(--secondary));
-            width: 0%;
-            border-radius: 20px;
-            transition: width 0.3s ease;
-        }
-
-        .radio-select {
-            position: absolute;
-            top: 1rem;
-            right: 1rem;
-            width: 24px;
-            height: 24px;
-            border: 2px solid var(--glass-border);
-            border-radius: 50%;
-            background: transparent;
-            cursor: pointer;
-            transition: all 0.3s ease;
-        }
-
-        .audio-card.selected .radio-select {
-            background: var(--accent);
-            border-color: var(--accent);
-            box-shadow: 0 0 15px var(--accent);
-        }
-
-        .audio-card.selected .radio-select::after {
-            content: '✓';
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            color: white;
-            font-size: 14px;
-            font-weight: bold;
-        }
-
-        /* Upload Section */
-        .upload-section {
-            margin-bottom: 3rem;
-        }
-
-        .upload-area {
-            border: 2px dashed var(--glass-border);
-            border-radius: 20px;
-            padding: 3rem;
-            text-align: center;
-            transition: all 0.3s ease;
-            position: relative;
-            background: rgba(255, 255, 255, 0.02);
-        }
-
-        .upload-area:hover {
-            border-color: var(--accent);
-            background: rgba(96, 165, 250, 0.1);
-            transform: translateY(-2px);
-        }
-
-        .upload-area.drag-over {
-            border-color: var(--accent);
-            background: rgba(96, 165, 250, 0.2);
-            transform: scale(1.02);
-        }
-
-        .upload-icon {
-            font-size: 3rem;
-            color: var(--accent);
-            margin-bottom: 1rem;
-            animation: bounce 2s ease-in-out infinite;
-        }
-
-        @keyframes bounce {
-            0%, 20%, 50%, 80%, 100% { transform: translateY(0); }
-            40% { transform: translateY(-10px); }
-            60% { transform: translateY(-5px); }
-        }
-
-        .btn {
-            padding: 0.75rem 2rem;
-            border: none;
-            border-radius: 50px;
-            font-weight: 600;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            display: inline-flex;
-            align-items: center;
-            gap: 0.5rem;
-            text-decoration: none;
-            position: relative;
-            overflow: hidden;
-        }
-
-        .btn::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: -100%;
-            width: 100%;
-            height: 100%;
-            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
-            transition: left 0.5s;
-        }
-
-        .btn:hover::before {
-            left: 100%;
-        }
-
-        .btn-primary {
-            background: linear-gradient(45deg, var(--primary), var(--secondary));
-            color: white;
-        }
-
-        .btn-primary:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 10px 30px var(--shadow);
-        }
-
-        .btn-primary:disabled {
-            opacity: 0.5;
-            cursor: not-allowed;
-            transform: none;
-        }
-
-        .btn-success {
-            background: linear-gradient(45deg, var(--success), #059669);
-            color: white;
-        }
-
-        .btn-success:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 10px 30px rgba(16, 185, 129, 0.4);
-        }
-
-        /* 🆕 Enhanced File Info */
-        .file-info {
-            margin-top: 1rem;
-            padding: 1rem;
-            background: rgba(16, 185, 129, 0.1);
-            border-radius: 10px;
-            border: 1px solid var(--success);
-            display: none;
-            animation: slideDown 0.3s ease-out;
-        }
-
-        .file-info.show {
-            display: block;
-        }
-
-        @keyframes slideDown {
-            from { opacity: 0; transform: translateY(-10px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
-
-        /* Generate Section */
-        .generate-section {
-            text-align: center;
-            padding: 2rem;
-            background: linear-gradient(45deg, rgba(37, 99, 235, 0.1), rgba(96, 165, 250, 0.1));
-            border-radius: 20px;
-            margin-bottom: 2rem;
-            border: 1px solid var(--glass-border);
-        }
-
-        .generate-btn {
-            font-size: 1.25rem;
-            padding: 1rem 3rem;
-            position: relative;
-        }
-
-        .generate-btn:disabled {
-            background: linear-gradient(45deg, #666, #888);
-        }
-
-        /* 🆕 Enhanced Processing Section */
-        .processing-section {
-            display: none;
-            text-align: center;
-            padding: 2rem;
-            background: linear-gradient(45deg, rgba(245, 158, 11, 0.1), rgba(251, 191, 36, 0.1));
-            border-radius: 20px;
-            margin-bottom: 2rem;
-            border: 1px solid var(--warning);
-            position: relative;
-            overflow: hidden;
-        }
-
-        .processing-section::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: -100%;
-            width: 100%;
-            height: 100%;
-            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.1), transparent);
-            animation: shimmer 2s infinite;
-        }
-
-        @keyframes shimmer {
-            0% { left: -100%; }
-            100% { left: 100%; }
-        }
-
-        .processing-section.show {
-            display: block;
-            animation: slideDown 0.5s ease-out;
-        }
-
-        .processing-icon {
-            font-size: 3rem;
-            color: var(--warning);
-            margin-bottom: 1rem;
-            animation: spin 2s linear infinite;
-        }
-
-        @keyframes spin {
-            0% { transform: rotate(0deg); }
-            100% { transform: rotate(360deg); }
-        }
-
-        .processing-title {
-            font-size: 1.5rem;
-            color: var(--warning);
-            margin-bottom: 0.5rem;
-        }
-
-        .processing-message {
-            color: var(--text-secondary);
-            font-size: 1rem;
-            margin-bottom: 1rem;
-        }
-
-        .estimated-time {
-            background: rgba(245, 158, 11, 0.2);
-            border: 1px solid var(--warning);
-            padding: 1rem;
-            border-radius: 10px;
-            margin-top: 1rem;
-        }
-
-        /* 🆕 Enhanced Status Update Section */
-        .status-update {
-            background: rgba(59, 130, 246, 0.1);
-            border: 1px solid var(--secondary);
-            padding: 1rem;
-            border-radius: 10px;
-            margin-top: 1rem;
-            text-align: left;
-        }
-
-        .status-steps {
-            list-style: none;
-            padding: 0;
-        }
-
-        .status-step {
-            padding: 0.5rem 0;
-            display: flex;
-            align-items: center;
-            gap: 0.5rem;
-            transition: all 0.3s ease;
-        }
-
-        .status-step.completed {
-            color: var(--success);
-            transform: translateX(5px);
-        }
-
-        .status-step.current {
-            color: var(--warning);
-            font-weight: 600;
-            transform: translateX(10px);
-        }
-
-        .status-step.pending {
-            color: var(--text-secondary);
-            opacity: 0.7;
-        }
-
-        /* 🆕 Enhanced Download Section */
-        .download-section {
-            display: none;
-            text-align: center;
-            padding: 2rem;
-            background: linear-gradient(45deg, rgba(16, 185, 129, 0.1), rgba(5, 150, 105, 0.1));
-            border-radius: 20px;
-            margin-bottom: 2rem;
-            border: 1px solid var(--success);
-            position: relative;
-            overflow: hidden;
-        }
-
-        .download-section::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: -100%;
-            width: 100%;
-            height: 100%;
-            background: linear-gradient(90deg, transparent, rgba(16, 185, 129, 0.2), transparent);
-            animation: successShimmer 3s infinite;
-        }
-
-        @keyframes successShimmer {
-            0% { left: -100%; }
-            100% { left: 100%; }
-        }
-
-        .download-section.show {
-            display: block;
-            animation: slideDown 0.5s ease-out;
-        }
-
-        .download-icon {
-            font-size: 3rem;
-            color: var(--success);
-            margin-bottom: 1rem;
-            animation: bounce 2s infinite;
-        }
-
-        .download-title {
-            font-size: 1.5rem;
-            color: var(--success);
-            margin-bottom: 0.5rem;
-        }
-
-        .download-message {
-            color: var(--text-secondary);
-            margin-bottom: 2rem;
+        .stats-container {
+            grid-template-columns: repeat(2, 1fr);
         }
 
         .download-options {
-            display: flex;
-            justify-content: center;
-            gap: 1rem;
-            margin-bottom: 1rem;
-            flex-wrap: wrap;
+            flex-direction: column;
+            align-items: center;
         }
 
         .download-btn {
-            padding: 0.75rem 1.5rem;
-            font-size: 1rem;
-        }
-
-        .audio-details {
-            background: rgba(16, 185, 129, 0.1);
-            border: 1px solid var(--success);
-            padding: 1rem;
-            border-radius: 10px;
-            margin-top: 1rem;
-            text-align: left;
-        }
-
-        .detail-row {
-            display: flex;
-            justify-content: space-between;
-            margin-bottom: 0.5rem;
-            padding: 0.25rem 0;
-            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
-        }
-
-        .detail-row:last-child {
-            border-bottom: none;
-        }
-
-        .detail-label {
-            color: var(--text-secondary);
-        }
-
-        .detail-value {
-            color: var(--text-primary);
-            font-weight: 600;
-        }
-
-        /* Character Counter */
-        .character-info {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-top: 1rem;
-            padding: 1rem;
-            background: rgba(255, 255, 255, 0.05);
-            border-radius: 10px;
-            border: 1px solid var(--glass-border);
-        }
-
-        .char-count {
-            font-size: 0.9rem;
-            color: var(--text-secondary);
-        }
-
-        .char-limit {
-            font-size: 0.9rem;
-            color: var(--accent);
-        }
-
-        /* 🆕 Enhanced Toast */
-        .toast {
-            position: fixed;
-            bottom: 2rem;
-            right: 2rem;
-            background: var(--glass-bg);
-            backdrop-filter: blur(10px);
-            padding: 1rem 2rem;
-            border-radius: 10px;
-            border: 1px solid var(--glass-border);
-            display: none;
-            animation: slideUp 0.3s ease-out;
-            z-index: 1000;
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+            width: 100%;
             max-width: 300px;
         }
 
-        @keyframes slideUp {
-            from { transform: translateY(100px); opacity: 0; }
-            to { transform: translateY(0); opacity: 1; }
+        .connection-status {
+            top: 60px;
+            right: 10px;
+            font-size: 0.7rem;
+            padding: 0.25rem 0.5rem;
         }
 
-        .toast.show {
-            display: block;
+        .glass-container {
+            padding: 1.5rem;
+        }
+    }
+
+    @media (max-width: 480px) {
+        .nav-container {
+            flex-direction: column;
+            gap: 1rem;
+            padding: 0.5rem 0;
         }
 
-        .toast.success {
-            border-color: var(--success);
-            color: var(--success);
-        }
-
-        .toast.error {
-            border-color: var(--error);
-            color: var(--error);
-        }
-
-        .toast.warning {
-            border-color: var(--warning);
-            color: var(--warning);
-        }
-
-        /* 🆕 Enhanced Audio Preview Modal */
-        .audio-preview-modal {
-            display: none;
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: rgba(0, 0, 0, 0.8);
-            z-index: 2000;
-            backdrop-filter: blur(5px);
-            animation: fadeIn 0.3s ease-out;
-        }
-
-        .audio-preview-modal.show {
-            display: flex;
-            align-items: center;
+        .nav-links {
+            flex-wrap: wrap;
             justify-content: center;
+            gap: 0.25rem;
+        }
+
+        .nav-link {
+            padding: 0.25rem 0.5rem;
+            font-size: 0.8rem;
+        }
+
+        .hero-title {
+            font-size: 1.5rem;
+        }
+
+        .hero-subtitle {
+            font-size: 1rem;
+        }
+
+        .stats-container {
+            grid-template-columns: 1fr;
+        }
+
+        .main-content {
+            padding: 8rem 0.5rem 2rem;
         }
 
         .modal-content {
-            background: var(--glass-bg);
-            backdrop-filter: blur(10px);
-            padding: 2rem;
-            border-radius: 20px;
-            max-width: 500px;
-            width: 90%;
-            border: 1px solid var(--glass-border);
-            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
-            animation: modalSlideIn 0.3s ease-out;
+            padding: 1rem;
+            margin: 1rem;
         }
+    }
 
-        @keyframes modalSlideIn {
-            from { opacity: 0; transform: scale(0.8); }
-            to { opacity: 1; transform: scale(1); }
-        }
+    /* 🆕 Loading Animation */
+    .loading-spinner {
+        width: 40px;
+        height: 40px;
+        border: 4px solid rgba(255, 255, 255, 0.3);
+        border-top: 4px solid var(--accent);
+        border-radius: 50%;
+        animation: spin 1s linear infinite;
+        margin: 0 auto;
+    }
 
-        .modal-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 1rem;
-        }
+    /* 🆕 Progress Bar */
+    .progress-bar {
+        width: 100%;
+        height: 6px;
+        background: rgba(255, 255, 255, 0.1);
+        border-radius: 3px;
+        overflow: hidden;
+        margin: 1rem 0;
+    }
 
-        .modal-close {
-            background: none;
-            border: none;
-            color: var(--text-primary);
-            font-size: 1.5rem;
-            cursor: pointer;
-            padding: 0.5rem;
-            border-radius: 50%;
-            transition: all 0.3s ease;
-        }
+    .progress-fill {
+        height: 100%;
+        background: linear-gradient(90deg, var(--primary), var(--secondary));
+        width: 0%;
+        border-radius: 3px;
+        transition: width 0.3s ease;
+    }
+</style>
+</head> <body> <!-- Background Animation --> <div class="bg-animation"> <div class="sound-wave"></div> <div class="floating-particles" id="particles"></div> </div>
+text
 
-        .modal-close:hover {
-            background: rgba(255, 255, 255, 0.1);
-            transform: rotate(90deg);
-        }
+<!-- 🆕 Connection Status -->
+<div class="connection-status connecting" id="connectionStatus">
+    <div class="status-dot"></div>
+    <span>Connecting...</span>
+</div>
 
-        .audio-player {
-            width: 100%;
-            margin-bottom: 1rem;
-            border-radius: 10px;
-            overflow: hidden;
-        }
-
-        /* Footer */
-        footer {
-            text-align: center;
-            padding: 2rem;
-            color: var(--text-secondary);
-            border-top: 1px solid var(--glass-border);
-            background: rgba(255, 255, 255, 0.02);
-        }
-
-        /* ✅ NEW: Waiting/Status Messages */
-        .status-message {
-            text-align: center;
-            padding: 3rem;
-            background: var(--glass-bg);
-            backdrop-filter: blur(10px);
-            border: 1px solid var(--glass-border);
-            border-radius: 20px;
-            margin-bottom: 2rem;
-        }
-
-        .status-icon {
-            font-size: 4rem;
-            margin-bottom: 1.5rem;
-        }
-
-        .status-icon.waiting {
-            color: var(--warning);
-            animation: pulse 2s infinite;
-        }
-
-        .status-icon.approved {
-            color: var(--primary);
-        }
-
-        .status-icon.error {
-            color: var(--error);
-        }
-
-        .status-title {
-            font-size: 1.8rem;
-            font-weight: 600;
-            margin-bottom: 1rem;
-        }
-
-        .status-description {
-            color: var(--text-secondary);
-            margin-bottom: 2rem;
-            line-height: 1.6;
-        }
-
-        .status-details {
-            background: rgba(255, 255, 255, 0.05);
-            border: 1px solid var(--glass-border);
-            padding: 1.5rem;
-            border-radius: 10px;
-            margin-bottom: 2rem;
-        }
-
-        .countdown {
-            font-size: 1.5rem;
-            font-weight: 600;
-            color: var(--accent);
-            margin: 1rem 0;
-        }
-
-        /* 🆕 Enhanced Responsive Design */
-        @media (max-width: 1024px) {
-            .hero-title {
-                font-size: 2.5rem;
-            }
-            
-            .main-content {
-                padding: 5rem 1rem 2rem;
-            }
-        }
-
-        @media (max-width: 768px) {
-            .hero-title {
-                font-size: 2rem;
-            }
-
-            .nav-links {
-                gap: 0.5rem;
-            }
-
-            .nav-link {
-                padding: 0.5rem 0.75rem;
-                font-size: 0.9rem;
-            }
-
-            .audio-grid {
-                grid-template-columns: 1fr;
-            }
-
-            .stats-container {
-                grid-template-columns: repeat(2, 1fr);
-            }
-
-            .download-options {
-                flex-direction: column;
-                align-items: center;
-            }
-
-            .download-btn {
-                width: 100%;
-                max-width: 300px;
-            }
-
-            .connection-status {
-                top: 60px;
-                right: 10px;
-                font-size: 0.7rem;
-                padding: 0.25rem 0.5rem;
-            }
-
-            .glass-container {
-                padding: 1.5rem;
-            }
-        }
-
-        @media (max-width: 480px) {
-            .nav-container {
-                flex-direction: column;
-                gap: 1rem;
-                padding: 0.5rem 0;
-            }
-
-            .nav-links {
-                flex-wrap: wrap;
-                justify-content: center;
-                gap: 0.25rem;
-            }
-
-            .nav-link {
-                padding: 0.25rem 0.5rem;
-                font-size: 0.8rem;
-            }
-
-            .hero-title {
-                font-size: 1.5rem;
-            }
-
-            .hero-subtitle {
-                font-size: 1rem;
-            }
-
-            .stats-container {
-                grid-template-columns: 1fr;
-            }
-
-            .main-content {
-                padding: 8rem 0.5rem 2rem;
-            }
-
-            .modal-content {
-                padding: 1rem;
-                margin: 1rem;
-            }
-        }
-
-        /* 🆕 Loading Animation */
-        .loading-spinner {
-            width: 40px;
-            height: 40px;
-            border: 4px solid rgba(255, 255, 255, 0.3);
-            border-top: 4px solid var(--accent);
-            border-radius: 50%;
-            animation: spin 1s linear infinite;
-            margin: 0 auto;
-        }
-
-        /* 🆕 Progress Bar */
-        .progress-bar {
-            width: 100%;
-            height: 6px;
-            background: rgba(255, 255, 255, 0.1);
-            border-radius: 3px;
-            overflow: hidden;
-            margin: 1rem 0;
-        }
-
-        .progress-fill {
-            height: 100%;
-            background: linear-gradient(90deg, var(--primary), var(--secondary));
-            width: 0%;
-            border-radius: 3px;
-            transition: width 0.3s ease;
-        }
-    </style>
-</head>
-<body>
-    <!-- Background Animation -->
-    <div class="bg-animation">
-        <div class="sound-wave"></div>
-        <div class="floating-particles" id="particles"></div>
-    </div>
-
-    <!-- 🆕 Connection Status -->
-    <div class="connection-status connecting" id="connectionStatus">
-        <div class="status-dot"></div>
-        <span>Connecting...</span>
-    </div>
-
-    <!-- Navigation -->
-    <nav>
-        <div class="nav-container">
-            <a href="#" class="logo">
-                <i class="fas fa-microphone-alt"></i>
-                Blue FM TTS
+<!-- Navigation -->
+<nav>
+    <div class="nav-container">
+        <a href="#" class="logo">
+            <i class="fas fa-microphone-alt"></i>
+            Blue FM TTS
+        </a>
+        <div class="nav-links">
+            <a href="my-audio.html" class="nav-link audio-link">
+                <i class="fas fa-headphones"></i> Your Audio
             </a>
-            <div class="nav-links">
-                <a href="my-audio.html" class="nav-link audio-link">
-                    <i class="fas fa-headphones"></i> Your Audio
-                </a>
-                <a href="membership.html" class="nav-link premium">
-                    <i class="fas fa-crown"></i> Premium
-                </a>
-                <div class="user-menu">
-                    <button class="user-btn" onclick="toggleUserMenu()">
-                        <i class="fas fa-user-circle"></i>
-                        <span id="userName">User</span>
-                    </button>
-                    <div class="user-dropdown" id="userDropdown">
-                        <div style="padding: 0.75rem; border-bottom: 1px solid var(--glass-border);">
-                            <div style="font-weight: 600;">Free Plan</div>
-                            <div style="font-size: 0.8rem; color: var(--text-secondary);">5,000 chars/month</div>
-                        </div>
-                        <a href="membership.html" class="nav-link" style="display: block; padding: 0.75rem;">
-                            <i class="fas fa-gem"></i> Upgrade to Premium
-                        </a>
-                        <button class="nav-link" style="display: block; width: 100%; text-align: left; padding: 0.75rem; background: none; border: none; cursor: pointer;" onclick="logout()">
-                            <i class="fas fa-sign-out-alt"></i> Logout
-                        </button>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </nav>
-
-    <!-- Main Content -->
-    <main class="main-content" id="mainContent">
-        <!-- Content will be dynamically loaded based on user status -->
-    </main>
-
-    <!-- Footer -->
-    <footer>
-        <p>&copy; 2024 Blue FM TTS. All rights reserved.</p>
-    </footer>
-
-    <!-- Toast -->
-    <div class="toast" id="toast"></div>
-
-    <!-- Enhanced Audio Preview Modal -->
-    <div class="audio-preview-modal" id="audioPreviewModal">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h3 style="margin: 0;">Audio Preview</h3>
-                <button class="modal-close" onclick="closePreview()">×</button>
-            </div>
-            <audio class="audio-player" id="previewAudioPlayer" controls>
-                Your browser does not support the audio element.
-            </audio>
-            <div style="text-align: center;">
-                <button class="btn btn-primary" onclick="closePreview()">
-                    <i class="fas fa-times"></i> Close
+            <a href="membership.html" class="nav-link premium">
+                <i class="fas fa-crown"></i> Premium
+            </a>
+            <div class="user-menu">
+                <button class="user-btn" onclick="toggleUserMenu()">
+                    <i class="fas fa-user-circle"></i>
+                    <span id="userName">User</span>
                 </button>
+                <div class="user-dropdown" id="userDropdown">
+                    <div style="padding: 0.75rem; border-bottom: 1px solid var(--glass-border);">
+                        <div style="font-weight: 600;">Free Plan</div>
+                        <div style="font-size: 0.8rem; color: var(--text-secondary);">5,000 chars/month</div>
+                    </div>
+                    <a href="membership.html" class="nav-link" style="display: block; padding: 0.75rem;">
+                        <i class="fas fa-gem"></i> Upgrade to Premium
+                    </a>
+                    <button class="nav-link" style="display: block; width: 100%; text-align: left; padding: 0.75rem; background: none; border: none; cursor: pointer;" onclick="logout()">
+                        <i class="fas fa-sign-out-alt"></i> Logout
+                    </button>
+                </div>
             </div>
         </div>
     </div>
+</nav>
 
-    <script type="module">
-        import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js';
-        import { getAuth, onAuthStateChanged, signOut } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js';
-        import { getStorage, ref, uploadBytes, getDownloadURL } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-storage.js';
-        import { getFirestore, doc, onSnapshot, collection, query, where, orderBy, limit } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js';
-        import { getFunctions, httpsCallable } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-functions.js';
+<!-- Main Content -->
+<main class="main-content">
+    <!-- Hero Section -->
+    <section class="hero-section">
+        <h1 class="hero-title">Transform Text to Natural Speech</h1>
+        <p class="hero-subtitle">Create professional voiceovers with AI-powered voices</p>
+    </section>
 
-        // Firebase configuration
-        const firebaseConfig = {
-            apiKey: "AIzaSyCmBZmN-BCa3Qkb7f7K9TjXuK1_ma1ukbw",
-            authDomain: "bluefm-tts.firebaseapp.com",
-            projectId: "bluefm-tts",
-            storageBucket: "bluefm-tts.firebasestorage.app",
-            messagingSenderId: "184060585228",
-            appId: "1:184060585228:web:045fdd4e5d4429fc7e9529",
-            measurementId: "G-ZTZNZG8YSJ"
-        };
+    <!-- Stats Section -->
+    <section class="stats-container">
+        <div class="stat-card">
+            <div class="stat-number">4</div>
+            <div class="stat-label">Natural Voices</div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-number">20+</div>
+            <div class="stat-label">Languages</div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-number">500+</div>
+            <div class="stat-label">Users Joined</div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-number">99.9%</div>
+            <div class="stat-label">Accuracy</div>
+        </div>
+    </section>
 
-        const app = initializeApp(firebaseConfig);
-        const auth = getAuth(app);
-        const storage = getStorage(app);
-        const db = getFirestore(app);
-        const functions = getFunctions(app);
+    <!-- Voice Selection -->
+    <section class="glass-container">
+        <h2 class="section-title">Choose Your Voice</h2>
+        <div class="audio-grid">
+            <!-- Voice Card 1 -->
+            <div class="audio-card glass-container" onclick="selectVoice('voice1')">
+                <div class="radio-select"></div>
+                <div class="audio-card-content">
+                    <div class="voice-avatar">👨</div>
+                    <h3 class="voice-name">Professional Male</h3>
+                    <p class="voice-description">Clear, confident business voice</p>
+                    <div class="audio-controls">
+                        <button class="play-btn" onclick="playDemo(event, 'voice1')">
+                            <i class="fas fa-play"></i>
+                        </button>
+                        <div class="audio-wave">
+                            <div class="audio-progress"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
 
-        // ✅ Firebase Functions - Multi-User Support
-        const createUserAccount = httpsCallable(functions, 'createUserAccount');
-        const checkUserStatus = httpsCallable(functions, 'checkUserStatus');
+            <!-- Voice Card 2 -->
+            <div class="audio-card glass-container" onclick="selectVoice('voice2')">
+                <div class="radio-select"></div>
+                <div class="audio-card-content">
+                    <div class="voice-avatar">👩</div>
+                    <h3 class="voice-name">Friendly Female</h3>
+                    <p class="voice-description">Warm, engaging narrative voice</p>
+                    <div class="audio-controls">
+                        <button class="play-btn" onclick="playDemo(event, 'voice2')">
+                            <i class="fas fa-play"></i>
+                        </button>
+                        <div class="audio-wave">
+                            <div class="audio-progress"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
 
-        // Global variables
-        let selectedVoice = null;
-        let uploadedFile = null;
-        let currentUser = null;
-        let currentJobId = null;
-        let jobListener = null;
-        let currentDownloadUrl = null;
-        let connectionRetryCount = 0;
+            <!-- Voice Card 3 -->
+            <div class="audio-card glass-container" onclick="selectVoice('voice3')">
+                <div class="radio-select"></div>
+                <div class="audio-card-content">
+                    <div class="voice-avatar">🎙</div>
+                    <h3 class="voice-name">News Anchor</h3>
+                    <p class="voice-description">Authoritative news reading voice</p>
+                    <div class="audio-controls">
+                        <button class="play-btn" onclick="playDemo(event, 'voice3')">
+                            <i class="fas fa-play"></i>
+                        </button>
+                        <div class="audio-wave">
+                            <div class="audio-progress"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
 
-        // Voice names mapping
-        const voiceNames = {
-            'voice1': 'Professional Male',
-            'voice2': 'Friendly Female', 
-            'voice3': 'News Anchor',
-            'voice4': 'Storyteller'
-        };
+            <!-- Voice Card 4 -->
+            <div class="audio-card glass-container" onclick="selectVoice('voice4')">
+                <div class="radio-select"></div>
+                <div class="audio-card-content">
+                    <div class="voice-avatar">📚</div>
+                    <h3 class="voice-name">Storyteller</h3>
+                    <p class="voice-description">Expressive audiobook narration</p>
+                    <div class="audio-controls">
+                        <button class="play-btn" onclick="playDemo(event, 'voice4')">
+                            <i class="fas fa-play"></i>
+                        </button>
+                        <div class="audio-wave">
+                            <div class="audio-progress"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
 
-        // Voice to Reference Audio mapping
-        const voiceToReference = {
-            'voice1': 'professional-male.mp3',
-            'voice2': 'friendly-female.mp3',
-            'voice3': 'news-anchor.mp3',
-            'voice4': 'storyteller.mp3'
-        };
+    <!-- Upload Section -->
+    <section class="upload-section glass-container">
+        <h2 class="section-title">Upload Your Text</h2>
+        <div class="upload-area" id="uploadArea">
+            <div class="upload-icon">
+                <i class="fas fa-file-alt"></i>
+            </div>
+            <p style="margin-bottom: 1rem;">Drag & drop your .txt file here or</p>
+            <button class="btn btn-primary" onclick="document.getElementById('fileInput').click()">
+                <i class="fas fa-upload"></i> Browse Files
+            </button>
+            <input type="file" id="fileInput" style="display: none;" accept=".txt">
+            <div class="file-info" id="fileInfo">
+                <i class="fas fa-check-circle" style="color: var(--success);"></i>
+                <span id="fileName"></span>
+            </div>
+        </div>
+        <div class="character-info" id="charInfo" style="display: none;">
+            <span class="char-count">Characters: <span id="charCount">0</span></span>
+            <span class="char-limit">Monthly Limit: 5,000 (Free Plan)</span>
+        </div>
+    </section>
 
-        // Demo audio URLs
-        const demoAudioUrls = {
-            'voice1': 'https://firebasestorage.googleapis.com/v0/b/bluefm-tts.firebasestorage.app/o/reference-voices%2Fprofessional-male.mp3?alt=media',
-            'voice2': 'https://firebasestorage.googleapis.com/v0/b/bluefm-tts.firebasestorage.app/o/reference-voices%2Ffriendly-female.mp3?alt=media',
-            'voice3': 'https://firebasestorage.googleapis.com/v0/b/bluefm-tts.firebasestorage.app/o/reference-voices%2Fnews-anchor.mp3?alt=media',
-            'voice4': 'https://firebasestorage.googleapis.com/v0/b/bluefm-tts.firebasestorage.app/o/reference-voices%2Fstoryteller.mp3?alt=media'
-        };
+    <!-- Generate Section -->
+    <section class="generate-section" id="generateSection">
+        <h3 style="margin-bottom: 1rem;">Ready to Create Your Audio?</h3>
+        <button class="btn btn-primary generate-btn" id="generateBtn" disabled onclick="generateAudio()">
+            <i class="fas fa-magic"></i> Generate Audio
+        </button>
+    </section>
 
-        // 🆕 Initialize Floating Particles
-        function initParticles() {
-            const particlesContainer = document.getElementById('particles');
-            for (let i = 0; i < 20; i++) {
-                const particle = document.createElement('div');
-                particle.className = 'particle';
-                particle.style.left = Math.random() * 100 + '%';
-                particle.style.top = Math.random() * 100 + '%';
-                particle.style.width = Math.random() * 10 + 5 + 'px';
-                particle.style.height = particle.style.width;
-                particle.style.animationDelay = Math.random() * 6 + 's';
-                particle.style.animationDuration = (Math.random() * 3 + 3) + 's';
-                particlesContainer.appendChild(particle);
-            }
+    <!-- Enhanced Processing Section -->
+    <section class="processing-section" id="processingSection">
+        <div class="processing-icon">
+            <i class="fas fa-cog"></i>
+        </div>
+        <h3 class="processing-title">Processing Your Audio</h3>
+        <p class="processing-message" id="processingMessage">Starting audio generation...</p>
+        
+        <!-- 🆕 Progress Bar -->
+        <div class="progress-bar">
+            <div class="progress-fill" id="progressFill"></div>
+        </div>
+        
+        <div class="estimated-time">
+            <strong>⏱ Estimated Time: 5-15 minutes</strong>
+            <br>
+            <small>Processing time depends on file size and server load</small>
+        </div>
+        
+        <!-- Real-time Status Updates -->
+        <div class="status-update">
+            <h4 style="margin-bottom: 1rem;">Processing Status:</h4>
+            <ul class="status-steps" id="statusSteps">
+                <li class="status-step pending" id="step1">
+                    <i class="fas fa-clock"></i> Uploading files...
+                </li>
+                <li class="status-step pending" id="step2">
+                    <i class="fas fa-clock"></i> Sending to processing server...
+                </li>
+                <li class="status-step pending" id="step3">
+                    <i class="fas fa-clock"></i> Generating audio with AI...
+                </li>
+                <li class="status-step pending" id="step4">
+                    <i class="fas fa-clock"></i> Uploading to cloud storage...
+                </li>
+                <li class="status-step pending" id="step5">
+                    <i class="fas fa-clock"></i> Finalizing download...
+                </li>
+            </ul>
+        </div>
+    </section>
+
+    <!-- Enhanced Download Section -->
+    <section class="download-section" id="downloadSection">
+        <div class="download-icon">
+            <i class="fas fa-download"></i>
+        </div>
+        <h3 class="download-title">Your Audio is Ready!</h3>
+        <p class="download-message">Your audio has been generated and is ready for download</p>
+        
+        <div class="download-options">
+            <button class="btn btn-success download-btn" onclick="downloadAudioFromR2()">
+                <i class="fas fa-cloud-download-alt"></i> Download Audio
+            </button>
+            <button class="btn btn-success download-btn" onclick="previewAudio()">
+                <i class="fas fa-play"></i> Preview Audio
+            </button>
+        </div>
+
+        <div class="audio-details">
+            <div class="detail-row">
+                <span class="detail-label">File Name:</span>
+                <span class="detail-value" id="audioFileName">my_audio_file</span>
+            </div>
+            <div class="detail-row">
+                <span class="detail-label">Voice Used:</span>
+                <span class="detail-value" id="audioVoice">Professional Male</span>
+            </div>
+            <div class="detail-row">
+                <span class="detail-label">File Size:</span>
+                <span class="detail-value" id="audioFileSize">Loading...</span>
+            </div>
+            <div class="detail-row">
+                <span class="detail-label">Characters:</span>
+                <span class="detail-value" id="audioCharCount">1,250</span>
+            </div>
+            <div class="detail-row">
+                <span class="detail-label">Expires:</span>
+                <span class="detail-value" id="audioExpiry">24 hours</span>
+            </div>
+        </div>
+
+        <button class="btn btn-primary" onclick="resetForm()" style="margin-top: 1rem;">
+            <i class="fas fa-plus"></i> Create Another Audio
+        </button>
+    </section>
+</main>
+
+<!-- Footer -->
+<footer>
+    <p>&copy; 2024 Blue FM TTS. All rights reserved.</p>
+</footer>
+
+<!-- Toast -->
+<div class="toast" id="toast"></div>
+
+<!-- Enhanced Audio Preview Modal -->
+<div class="audio-preview-modal" id="audioPreviewModal">
+    <div class="modal-content">
+        <div class="modal-header">
+            <h3 style="margin: 0;">Audio Preview</h3>
+            <button class="modal-close" onclick="closePreview()">×</button>
+        </div>
+        <audio class="audio-player" id="previewAudioPlayer" controls>
+            Your browser does not support the audio element.
+        </audio>
+        <div style="text-align: center;">
+            <button class="btn btn-primary" onclick="closePreview()">
+                <i class="fas fa-times"></i> Close
+            </button>
+        </div>
+    </div>
+</div>
+
+<script type="module">
+    import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js';
+    import { getAuth, onAuthStateChanged, signOut } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js';
+    import { getStorage, ref, uploadBytes, getDownloadURL } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-storage.js';
+    import { getFirestore, doc, onSnapshot, collection, query, where, orderBy, limit } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js';
+
+    // Firebase configuration
+    const firebaseConfig = {
+        apiKey: "AIzaSyCmBZmN-BCa3Qkb7f7K9TjXuK1_ma1ukbw",
+        authDomain: "bluefm-tts.firebaseapp.com",
+        projectId: "bluefm-tts",
+        storageBucket: "bluefm-tts.firebasestorage.app",
+        messagingSenderId: "184060585228",
+        appId: "1:184060585228:web:045fdd4e5d4429fc7e9529",
+        measurementId: "G-ZTZNZG8YSJ"
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const auth = getAuth(app);
+    const storage = getStorage(app);
+    const db = getFirestore(app);
+
+    // 🎯 Target User Configuration
+    const TARGET_USER_ID = "WjOw52WYq7XBRrEtaV2oa8aR7323";
+
+    // Global variables
+    let selectedVoice = null;
+    let uploadedFile = null;
+    let currentUser = null;
+    let currentJobId = null;
+    let jobListener = null;
+    let currentDownloadUrl = null;
+    let connectionRetryCount = 0;
+
+    // Voice names mapping
+    const voiceNames = {
+        'voice1': 'Professional Male',
+        'voice2': 'Friendly Female', 
+        'voice3': 'News Anchor',
+        'voice4': 'Storyteller'
+    };
+
+    // Voice to Reference Audio mapping
+    const voiceToReference = {
+        'voice1': 'professional-male.mp3',
+        'voice2': 'friendly-female.mp3',
+        'voice3': 'news-anchor.mp3',
+        'voice4': 'storyteller.mp3'
+    };
+
+    // Demo audio URLs
+    const demoAudioUrls = {
+        'voice1': 'https://firebasestorage.googleapis.com/v0/b/bluefm-tts.firebasestorage.app/o/reference-voices%2Fprofessional-male.mp3?alt=media',
+        'voice2': 'https://firebasestorage.googleapis.com/v0/b/bluefm-tts.firebasestorage.app/o/reference-voices%2Ffriendly-female.mp3?alt=media',
+        'voice3': 'https://firebasestorage.googleapis.com/v0/b/bluefm-tts.firebasestorage.app/o/reference-voices%2Fnews-anchor.mp3?alt=media',
+        'voice4': 'https://firebasestorage.googleapis.com/v0/b/bluefm-tts.firebasestorage.app/o/reference-voices%2Fstoryteller.mp3?alt=media'
+    };
+
+    // 🆕 Initialize Floating Particles
+    function initParticles() {
+        const particlesContainer = document.getElementById('particles');
+        for (let i = 0; i < 20; i++) {
+            const particle = document.createElement('div');
+            particle.className = 'particle';
+            particle.style.left = Math.random() * 100 + '%';
+            particle.style.top = Math.random() * 100 + '%';
+            particle.style.width = Math.random() * 10 + 5 + 'px';
+            particle.style.height = particle.style.width;
+            particle.style.animationDelay = Math.random() * 6 + 's';
+            particle.style.animationDuration = (Math.random() * 3 + 3) + 's';
+            particlesContainer.appendChild(particle);
         }
+    }
 
-        // 🆕 Update Connection Status
-        function updateConnectionStatus(status, message) {
-            const statusEl = document.getElementById('connectionStatus');
-            statusEl.className = `connection-status ${status}`;
-            statusEl.querySelector('span').textContent = message;
+    // 🆕 Update Connection Status
+    function updateConnectionStatus(status, message) {
+        const statusEl = document.getElementById('connectionStatus');
+        statusEl.className = connection-status ${status};
+        statusEl.querySelector('span').textContent = message;
+    }
+
+    // Check authentication state
+    onAuthStateChanged(auth, (user) => {
+        if (user) {
+            currentUser = user;
+            console.log('✅ User logged in:', user.email);
+            updateConnectionStatus('connected', 'Connected');
+            
+            // Update UI with user info
+            document.getElementById('userName').textContent = user.displayName || user.email.split('@')[0];
+            
+            // Store user data
+            localStorage.setItem('isLoggedIn', 'true');
+            localStorage.setItem('userEmail', user.email);
+            localStorage.setItem('userId', user.uid);
+            
+            // Check for any active jobs
+            checkActiveJobs();
+            
+        } else {
+            console.log('❌ User not logged in');
+            updateConnectionStatus('disconnected', 'Not logged in');
+            window.location.href = 'login.html';
         }
+    });
 
-        // ✅ UPDATED: Check authentication state - Multi-User Support
-        onAuthStateChanged(auth, async (user) => {
-            if (user) {
-                currentUser = user;
-                console.log('✅ User logged in:', user.email);
-                
-                // Check user status and approval
-                await checkUserStatusAndSetup(user);
-                
-            } else {
-                console.log('❌ User not logged in');
-                updateConnectionStatus('disconnected', 'Not logged in');
-                window.location.href = 'login.html';
-            }
-        });
-
-        // ✅ NEW: Check user status and setup interface
-        async function checkUserStatusAndSetup(user) {
-            try {
-                updateConnectionStatus('connecting', 'Checking account...');
-                
-                // Check if user exists and is approved
-                const result = await checkUserStatus();
-                const status = result.data;
-                
-                if (!status.exists) {
-                    // First time user - create account
-                    await createUserAccount();
-                    showWaitingMessage();
-                    return;
-                }
-                
-                if (!status.isApproved) {
-                    // User exists but not approved yet
-                    showWaitingMessage(status.waitTimeRemaining);
-                    return;
-                }
-                
-                if (!status.canUseService) {
-                    // Approved but bot not linked
-                    showBotNotLinkedMessage();
-                    return;
-                }
-                
-                // ✅ User is fully set up
+    // 🆕 Enhanced Check for Active Jobs
+    async function checkActiveJobs() {
+        try {
+            updateConnectionStatus('connecting', 'Checking jobs...');
+            
+            // 🎯 Check for jobs assigned to target user
+            const q = query(
+                collection(db, "tts_jobs"),
+                where("userId", "==", TARGET_USER_ID),
+                where("status", "in", ["processing", "sent_to_telegram"]),
+                orderBy("createdAt", "desc"),
+                limit(1)
+            );
+            
+            const unsubscribe = onSnapshot(q, (querySnapshot) => {
                 updateConnectionStatus('connected', 'Connected');
-                document.getElementById('userName').textContent = user.displayName || user.email.split('@')[0];
                 
-                // Enable the interface
-                showNormalInterface();
-                checkActiveJobs();
-                
-            } catch (error) {
-                console.error('❌ User status check error:', error);
-                updateConnectionStatus('disconnected', 'Setup error');
-                showToast('Error checking account status', 'error');
-            }
-        }
-
-        // ✅ NEW: Show waiting message for approval
-        function showWaitingMessage(timeRemaining = null) {
-            const mainContent = document.getElementById('mainContent');
-            mainContent.innerHTML = `
-                <div class="status-message">
-                    <div class="status-icon waiting">
-                        <i class="fas fa-clock"></i>
-                    </div>
-                    <h2 class="status-title" style="color: var(--warning);">Account Under Review</h2>
-                    <p class="status-description">
-                        Your account has been created and is waiting for admin approval.
-                        <br>Please wait 24 hours for manual review.
-                    </p>
-                    ${timeRemaining ? `
-                        <div class="status-details">
-                            <div class="countdown">Time Remaining: ${formatTime(timeRemaining)}</div>
-                            <p style="font-size: 0.9rem; color: var(--text-secondary);">
-                                You will receive access once admin approves your account.
-                            </p>
-                        </div>
-                    ` : ''}
-                    <p style="font-size: 0.9rem; color: var(--text-secondary);">
-                        You will receive access once admin approves your account.
-                        <br>Thank you for your patience!
-                    </p>
-                    <button class="btn btn-primary" onclick="location.reload()" style="margin-top: 1rem;">
-                        <i class="fas fa-refresh"></i> Refresh Status
-                    </button>
-                </div>
-            `;
-            updateConnectionStatus('waiting', 'Waiting approval');
-        }
-
-        // ✅ NEW: Show bot not linked message
-        function showBotNotLinkedMessage() {
-            const mainContent = document.getElementById('mainContent');
-            mainContent.innerHTML = `
-                <div class="status-message">
-                    <div class="status-icon approved">
-                        <i class="fas fa-robot"></i>
-                    </div>
-                    <h2 class="status-title" style="color: var(--primary);">Account Approved!</h2>
-                    <p class="status-description">
-                        Your account has been approved but admin is still setting up your personal bot.
-                        <br>Please wait a few more minutes.
-                    </p>
-                    <div class="status-details">
-                        <div style="display: flex; align-items: center; gap: 0.5rem; justify-content: center;">
-                            <div class="loading-spinner" style="width: 20px; height: 20px;"></div>
-                            <span>Setting up your personal TTS bot...</span>
-                        </div>
-                    </div>
-                    <button class="btn btn-primary" onclick="location.reload()">
-                        <i class="fas fa-refresh"></i> Refresh Page
-                    </button>
-                </div>
-            `;
-            updateConnectionStatus('connecting', 'Setting up bot');
-        }
-
-        // ✅ NEW: Show normal interface for approved users
-        function showNormalInterface() {
-            const mainContent = document.getElementById('mainContent');
-            mainContent.innerHTML = `
-                <!-- Hero Section -->
-                <section class="hero-section">
-                    <h1 class="hero-title">Transform Text to Natural Speech</h1>
-                    <p class="hero-subtitle">Create professional voiceovers with AI-powered voices</p>
-                </section>
-
-                <!-- Stats Section -->
-                <section class="stats-container">
-                    <div class="stat-card">
-                        <div class="stat-number">4</div>
-                        <div class="stat-label">Natural Voices</div>
-                    </div>
-                    <div class="stat-card">
-                        <div class="stat-number">20+</div>
-                        <div class="stat-label">Languages</div>
-                    </div>
-                    <div class="stat-card">
-                        <div class="stat-number">500+</div>
-                        <div class="stat-label">Users Joined</div>
-                    </div>
-                    <div class="stat-card">
-                        <div class="stat-number">99.9%</div>
-                        <div class="stat-label">Accuracy</div>
-                    </div>
-                </section>
-
-                <!-- Voice Selection -->
-                <section class="glass-container">
-                    <h2 class="section-title">Choose Your Voice</h2>
-                    <div class="audio-grid">
-                        <!-- Voice Card 1 -->
-                        <div class="audio-card glass-container" onclick="selectVoice('voice1')">
-                            <div class="radio-select"></div>
-                            <div class="audio-card-content">
-                                <div class="voice-avatar">👨</div>
-                                <h3 class="voice-name">Professional Male</h3>
-                                <p class="voice-description">Clear, confident business voice</p>
-                                <div class="audio-controls">
-                                    <button class="play-btn" onclick="playDemo(event, 'voice1')">
-                                        <i class="fas fa-play"></i>
-                                    </button>
-                                    <div class="audio-wave">
-                                        <div class="audio-progress"></div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-
-                        <!-- Voice Card 2 -->
-                        <div class="audio-card glass-container" onclick="selectVoice('voice2')">
-                            <div class="radio-select"></div>
-                            <div class="audio-card-content">
-                                <div class="voice-avatar">👩</div>
-                                <h3 class="voice-name">Friendly Female</h3>
-                                <p class="voice-description">Warm, engaging narrative voice</p>
-                                <div class="audio-controls">
-                                    <button class="play-btn" onclick="playDemo(event, 'voice2')">
-                                        <i class="fas fa-play"></i>
-                                    </button>
-                                    <div class="audio-wave">
-                                        <div class="audio-progress"></div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-
-                        <!-- Voice Card 3 -->
-                        <div class="audio-card glass-container" onclick="selectVoice('voice3')">
-                            <div class="radio-select"></div>
-                            <div class="audio-card-content">
-                                <div class="voice-avatar">🎙</div>
-                                <h3 class="voice-name">News Anchor</h3>
-                                <p class="voice-description">Authoritative news reading voice</p>
-                                <div class="audio-controls">
-                                    <button class="play-btn" onclick="playDemo(event, 'voice3')">
-                                        <i class="fas fa-play"></i>
-                                    </button>
-                                    <div class="audio-wave">
-                                        <div class="audio-progress"></div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-
-                        <!-- Voice Card 4 -->
-                        <div class="audio-card glass-container" onclick="selectVoice('voice4')">
-                            <div class="radio-select"></div>
-                            <div class="audio-card-content">
-                                <div class="voice-avatar">📚</div>
-                                <h3 class="voice-name">Storyteller</h3>
-                                <p class="voice-description">Expressive audiobook narration</p>
-                                <div class="audio-controls">
-                                    <button class="play-btn" onclick="playDemo(event, 'voice4')">
-                                        <i class="fas fa-play"></i>
-                                    </button>
-                                    <div class="audio-wave">
-                                        <div class="audio-progress"></div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </section>
-
-                <!-- Upload Section -->
-                <section class="upload-section glass-container">
-                    <h2 class="section-title">Upload Your Text</h2>
-                    <div class="upload-area" id="uploadArea">
-                        <div class="upload-icon">
-                            <i class="fas fa-file-alt"></i>
-                        </div>
-                        <p style="margin-bottom: 1rem;">Drag & drop your .txt file here or</p>
-                        <button class="btn btn-primary" onclick="document.getElementById('fileInput').click()">
-                            <i class="fas fa-upload"></i> Browse Files
-                        </button>
-                        <input type="file" id="fileInput" style="display: none;" accept=".txt">
-                        <div class="file-info" id="fileInfo">
-                            <i class="fas fa-check-circle" style="color: var(--success);"></i>
-                            <span id="fileName"></span>
-                        </div>
-                    </div>
-                    <div class="character-info" id="charInfo" style="display: none;">
-                        <span class="char-count">Characters: <span id="charCount">0</span></span>
-                        <span class="char-limit">Monthly Limit: 5,000 (Free Plan)</span>
-                    </div>
-                </section>
-
-                <!-- Generate Section -->
-                <section class="generate-section" id="generateSection">
-                    <h3 style="margin-bottom: 1rem;">Ready to Create Your Audio?</h3>
-                    <button class="btn btn-primary generate-btn" id="generateBtn" disabled onclick="generateAudio()">
-                        <i class="fas fa-magic"></i> Generate Audio
-                    </button>
-                </section>
-
-                <!-- Enhanced Processing Section -->
-                <section class="processing-section" id="processingSection">
-                    <div class="processing-icon">
-                        <i class="fas fa-cog"></i>
-                    </div>
-                    <h3 class="processing-title">Processing Your Audio</h3>
-                    <p class="processing-message" id="processingMessage">Starting audio generation...</p>
+                if (!querySnapshot.empty) {
+                    const latestJob = querySnapshot.docs[0];
+                    const jobData = latestJob.data();
                     
-                    <!-- 🆕 Progress Bar -->
-                    <div class="progress-bar">
-                        <div class="progress-fill" id="progressFill"></div>
-                    </div>
+                    console.log('🔄 Found active job:', latestJob.id);
                     
-                    <div class="estimated-time">
-                        <strong>⏱ Estimated Time: 5-15 minutes</strong>
-                        <br>
-                        <small>Processing time depends on file size and server load</small>
-                    </div>
+                    // Resume monitoring this job
+                    currentJobId = latestJob.id;
+                    startJobMonitoring(latestJob.id);
                     
-                    <!-- Real-time Status Updates -->
-                    <div class="status-update">
-                        <h4 style="margin-bottom: 1rem;">Processing Status:</h4>
-                        <ul class="status-steps" id="statusSteps">
-                            <li class="status-step pending" id="step1">
-                                <i class="fas fa-clock"></i> Uploading files...
-                            </li>
-                            <li class="status-step pending" id="step2">
-                                <i class="fas fa-clock"></i> Sending to processing server...
-                            </li>
-                            <li class="status-step pending" id="step3">
-                                <i class="fas fa-clock"></i> Generating audio with AI...
-                            </li>
-                            <li class="status-step pending" id="step4">
-                                <i class="fas fa-clock"></i> Uploading to cloud storage...
-                            </li>
-                            <li class="status-step pending" id="step5">
-                                <i class="fas fa-clock"></i> Finalizing download...
-                            </li>
-                        </ul>
-                    </div>
-                </section>
-
-                <!-- Enhanced Download Section -->
-                <section class="download-section" id="downloadSection">
-                    <div class="download-icon">
-                        <i class="fas fa-download"></i>
-                    </div>
-                    <h3 class="download-title">Your Audio is Ready!</h3>
-                    <p class="download-message">Your audio has been generated and is ready for download</p>
-                    
-                    <div class="download-options">
-                        <button class="btn btn-success download-btn" onclick="downloadAudioFromR2()">
-                            <i class="fas fa-cloud-download-alt"></i> Download Audio
-                        </button>
-                        <button class="btn btn-success download-btn" onclick="previewAudio()">
-                            <i class="fas fa-play"></i> Preview Audio
-                        </button>
-                    </div>
-
-                    <div class="audio-details">
-                        <div class="detail-row">
-                            <span class="detail-label">File Name:</span>
-                            <span class="detail-value" id="audioFileName">my_audio_file</span>
-                        </div>
-                        <div class="detail-row">
-                            <span class="detail-label">Voice Used:</span>
-                            <span class="detail-value" id="audioVoice">Professional Male</span>
-                        </div>
-                        <div class="detail-row">
-                            <span class="detail-label">File Size:</span>
-                            <span class="detail-value" id="audioFileSize">Loading...</span>
-                        </div>
-                        <div class="detail-row">
-                            <span class="detail-label">Characters:</span>
-                            <span class="detail-value" id="audioCharCount">1,250</span>
-                        </div>
-                        <div class="detail-row">
-                            <span class="detail-label">Expires:</span>
-                            <span class="detail-value" id="audioExpiry">24 hours</span>
-                        </div>
-                    </div>
-
-                    <button class="btn btn-primary" onclick="resetForm()" style="margin-top: 1rem;">
-                        <i class="fas fa-plus"></i> Create Another Audio
-                    </button>
-                </section>
-            `;
-            
-            // Re-initialize event listeners
-            initializeFileUpload();
-            updateConnectionStatus('connected', 'Ready');
-        }
-
-        // Initialize file upload after interface is loaded
-        function initializeFileUpload() {
-            const fileInput = document.getElementById('fileInput');
-            const uploadArea = document.getElementById('uploadArea');
-            
-            if (fileInput && uploadArea) {
-                fileInput.addEventListener('change', handleFileSelect);
-                
-                uploadArea.addEventListener('dragover', (e) => {
-                    e.preventDefault();
-                    uploadArea.classList.add('drag-over');
-                });
-                
-                uploadArea.addEventListener('dragleave', () => {
-                    uploadArea.classList.remove('drag-over');
-                });
-                
-                uploadArea.addEventListener('drop', (e) => {
-                    e.preventDefault();
-                    uploadArea.classList.remove('drag-over');
-                    
-                    const files = e.dataTransfer.files;
-                    if (files.length > 0) {
-                        handleFile(files[0]);
-                    }
-                });
-            }
-        }
-
-        // ✅ UPDATED: Enhanced Check for Active Jobs - Multi-User Support
-        async function checkActiveJobs() {
-            if (!currentUser) return;
-            
-            try {
-                updateConnectionStatus('connecting', 'Checking jobs...');
-                
-                // ✅ Check for jobs for current user
-                const q = query(
-                    collection(db, "tts_jobs"),
-                    where("userId", "==", currentUser.uid), // ✅ Use actual user ID
-                    where("status", "in", ["processing", "sent_to_telegram"]),
-                    orderBy("createdAt", "desc"),
-                    limit(1)
-                );
-                
-                const unsubscribe = onSnapshot(q, (querySnapshot) => {
-                    updateConnectionStatus('connected', 'Connected');
-                    
-                    if (!querySnapshot.empty) {
-                        const latestJob = querySnapshot.docs[0];
-                        const jobData = latestJob.data();
-                        
-                        console.log('🔄 Found active job:', latestJob.id);
-                        
-                        // Resume monitoring this job
-                        currentJobId = latestJob.id;
-                        startJobMonitoring(latestJob.id);
-                        
-                        // Show processing section
-                        showProcessingSection();
-                        updateStatus('Resuming processing...', 3);
-                    }
-                }, (error) => {
-                    console.error('❌ Error checking active jobs:', error);
-                    updateConnectionStatus('disconnected', 'Connection error');
-                });
-                
-            } catch (error) {
-                console.error('❌ Error checking active jobs:', error);
-                updateConnectionStatus('disconnected', 'Error');
-            }
-        }
-
-        // Voice Selection
-        window.selectVoice = function(voiceId) {
-            document.querySelectorAll('.audio-card').forEach(card => {
-                card.classList.remove('selected');
-            });
-            
-            event.currentTarget.classList.add('selected');
-            selectedVoice = voiceId;
-            checkGenerateButton();
-            showToast(`Voice selected: ${voiceNames[voiceId]}!`);
-        }
-
-        // Enhanced Play Demo with Real Audio
-        window.playDemo = function(event, voiceId) {
-            event.stopPropagation();
-            const btn = event.currentTarget;
-            const icon = btn.querySelector('i');
-            const progressBar = btn.parentElement.querySelector('.audio-progress');
-            
-            if (icon.classList.contains('fa-play')) {
-                try {
-                    // Create audio element
-                    const audio = new Audio(demoAudioUrls[voiceId]);
-                    
-                    icon.classList.remove('fa-play');
-                    icon.classList.add('fa-pause');
-                    
-                    // Play audio
-                    audio.play();
-                    
-                    // Update progress bar
-                    audio.addEventListener('timeupdate', () => {
-                        const progress = (audio.currentTime / audio.duration) * 100;
-                        progressBar.style.width = progress + '%';
-                    });
-                    
-                    // Reset when audio ends
-                    audio.addEventListener('ended', () => {
-                        icon.classList.remove('fa-pause');
-                        icon.classList.add('fa-play');
-                        progressBar.style.width = '0%';
-                    });
-                    
-                    // Handle errors
-                    audio.addEventListener('error', () => {
-                        console.log('Audio demo not available yet');
-                        icon.classList.remove('fa-pause');
-                        icon.classList.add('fa-play');
-                        progressBar.style.width = '0%';
-                        showToast('Demo audio will be available soon!', 'warning');
-                    });
-                    
-                } catch (error) {
-                    console.log('Demo audio error:', error);
-                    // Fallback to animated demo
-                    let progress = 0;
-                    const interval = setInterval(() => {
-                        progress += 2;
-                        progressBar.style.width = progress + '%';
-                        
-                        if (progress >= 100) {
-                            clearInterval(interval);
-                            icon.classList.remove('fa-pause');
-                            icon.classList.add('fa-play');
-                            progressBar.style.width = '0%';
-                        }
-                    }, 100);
-                }
-            }
-        }
-
-        function handleFileSelect(e) {
-            const file = e.target.files[0];
-            if (file) {
-                handleFile(file);
-            }
-        }
-
-        function handleFile(file) {
-            if (!file.name.endsWith('.txt')) {
-                showToast('Please upload a .txt file only!', 'error');
-                return;
-            }
-            
-            uploadedFile = file;
-            document.getElementById('fileName').textContent = file.name;
-            document.getElementById('fileInfo').classList.add('show');
-            
-            // Read file to count characters
-            const reader = new FileReader();
-            reader.onload = function(e) {
-                const text = e.target.result;
-                const charCount = text.length;
-                document.getElementById('charCount').textContent = charCount.toLocaleString();
-                document.getElementById('charInfo').style.display = 'flex';
-                
-                if (charCount > 5000) {
-                    showToast('File exceeds free plan limit. Upgrade to Premium!', 'warning');
-                }
-            };
-            reader.readAsText(file);
-            
-            checkGenerateButton();
-            showToast('File uploaded successfully!');
-        }
-
-        // Check Generate Button
-        function checkGenerateButton() {
-            const btn = document.getElementById('generateBtn');
-            if (btn && selectedVoice && uploadedFile && currentUser) {
-                btn.disabled = false;
-            } else if (btn) {
-                btn.disabled = true;
-            }
-        }
-
-        // ✅ UPDATED: Enhanced Generate Audio - Multi-User Support
-        window.generateAudio = async function() {
-            if (!selectedVoice || !uploadedFile) {
-                showToast('Please select a voice and upload a file!', 'error');
-                return;
-            }
-            
-            if (!currentUser) {
-                showToast('Please login first!', 'error');
-                return;
-            }
-            
-            try {
-                updateConnectionStatus('connecting', 'Starting...');
-                
-                // Generate unique ID for this job
-                const jobId = Date.now().toString();
-                const userId = currentUser.uid; // ✅ Use actual user ID
-                currentJobId = jobId;
-                
-                // Show processing section
-                showProcessingSection();
-                updateStatus('Uploading files...', 1);
-                updateProgress(20);
-                
-                // Upload text file with metadata
-                const textFileName = `${jobId}-${uploadedFile.name}`;
-                const textRef = ref(storage, `tts-requests/${userId}/${textFileName}`); // ✅ User-specific path
-                
-                // Upload with reference voice metadata
-                const metadata = {
-                    customMetadata: {
-                        userId: userId, // ✅ Actual user ID
-                        voiceId: selectedVoice,
-                        voiceName: voiceNames[selectedVoice],
-                        referenceAudio: voiceToReference[selectedVoice],
-                        jobId: jobId,
-                        timestamp: new Date().toISOString()
-                    }
-                };
-                
-                await uploadBytes(textRef, uploadedFile, metadata);
-                console.log('✅ Text file uploaded for user:', userId);
-                
-                updateStatus('Sending to processing server...', 2);
-                updateProgress(40);
-                updateConnectionStatus('connected', 'Processing...');
-                
-                // Start real-time job monitoring
-                startJobMonitoring(jobId);
-                
-                showToast('Files uploaded! Processing started...', 'success');
-                
-            } catch (error) {
-                console.error('❌ Upload error:', error);
-                showToast('Upload failed! Please try again.', 'error');
-                updateConnectionStatus('disconnected', 'Upload failed');
-                resetToGenerateSection();
-            }
-        }
-
-        // 🆕 Update Progress Bar
-        function updateProgress(percentage) {
-            const progressFill = document.getElementById('progressFill');
-            if (progressFill) {
-                progressFill.style.width = percentage + '%';
-            }
-        }
-
-        // Real-time Job Monitoring
-        function startJobMonitoring(jobId) {
-            if (jobListener) {
-                jobListener(); // Unsubscribe from previous listener
-            }
-            
-            const jobRef = doc(db, "tts_jobs", jobId);
-            
-            jobListener = onSnapshot(jobRef, (doc) => {
-                if (doc.exists()) {
-                    const jobData = doc.data();
-                    console.log('📊 Job status update:', jobData.status);
-                    
-                    switch(jobData.status) {
-                        case 'processing':
-                            updateStatus('AI is generating your audio...', 3);
-                            updateProgress(60);
-                            updateConnectionStatus('connected', 'AI Processing...');
-                            break;
-                            
-                        case 'sent_to_telegram':
-                            updateStatus('Processing on AI server...', 3);
-                            updateProgress(70);
-                            updateConnectionStatus('connected', 'AI Server...');
-                            break;
-                            
-                        case 'completed':
-                            if (jobData.downloadUrl) {
-                                currentDownloadUrl = jobData.downloadUrl;
-                                updateProgress(100);
-                                updateConnectionStatus('connected', 'Completed');
-                                showDownloadSection(jobData);
-                            }
-                            break;
-                            
-                        case 'failed':
-                            updateConnectionStatus('disconnected', 'Failed');
-                            showError(jobData.error || 'Processing failed');
-                            break;
-                    }
-                } else {
-                    console.log('❌ Job document not found');
+                    // Show processing section
+                    showProcessingSection();
+                    updateStatus('Resuming processing...', 3);
                 }
             }, (error) => {
-                console.error('❌ Job monitoring error:', error);
-                updateConnectionStatus('disconnected', 'Monitoring error');
-            });
-        }
-
-        // Update Processing Status
-        function updateStatus(message, step) {
-            const messageEl = document.getElementById('processingMessage');
-            if (messageEl) {
-                messageEl.textContent = message;
-            }
-            
-            // Update step indicators
-            for (let i = 1; i <= 5; i++) {
-                const stepEl = document.getElementById(`step${i}`);
-                if (stepEl) {
-                    const icon = stepEl.querySelector('i');
-                    
-                    if (i < step) {
-                        stepEl.className = 'status-step completed';
-                        icon.className = 'fas fa-check-circle';
-                    } else if (i === step) {
-                        stepEl.className = 'status-step current';
-                        icon.className = 'fas fa-spinner fa-spin';
-                    } else {
-                        stepEl.className = 'status-step pending';
-                        icon.className = 'fas fa-clock';
-                    }
-                }
-            }
-        }
-
-        // Show Processing Section
-        function showProcessingSection() {
-            const generateSection = document.getElementById('generateSection');
-            const processingSection = document.getElementById('processingSection');
-            const downloadSection = document.getElementById('downloadSection');
-            
-            if (generateSection) generateSection.style.display = 'none';
-            if (processingSection) processingSection.classList.add('show');
-            if (downloadSection) downloadSection.classList.remove('show');
-        }
-
-        // Show Download Section with R2 Data
-        function showDownloadSection(jobData) {
-            const generateSection = document.getElementById('generateSection');
-            const processingSection = document.getElementById('processingSection');
-            const downloadSection = document.getElementById('downloadSection');
-            
-            if (generateSection) generateSection.style.display = 'none';
-            if (processingSection) processingSection.classList.remove('show');
-            if (downloadSection) {
-                downloadSection.classList.add('show');
+                console.error('❌ Error checking active jobs:', error);
+                updateConnectionStatus('disconnected', 'Connection error');
                 
-                // Update download details
-                if (document.getElementById('audioFileName')) {
-                    document.getElementById('audioFileName').textContent = `audio_${currentJobId}.mp3`;
+                // Retry connection
+                if (connectionRetryCount < 3) {
+                    connectionRetryCount++;
+                    setTimeout(() => {
+                        checkActiveJobs();
+                    }, 5000);
                 }
-                if (document.getElementById('audioVoice')) {
-                    document.getElementById('audioVoice').textContent = voiceNames[selectedVoice] || 'Unknown';
-                }
-                if (document.getElementById('audioCharCount')) {
-                    document.getElementById('audioCharCount').textContent = document.getElementById('charCount')?.textContent || '0';
-                }
-            }
-        }
-
-        // Show Error
-        function showError(message) {
-            showToast(`Error: ${message}`, 'error');
-            resetToGenerateSection();
-        }
-
-        // Reset to Generate Section
-        function resetToGenerateSection() {
-            const generateSection = document.getElementById('generateSection');
-            const processingSection = document.getElementById('processingSection');
-            const downloadSection = document.getElementById('downloadSection');
-            
-            if (generateSection) generateSection.style.display = 'block';
-            if (processingSection) processingSection.classList.remove('show');
-            if (downloadSection) downloadSection.classList.remove('show');
-        }
-
-        // Download Audio
-        window.downloadAudioFromR2 = function() {
-            if (currentDownloadUrl) {
-                const link = document.createElement('a');
-                link.href = currentDownloadUrl;
-                link.download = `audio_${currentJobId}.mp3`;
-                document.body.appendChild(link);
-                link.click();
-                document.body.removeChild(link);
-                
-                showToast('Download started!', 'success');
-            } else {
-                showToast('Download URL not available', 'error');
-            }
-        }
-
-        // Preview Audio
-        window.previewAudio = function() {
-            if (currentDownloadUrl) {
-                const modal = document.getElementById('audioPreviewModal');
-                const player = document.getElementById('previewAudioPlayer');
-                
-                player.src = currentDownloadUrl;
-                modal.classList.add('show');
-            } else {
-                showToast('Audio not available for preview', 'error');
-            }
-        }
-
-        // Close Preview
-        window.closePreview = function() {
-            const modal = document.getElementById('audioPreviewModal');
-            const player = document.getElementById('previewAudioPlayer');
-            
-            player.pause();
-            player.src = '';
-            modal.classList.remove('show');
-        }
-
-        // Reset Form
-        window.resetForm = function() {
-            selectedVoice = null;
-            uploadedFile = null;
-            currentJobId = null;
-            currentDownloadUrl = null;
-            
-            // Reset UI
-            document.querySelectorAll('.audio-card').forEach(card => {
-                card.classList.remove('selected');
             });
             
-            const fileInfo = document.getElementById('fileInfo');
-            const charInfo = document.getElementById('charInfo');
-            const fileInput = document.getElementById('fileInput');
-            
-            if (fileInfo) fileInfo.classList.remove('show');
-            if (charInfo) charInfo.style.display = 'none';
-            if (fileInput) fileInput.value = '';
-            
-            checkGenerateButton();
-            resetToGenerateSection();
+        } catch (error) {
+            console.error('❌ Error checking active jobs:', error);
+            updateConnectionStatus('disconnected', 'Error');
         }
+    }
 
-        // Toggle User Menu
-        window.toggleUserMenu = function() {
-            const dropdown = document.getElementById('userDropdown');
-            dropdown.classList.toggle('show');
-        }
-
-        // Logout
-        window.logout = async function() {
-            try {
-                await signOut(auth);
-                window.location.href = 'login.html';
-            } catch (error) {
-                console.error('Logout error:', error);
-                showToast('Error logging out', 'error');
-            }
-        }
-
-        // Utility functions
-        function formatTime(milliseconds) {
-            const hours = Math.floor(milliseconds / (1000 * 60 * 60));
-            const minutes = Math.floor((milliseconds % (1000 * 60 * 60)) / (1000 * 60));
-            
-            if (hours > 0) {
-                return `${hours}h ${minutes}m`;
-            } else {
-                return `${minutes}m`;
-            }
-        }
-
-        function showToast(message, type = 'success') {
-            const toast = document.getElementById('toast');
-            toast.textContent = message;
-            toast.className = `toast show ${type}`;
-            
-            setTimeout(() => {
-                toast.classList.remove('show');
-            }, 3000);
-        }
-
-        // Initialize particles on load
-        initParticles();
-
-        // Close modals and dropdowns when clicking outside
-        document.addEventListener('click', (e) => {
-            if (e.target.classList.contains('audio-preview-modal')) {
-                closePreview();
-            }
-            
-            if (!e.target.closest('.user-menu')) {
-                const dropdown = document.getElementById('userDropdown');
-                if (dropdown) dropdown.classList.remove('show');
-            }
+    // Voice Selection
+    window.selectVoice = function(voiceId) {
+        document.querySelectorAll('.audio-card').forEach(card => {
+            card.classList.remove('selected');
         });
-    </script>
-</body>
-</html>
+        
+        event.currentTarget.classList.add('selected');
+        selectedVoice = voiceId;
+        checkGenerateButton();
+        showToast(Voice selected: ${voiceNames[voiceId]}!);
+    }
+
+    // Enhanced Play Demo with Real Audio
+    window.playDemo = function(event, voiceId) {
+        event.stopPropagation();
+        const btn = event.currentTarget;
+        const icon = btn.querySelector('i');
+        const progressBar = btn.parentElement.querySelector('.audio-progress');
+        
+        if (icon.classList.contains('fa-play')) {
+            try {
+                // Create audio element
+                const audio = new Audio(demoAudioUrls[voiceId]);
+                
+                icon.classList.remove('fa-play');
+                icon.classList.add('fa-pause');
+                
+                // Play audio
+                audio.play();
+                
+                // Update progress bar
+                audio.addEventListener('timeupdate', () => {
+                    const progress = (audio.currentTime / audio.duration) * 100;
+                    progressBar.style.width = progress + '%';
+                });
+                
+                // Reset when audio ends
+                audio.addEventListener('ended', () => {
+                    icon.classList.remove('fa-pause');
+                    icon.classList.add('fa-play');
+                    progressBar.style.width = '0%';
+                });
+                
+                // Handle errors
+                audio.addEventListener('error', () => {
+                    console.log('Audio demo not available yet');
+                    icon.classList.remove('fa-pause');
+                    icon.classList.add('fa-play');
+                    progressBar.style.width = '0%';
+                    showToast('Demo audio will be available soon!', 'warning');
+                });
+                
+            } catch (error) {
+                console.log('Demo audio error:', error);
+                // Fallback to animated demo
+                let progress = 0;
+                const interval = setInterval(() => {
+                    progress += 2;
+                    progressBar.style.width = progress + '%';
+                    
+                    if (progress >= 100) {
+                        clearInterval(interval);
+                        icon.classList.remove('fa-pause');
+                        icon.classList.add('fa-play');
+                        progressBar.style.width = '0%';
+                    }
+                }, 100);
+            }
+        }
+    }
+
+    // File Upload
+    const fileInput = document.getElementById('fileInput');
+    const uploadArea = document.getElementById('uploadArea');
+    
+    fileInput.addEventListener('change', handleFileSelect);
+    
+    uploadArea.addEventListener('dragover', (e) => {
+        e.preventDefault();
+        uploadArea.classList.add('drag-over');
+    });
+    
+    uploadArea.addEventListener('dragleave', () => {
+        uploadArea.classList.remove('drag-over');
+    });
+    
+    uploadArea.addEventListener('drop', (e) => {
+        e.preventDefault();
+        uploadArea.classList.remove('drag-over');
+        
+        const files = e.dataTransfer.files;
+        if (files.length > 0) {
+            handleFile(files[0]);
+        }
+    });
+
+    function handleFileSelect(e) {
+        const file = e.target.files[0];
+        if (file) {
+            handleFile(file);
+        }
+    }
+
+    function handleFile(file) {
+        if (!file.name.endsWith('.txt')) {
+            showToast('Please upload a .txt file only!', 'error');
+            return;
+        }
+        
+        uploadedFile = file;
+        document.getElementById('fileName').textContent = file.name;
+        document.getElementById('fileInfo').classList.add('show');
+        
+        // Read file to count characters
+        const reader = new FileReader();
+        reader.onload = function(e) {
+            const text = e.target.result;
+            const charCount = text.length;
+            document.getElementById('charCount').textContent = charCount.toLocaleString();
+            document.getElementById('charInfo').style.display = 'flex';
+            
+            if (charCount > 5000) {
+                showToast('File exceeds free plan limit. Upgrade to Premium!', 'warning');
+            }
+        };
+        reader.readAsText(file);
+        
+        checkGenerateButton();
+        showToast('File uploaded successfully!');
+    }
+
+    // Check Generate Button
+    function checkGenerateButton() {
+        const btn = document.getElementById('generateBtn');
+        if (selectedVoice && uploadedFile && currentUser) {
+            btn.disabled = false;
+        } else {
+            btn.disabled = true;
+        }
+    }
+
+    // Enhanced Generate Audio
+    window.generateAudio = async function() {
+        if (!selectedVoice || !uploadedFile) {
+            showToast('Please select a voice and upload a file!', 'error');
+            return;
+        }
+        
+        try {
+            updateConnectionStatus('connecting', 'Starting...');
+            
+            // Generate unique ID for this job
+            const jobId = Date.now().toString();
+            const userId = TARGET_USER_ID; // Always use target user
+            currentJobId = jobId;
+            
+            // Show processing section
+            showProcessingSection();
+            updateStatus('Uploading files...', 1);
+            updateProgress(20);
+            
+            // Upload text file with metadata
+            const textFileName = ${jobId}-${uploadedFile.name};
+            const textRef = ref(storage, tts-requests/${userId}/${textFileName});
+            
+            // Upload with reference voice metadata
+            const metadata = {
+                customMetadata: {
+                    userId: userId,
+                    voiceId: selectedVoice,
+                    voiceName: voiceNames[selectedVoice],
+                    referenceAudio: voiceToReference[selectedVoice],
+                    jobId: jobId,
+                    timestamp: new Date().toISOString()
+                }
+            };
+            
+            await uploadBytes(textRef, uploadedFile, metadata);
+            console.log('✅ Text file uploaded for target user:', userId);
+            
+            updateStatus('Sending to processing server...', 2);
+            updateProgress(40);
+            updateConnectionStatus('connected', 'Processing...');
+            
+            // Start real-time job monitoring
+            startJobMonitoring(jobId);
+            
+            showToast('Files uploaded! Processing started...', 'success');
+            
+        } catch (error) {
+            console.error('❌ Upload error:', error);
+            showToast('Upload failed! Please try again.', 'error');
+            updateConnectionStatus('disconnected', 'Upload failed');
+            resetToGenerateSection();
+        }
+    }
+
+    // 🆕 Update Progress Bar
+    function updateProgress(percentage) {
+        const progressFill = document.getElementById('progressFill');
+        progressFill.style.width = percentage + '%';
+    }
+
+    // Real-time Job Monitoring
+    function startJobMonitoring(jobId) {
+        if (jobListener) {
+            jobListener(); // Unsubscribe from previous listener
+        }
+        
+        const jobRef = doc(db, "tts_jobs", jobId);
+        
+        jobListener = onSnapshot(jobRef, (doc) => {
+            if (doc.exists()) {
+                const jobData = doc.data();
+                console.log('📊 Job status update:', jobData.status);
+                
+                switch(jobData.status) {
+                    case 'processing':
+                        updateStatus('AI is generating your audio...', 3);
+                        updateProgress(60);
+                        updateConnectionStatus('connected', 'AI Processing...');
+                        break;
+                        
+                    case 'sent_to_telegram':
+                        updateStatus('Processing on AI server...', 3);
+                        updateProgress(70);
+                        updateConnectionStatus('connected', 'AI Server...');
+                        break;
+                        
+                    case 'completed':
+                        if (jobData.downloadUrl) {
+                            currentDownloadUrl = jobData.downloadUrl;
+                            updateProgress(100);
+                            updateConnectionStatus('connected', 'Completed');
+                            showDownloadSection(jobData);
+                        }
+                        break;
+                        
+                    case 'failed':
+                        updateConnectionStatus('disconnected', 'Failed');
+                        showError(jobData.error || 'Processing failed');
+                        break;
+                }
+            } else {
+                console.log('❌ Job document not found');
+            }
+        }, (error) => {
+            console.error('❌ Job monitoring error:', error);
+            updateConnectionStatus('disconnected', 'Monitoring error');
+        });
+    }
+
+    // Update Processing Status
+    function updateStatus(message, step) {
+        document.getElementById('processingMessage').textContent = message;
+        
+        // Update step indicators
+        for (let i = 1; i <= 5; i++) {
+            const stepEl = document.getElementById(step${i});
+            const icon = stepEl.querySelector('i');
+            
+            if (i < step) {
+                stepEl.className = 'status-step completed';
+                icon.className = 'fas fa-check-circle';
+            } else if (i === step) {
+                stepEl.className = 'status-step current';
+                icon.className = 'fas fa-spinner fa-spin';
+            } else {
+                stepEl.className = 'status-step pending';
+                icon.className = 'fas fa-clock';
+            }
+        }
+    }
+
+    // Show Processing Section
+    function showProcessingSection() {
+        document.getElementById('generateSection').style.display = 'none';
+        document.getElementById('processingSection').classList.add('show');
+        document.getElementById('downloadSection').classList.remove('show');
+    }
+
+    // Show Download Section with R2 Data
+    function showDownloadSection(jobData) {
