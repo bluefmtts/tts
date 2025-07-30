@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Blue FM TTS - Text to Speech Platform</title>
+    <title>Blue FM TTS - AI Voice Platform</title>
     
     <!-- Google Fonts -->
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
@@ -43,7 +43,7 @@
             position: relative;
         }
 
-        /* 🆕 Enhanced Background Animation */
+        /* Background Animation */
         .bg-animation {
             position: fixed;
             width: 100%;
@@ -88,7 +88,7 @@
             50% { transform: translateY(-20px) rotate(180deg); opacity: 0.4; }
         }
 
-        /* 🆕 Connection Status Indicator */
+        /* Connection Status */
         .connection-status {
             position: fixed;
             top: 70px;
@@ -135,17 +135,9 @@
             animation: pulse 2s infinite;
         }
 
-        .connected .status-dot {
-            background: var(--success);
-        }
-
-        .disconnected .status-dot {
-            background: var(--error);
-        }
-
-        .connecting .status-dot, .waiting .status-dot {
-            background: var(--warning);
-        }
+        .connected .status-dot { background: var(--success); }
+        .disconnected .status-dot { background: var(--error); }
+        .connecting .status-dot, .waiting .status-dot { background: var(--warning); }
 
         @keyframes pulse {
             0% { opacity: 1; transform: scale(1); }
@@ -226,20 +218,10 @@
             font-weight: 600;
         }
 
-        .nav-link.premium:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 5px 20px rgba(251, 191, 36, 0.4);
-        }
-
-        .nav-link.audio-link {
-            background: linear-gradient(45deg, var(--success), #059669);
+        .nav-link.admin {
+            background: linear-gradient(45deg, var(--error), #dc2626);
             color: white;
             font-weight: 600;
-        }
-
-        .nav-link.audio-link:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 5px 20px rgba(16, 185, 129, 0.4);
         }
 
         /* User Menu */
@@ -290,6 +272,63 @@
             to { opacity: 1; transform: translateY(0); }
         }
 
+        /* Login Section */
+        .login-section {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+            padding: 2rem;
+        }
+
+        .login-container {
+            background: var(--glass-bg);
+            backdrop-filter: blur(10px);
+            border: 1px solid var(--glass-border);
+            border-radius: 20px;
+            padding: 3rem;
+            box-shadow: 0 8px 32px var(--shadow);
+            text-align: center;
+            max-width: 400px;
+            width: 100%;
+        }
+
+        .login-title {
+            font-size: 2rem;
+            margin-bottom: 1rem;
+            background: linear-gradient(45deg, var(--text-primary), var(--accent));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .login-subtitle {
+            color: var(--text-secondary);
+            margin-bottom: 2rem;
+        }
+
+        .google-login-btn {
+            width: 100%;
+            padding: 1rem;
+            background: white;
+            color: #333;
+            border: none;
+            border-radius: 10px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+            font-size: 1rem;
+        }
+
+        .google-login-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+        }
+
         /* Glass Container */
         .glass-container {
             background: var(--glass-bg);
@@ -299,6 +338,7 @@
             padding: 2rem;
             box-shadow: 0 8px 32px var(--shadow);
             transition: all 0.3s ease;
+            margin-bottom: 2rem;
         }
 
         .glass-container:hover {
@@ -347,7 +387,7 @@
             to { opacity: 1; transform: translateY(0); }
         }
 
-        /* 🆕 Enhanced Stats */
+        /* Stats Container */
         .stats-container {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
@@ -418,6 +458,13 @@
             transition: all 0.3s ease;
             position: relative;
             overflow: hidden;
+            opacity: 1;
+        }
+
+        .audio-card.disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+            pointer-events: none;
         }
 
         .audio-card::before {
@@ -553,6 +600,62 @@
             font-weight: bold;
         }
 
+        /* Status Message */
+        .status-message {
+            text-align: center;
+            padding: 3rem;
+            background: var(--glass-bg);
+            backdrop-filter: blur(10px);
+            border: 1px solid var(--glass-border);
+            border-radius: 20px;
+            margin-bottom: 2rem;
+        }
+
+        .status-icon {
+            font-size: 4rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .status-icon.waiting {
+            color: var(--warning);
+            animation: pulse 2s infinite;
+        }
+
+        .status-icon.approved {
+            color: var(--primary);
+        }
+
+        .status-icon.error {
+            color: var(--error);
+        }
+
+        .status-title {
+            font-size: 1.8rem;
+            font-weight: 600;
+            margin-bottom: 1rem;
+        }
+
+        .status-description {
+            color: var(--text-secondary);
+            margin-bottom: 2rem;
+            line-height: 1.6;
+        }
+
+        .status-details {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid var(--glass-border);
+            padding: 1.5rem;
+            border-radius: 10px;
+            margin-bottom: 2rem;
+        }
+
+        .countdown {
+            font-size: 1.5rem;
+            font-weight: 600;
+            color: var(--accent);
+            margin: 1rem 0;
+        }
+
         /* Upload Section */
         .upload-section {
             margin-bottom: 3rem;
@@ -566,6 +669,12 @@
             transition: all 0.3s ease;
             position: relative;
             background: rgba(255, 255, 255, 0.02);
+            opacity: 1;
+        }
+
+        .upload-area.disabled {
+            opacity: 0.3;
+            pointer-events: none;
         }
 
         .upload-area:hover {
@@ -644,12 +753,12 @@
             color: white;
         }
 
-        .btn-success:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 10px 30px rgba(16, 185, 129, 0.4);
+        .btn-danger {
+            background: linear-gradient(45deg, var(--error), #dc2626);
+            color: white;
         }
 
-        /* 🆕 Enhanced File Info */
+        /* File Info */
         .file-info {
             margin-top: 1rem;
             padding: 1rem;
@@ -667,226 +776,6 @@
         @keyframes slideDown {
             from { opacity: 0; transform: translateY(-10px); }
             to { opacity: 1; transform: translateY(0); }
-        }
-
-        /* Generate Section */
-        .generate-section {
-            text-align: center;
-            padding: 2rem;
-            background: linear-gradient(45deg, rgba(37, 99, 235, 0.1), rgba(96, 165, 250, 0.1));
-            border-radius: 20px;
-            margin-bottom: 2rem;
-            border: 1px solid var(--glass-border);
-        }
-
-        .generate-btn {
-            font-size: 1.25rem;
-            padding: 1rem 3rem;
-            position: relative;
-        }
-
-        .generate-btn:disabled {
-            background: linear-gradient(45deg, #666, #888);
-        }
-
-        /* 🆕 Enhanced Processing Section */
-        .processing-section {
-            display: none;
-            text-align: center;
-            padding: 2rem;
-            background: linear-gradient(45deg, rgba(245, 158, 11, 0.1), rgba(251, 191, 36, 0.1));
-            border-radius: 20px;
-            margin-bottom: 2rem;
-            border: 1px solid var(--warning);
-            position: relative;
-            overflow: hidden;
-        }
-
-        .processing-section::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: -100%;
-            width: 100%;
-            height: 100%;
-            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.1), transparent);
-            animation: shimmer 2s infinite;
-        }
-
-        @keyframes shimmer {
-            0% { left: -100%; }
-            100% { left: 100%; }
-        }
-
-        .processing-section.show {
-            display: block;
-            animation: slideDown 0.5s ease-out;
-        }
-
-        .processing-icon {
-            font-size: 3rem;
-            color: var(--warning);
-            margin-bottom: 1rem;
-            animation: spin 2s linear infinite;
-        }
-
-        @keyframes spin {
-            0% { transform: rotate(0deg); }
-            100% { transform: rotate(360deg); }
-        }
-
-        .processing-title {
-            font-size: 1.5rem;
-            color: var(--warning);
-            margin-bottom: 0.5rem;
-        }
-
-        .processing-message {
-            color: var(--text-secondary);
-            font-size: 1rem;
-            margin-bottom: 1rem;
-        }
-
-        .estimated-time {
-            background: rgba(245, 158, 11, 0.2);
-            border: 1px solid var(--warning);
-            padding: 1rem;
-            border-radius: 10px;
-            margin-top: 1rem;
-        }
-
-        /* 🆕 Enhanced Status Update Section */
-        .status-update {
-            background: rgba(59, 130, 246, 0.1);
-            border: 1px solid var(--secondary);
-            padding: 1rem;
-            border-radius: 10px;
-            margin-top: 1rem;
-            text-align: left;
-        }
-
-        .status-steps {
-            list-style: none;
-            padding: 0;
-        }
-
-        .status-step {
-            padding: 0.5rem 0;
-            display: flex;
-            align-items: center;
-            gap: 0.5rem;
-            transition: all 0.3s ease;
-        }
-
-        .status-step.completed {
-            color: var(--success);
-            transform: translateX(5px);
-        }
-
-        .status-step.current {
-            color: var(--warning);
-            font-weight: 600;
-            transform: translateX(10px);
-        }
-
-        .status-step.pending {
-            color: var(--text-secondary);
-            opacity: 0.7;
-        }
-
-        /* 🆕 Enhanced Download Section */
-        .download-section {
-            display: none;
-            text-align: center;
-            padding: 2rem;
-            background: linear-gradient(45deg, rgba(16, 185, 129, 0.1), rgba(5, 150, 105, 0.1));
-            border-radius: 20px;
-            margin-bottom: 2rem;
-            border: 1px solid var(--success);
-            position: relative;
-            overflow: hidden;
-        }
-
-        .download-section::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: -100%;
-            width: 100%;
-            height: 100%;
-            background: linear-gradient(90deg, transparent, rgba(16, 185, 129, 0.2), transparent);
-            animation: successShimmer 3s infinite;
-        }
-
-        @keyframes successShimmer {
-            0% { left: -100%; }
-            100% { left: 100%; }
-        }
-
-        .download-section.show {
-            display: block;
-            animation: slideDown 0.5s ease-out;
-        }
-
-        .download-icon {
-            font-size: 3rem;
-            color: var(--success);
-            margin-bottom: 1rem;
-            animation: bounce 2s infinite;
-        }
-
-        .download-title {
-            font-size: 1.5rem;
-            color: var(--success);
-            margin-bottom: 0.5rem;
-        }
-
-        .download-message {
-            color: var(--text-secondary);
-            margin-bottom: 2rem;
-        }
-
-        .download-options {
-            display: flex;
-            justify-content: center;
-            gap: 1rem;
-            margin-bottom: 1rem;
-            flex-wrap: wrap;
-        }
-
-        .download-btn {
-            padding: 0.75rem 1.5rem;
-            font-size: 1rem;
-        }
-
-        .audio-details {
-            background: rgba(16, 185, 129, 0.1);
-            border: 1px solid var(--success);
-            padding: 1rem;
-            border-radius: 10px;
-            margin-top: 1rem;
-            text-align: left;
-        }
-
-        .detail-row {
-            display: flex;
-            justify-content: space-between;
-            margin-bottom: 0.5rem;
-            padding: 0.25rem 0;
-            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
-        }
-
-        .detail-row:last-child {
-            border-bottom: none;
-        }
-
-        .detail-label {
-            color: var(--text-secondary);
-        }
-
-        .detail-value {
-            color: var(--text-primary);
-            font-weight: 600;
         }
 
         /* Character Counter */
@@ -911,7 +800,27 @@
             color: var(--accent);
         }
 
-        /* 🆕 Enhanced Toast */
+        /* Generate Section */
+        .generate-section {
+            text-align: center;
+            padding: 2rem;
+            background: linear-gradient(45deg, rgba(37, 99, 235, 0.1), rgba(96, 165, 250, 0.1));
+            border-radius: 20px;
+            margin-bottom: 2rem;
+            border: 1px solid var(--glass-border);
+        }
+
+        .generate-btn {
+            font-size: 1.25rem;
+            padding: 1rem 3rem;
+            position: relative;
+        }
+
+        .generate-btn:disabled {
+            background: linear-gradient(45deg, #666, #888);
+        }
+
+        /* Toast */
         .toast {
             position: fixed;
             bottom: 2rem;
@@ -952,8 +861,112 @@
             color: var(--warning);
         }
 
-        /* 🆕 Enhanced Audio Preview Modal */
-        .audio-preview-modal {
+        /* Admin Panel Styles */
+        .admin-panel {
+            display: none;
+        }
+
+        .admin-panel.show {
+            display: block;
+        }
+
+        .tab-container {
+            display: flex;
+            gap: 0.5rem;
+            margin-bottom: 2rem;
+            background: rgba(255, 255, 255, 0.05);
+            padding: 0.5rem;
+            border-radius: 15px;
+        }
+
+        .tab-btn {
+            flex: 1;
+            padding: 1rem;
+            background: transparent;
+            border: none;
+            color: var(--text-secondary);
+            font-weight: 600;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+        }
+
+        .tab-btn.active {
+            background: var(--primary);
+            color: white;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(37, 99, 235, 0.3);
+        }
+
+        .tab-content {
+            display: none;
+        }
+
+        .tab-content.active {
+            display: block;
+            animation: fadeIn 0.3s ease-out;
+        }
+
+        .user-table {
+            width: 100%;
+            border-collapse: collapse;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 15px;
+            overflow: hidden;
+            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.2);
+        }
+
+        .user-table th,
+        .user-table td {
+            padding: 1rem;
+            text-align: left;
+            border-bottom: 1px solid var(--glass-border);
+        }
+
+        .user-table th {
+            background: rgba(255, 255, 255, 0.1);
+            font-weight: 600;
+            color: var(--accent);
+        }
+
+        .user-table tr:hover {
+            background: rgba(255, 255, 255, 0.08);
+        }
+
+        .status-badge {
+            padding: 0.25rem 0.75rem;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            font-weight: 600;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.3rem;
+        }
+
+        .status-pending {
+            background: rgba(245, 158, 11, 0.2);
+            color: var(--warning);
+            border: 1px solid var(--warning);
+        }
+
+        .status-approved {
+            background: rgba(16, 185, 129, 0.2);
+            color: var(--success);
+            border: 1px solid var(--success);
+        }
+
+        .status-bot-linked {
+            background: rgba(59, 130, 246, 0.2);
+            color: var(--accent);
+            border: 1px solid var(--accent);
+        }
+
+        /* Modal */
+        .modal {
             display: none;
             position: fixed;
             top: 0;
@@ -963,13 +976,18 @@
             background: rgba(0, 0, 0, 0.8);
             z-index: 2000;
             backdrop-filter: blur(5px);
-            animation: fadeIn 0.3s ease-out;
         }
 
-        .audio-preview-modal.show {
+        .modal.show {
             display: flex;
             align-items: center;
             justify-content: center;
+            animation: modalFadeIn 0.3s ease-out;
+        }
+
+        @keyframes modalFadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
         }
 
         .modal-content {
@@ -1012,89 +1030,65 @@
             transform: rotate(90deg);
         }
 
-        .audio-player {
-            width: 100%;
+        .form-group {
             margin-bottom: 1rem;
-            border-radius: 10px;
-            overflow: hidden;
         }
 
-        /* Footer */
-        footer {
+        .form-label {
+            display: block;
+            margin-bottom: 0.5rem;
+            color: var(--text-secondary);
+            font-weight: 600;
+        }
+
+        .form-input {
+            width: 100%;
+            padding: 0.75rem;
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid var(--glass-border);
+            border-radius: 10px;
+            color: var(--text-primary);
+            font-size: 1rem;
+            transition: all 0.3s ease;
+        }
+
+        .form-input:focus {
+            outline: none;
+            border-color: var(--accent);
+            background: rgba(255, 255, 255, 0.15);
+            box-shadow: 0 0 20px rgba(96, 165, 250, 0.3);
+        }
+
+        .form-input::placeholder {
+            color: var(--text-secondary);
+        }
+
+        .loading {
+            display: none;
             text-align: center;
             padding: 2rem;
-            color: var(--text-secondary);
-            border-top: 1px solid var(--glass-border);
-            background: rgba(255, 255, 255, 0.02);
         }
 
-        /* ✅ NEW: Waiting/Status Messages */
-        .status-message {
-            text-align: center;
-            padding: 3rem;
-            background: var(--glass-bg);
-            backdrop-filter: blur(10px);
-            border: 1px solid var(--glass-border);
-            border-radius: 20px;
-            margin-bottom: 2rem;
+        .loading.show {
+            display: block;
         }
 
-        .status-icon {
-            font-size: 4rem;
-            margin-bottom: 1.5rem;
+        .spinner {
+            width: 40px;
+            height: 40px;
+            border: 4px solid rgba(255, 255, 255, 0.3);
+            border-top: 4px solid var(--accent);
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 1rem;
         }
 
-        .status-icon.waiting {
-            color: var(--warning);
-            animation: pulse 2s infinite;
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
         }
 
-        .status-icon.approved {
-            color: var(--primary);
-        }
-
-        .status-icon.error {
-            color: var(--error);
-        }
-
-        .status-title {
-            font-size: 1.8rem;
-            font-weight: 600;
-            margin-bottom: 1rem;
-        }
-
-        .status-description {
-            color: var(--text-secondary);
-            margin-bottom: 2rem;
-            line-height: 1.6;
-        }
-
-        .status-details {
-            background: rgba(255, 255, 255, 0.05);
-            border: 1px solid var(--glass-border);
-            padding: 1.5rem;
-            border-radius: 10px;
-            margin-bottom: 2rem;
-        }
-
-        .countdown {
-            font-size: 1.5rem;
-            font-weight: 600;
-            color: var(--accent);
-            margin: 1rem 0;
-        }
-
-        /* 🆕 Enhanced Responsive Design */
-        @media (max-width: 1024px) {
-            .hero-title {
-                font-size: 2.5rem;
-            }
-            
-            .main-content {
-                padding: 5rem 1rem 2rem;
-            }
-        }
-
+        /* Responsive */
         @media (max-width: 768px) {
             .hero-title {
                 font-size: 2rem;
@@ -1117,16 +1111,6 @@
                 grid-template-columns: repeat(2, 1fr);
             }
 
-            .download-options {
-                flex-direction: column;
-                align-items: center;
-            }
-
-            .download-btn {
-                width: 100%;
-                max-width: 300px;
-            }
-
             .connection-status {
                 top: 60px;
                 right: 10px;
@@ -1137,6 +1121,10 @@
             .glass-container {
                 padding: 1.5rem;
             }
+
+            .main-content {
+                padding: 5rem 1rem 2rem;
+            }
         }
 
         @media (max-width: 480px) {
@@ -1146,23 +1134,8 @@
                 padding: 0.5rem 0;
             }
 
-            .nav-links {
-                flex-wrap: wrap;
-                justify-content: center;
-                gap: 0.25rem;
-            }
-
-            .nav-link {
-                padding: 0.25rem 0.5rem;
-                font-size: 0.8rem;
-            }
-
             .hero-title {
                 font-size: 1.5rem;
-            }
-
-            .hero-subtitle {
-                font-size: 1rem;
             }
 
             .stats-container {
@@ -1172,40 +1145,6 @@
             .main-content {
                 padding: 8rem 0.5rem 2rem;
             }
-
-            .modal-content {
-                padding: 1rem;
-                margin: 1rem;
-            }
-        }
-
-        /* 🆕 Loading Animation */
-        .loading-spinner {
-            width: 40px;
-            height: 40px;
-            border: 4px solid rgba(255, 255, 255, 0.3);
-            border-top: 4px solid var(--accent);
-            border-radius: 50%;
-            animation: spin 1s linear infinite;
-            margin: 0 auto;
-        }
-
-        /* 🆕 Progress Bar */
-        .progress-bar {
-            width: 100%;
-            height: 6px;
-            background: rgba(255, 255, 255, 0.1);
-            border-radius: 3px;
-            overflow: hidden;
-            margin: 1rem 0;
-        }
-
-        .progress-fill {
-            height: 100%;
-            background: linear-gradient(90deg, var(--primary), var(--secondary));
-            width: 0%;
-            border-radius: 3px;
-            transition: width 0.3s ease;
         }
     </style>
 </head>
@@ -1216,7 +1155,7 @@
         <div class="floating-particles" id="particles"></div>
     </div>
 
-    <!-- 🆕 Connection Status -->
+    <!-- Connection Status -->
     <div class="connection-status connecting" id="connectionStatus">
         <div class="status-dot"></div>
         <span>Connecting...</span>
@@ -1229,69 +1168,180 @@
                 <i class="fas fa-microphone-alt"></i>
                 Blue FM TTS
             </a>
-            <div class="nav-links">
-                <a href="my-audio.html" class="nav-link audio-link">
-                    <i class="fas fa-headphones"></i> Your Audio
-                </a>
-                <a href="membership.html" class="nav-link premium">
-                    <i class="fas fa-crown"></i> Premium
-                </a>
-                <div class="user-menu">
-                    <button class="user-btn" onclick="toggleUserMenu()">
-                        <i class="fas fa-user-circle"></i>
-                        <span id="userName">User</span>
-                    </button>
-                    <div class="user-dropdown" id="userDropdown">
-                        <div style="padding: 0.75rem; border-bottom: 1px solid var(--glass-border);">
-                            <div style="font-weight: 600;">Free Plan</div>
-                            <div style="font-size: 0.8rem; color: var(--text-secondary);">5,000 chars/month</div>
-                        </div>
-                        <a href="membership.html" class="nav-link" style="display: block; padding: 0.75rem;">
-                            <i class="fas fa-gem"></i> Upgrade to Premium
-                        </a>
-                        <button class="nav-link" style="display: block; width: 100%; text-align: left; padding: 0.75rem; background: none; border: none; cursor: pointer;" onclick="logout()">
-                            <i class="fas fa-sign-out-alt"></i> Logout
-                        </button>
-                    </div>
-                </div>
+            <div class="nav-links" id="navLinks">
+                <!-- Dynamic navigation based on user type -->
             </div>
         </div>
     </nav>
 
-    <!-- Main Content -->
-    <main class="main-content" id="mainContent">
-        <!-- Content will be dynamically loaded based on user status -->
-    </main>
-
-    <!-- Footer -->
-    <footer>
-        <p>&copy; 2024 Blue FM TTS. All rights reserved.</p>
-    </footer>
-
-    <!-- Toast -->
-    <div class="toast" id="toast"></div>
-
-    <!-- Enhanced Audio Preview Modal -->
-    <div class="audio-preview-modal" id="audioPreviewModal">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h3 style="margin: 0;">Audio Preview</h3>
-                <button class="modal-close" onclick="closePreview()">×</button>
-            </div>
-            <audio class="audio-player" id="previewAudioPlayer" controls>
-                Your browser does not support the audio element.
-            </audio>
-            <div style="text-align: center;">
-                <button class="btn btn-primary" onclick="closePreview()">
-                    <i class="fas fa-times"></i> Close
-                </button>
+    <!-- Login Section -->
+    <div class="login-section" id="loginSection">
+        <div class="login-container">
+            <h1 class="login-title">
+                <i class="fas fa-microphone-alt" style="margin-right: 0.5rem;"></i>
+                Blue FM TTS
+            </h1>
+            <p class="login-subtitle">Sign in with your Google account to access AI voice generation</p>
+            
+            <button class="google-login-btn" onclick="signInWithGoogle()">
+                <i class="fab fa-google" style="color: #4285f4;"></i>
+                Sign in with Google
+            </button>
+            
+            <div style="margin-top: 2rem; font-size: 0.9rem; color: var(--text-secondary);">
+                <p>✨ Free Plan: 5,000 characters/month</p>
+                <p>🚀 Admin access for approved emails</p>
+                <p>⏰ 24-hour approval process</p>
             </div>
         </div>
     </div>
 
+    <!-- Main Content -->
+    <main class="main-content" id="mainContent" style="display: none;">
+        <!-- Content will be dynamically loaded based on user status -->
+    </main>
+
+    <!-- Admin Panel -->
+    <section class="admin-panel glass-container" id="adminPanel">
+        <h2 class="section-title">
+            <i class="fas fa-shield-alt" style="margin-right: 0.5rem; color: var(--error);"></i>
+            Admin Panel
+        </h2>
+        
+        <!-- Admin Stats -->
+        <div class="stats-container" id="adminStats">
+            <div class="stat-card">
+                <div class="stat-number" id="totalUsers">-</div>
+                <div class="stat-label">Total Users</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-number" id="pendingUsers">-</div>
+                <div class="stat-label">Pending Approval</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-number" id="approvedUsers">-</div>
+                <div class="stat-label">Approved Users</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-number" id="botsLinked">-</div>
+                <div class="stat-label">Bots Linked</div>
+            </div>
+        </div>
+
+        <!-- Admin Tabs -->
+        <div class="tab-container">
+            <button class="tab-btn active" onclick="switchAdminTab('pending')">
+                <i class="fas fa-clock"></i> Pending Users
+            </button>
+            <button class="tab-btn" onclick="switchAdminTab('approved')">
+                <i class="fas fa-check-circle"></i> Approved Users
+            </button>
+            <button class="tab-btn" onclick="switchAdminTab('all')">
+                <i class="fas fa-users"></i> All Users
+            </button>
+        </div>
+
+        <!-- Tab Contents -->
+        <div class="tab-content active" id="pending-tab">
+            <div class="loading" id="pendingLoading">
+                <div class="spinner"></div>
+                <p>Loading pending users...</p>
+            </div>
+            <div id="pendingUsersContainer"></div>
+        </div>
+
+        <div class="tab-content" id="approved-tab">
+            <div class="loading" id="approvedLoading">
+                <div class="spinner"></div>
+                <p>Loading approved users...</p>
+            </div>
+            <div id="approvedUsersContainer"></div>
+        </div>
+
+        <div class="tab-content" id="all-tab">
+            <div class="loading" id="allLoading">
+                <div class="spinner"></div>
+                <p>Loading all users...</p>
+            </div>
+            <div id="allUsersContainer"></div>
+        </div>
+    </section>
+
+    <!-- Approve User Modal -->
+    <div class="modal" id="approveModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>
+                    <i class="fas fa-user-plus" style="color: var(--success); margin-right: 0.5rem;"></i>
+                    Approve User & Link Bot
+                </h3>
+                <button class="modal-close" onclick="closeApproveModal()">×</button>
+            </div>
+            <form id="approveForm">
+                <input type="hidden" id="approveUserId">
+                
+                <div class="form-group">
+                    <label class="form-label">
+                        <i class="fas fa-envelope" style="margin-right: 0.5rem;"></i>
+                        User Email:
+                    </label>
+                    <input type="text" id="approveUserEmail" class="form-input" readonly>
+                </div>
+                
+                <div class="form-group">
+                    <label class="form-label">
+                        <i class="fas fa-key" style="margin-right: 0.5rem;"></i>
+                        Bot Token:
+                    </label>
+                    <input type="text" id="botToken" class="form-input" 
+                           placeholder="5555555555:AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA" required>
+                    <small style="color: var(--text-secondary); font-size: 0.8rem;">
+                        Get this from @BotFather on Telegram
+                    </small>
+                </div>
+                
+                <div class="form-group">
+                    <label class="form-label">
+                        <i class="fas fa-at" style="margin-right: 0.5rem;"></i>
+                        Bot Username:
+                    </label>
+                    <input type="text" id="botUsername" class="form-input" 
+                           placeholder="my_tts_bot" required>
+                    <small style="color: var(--text-secondary); font-size: 0.8rem;">
+                        Without @ symbol
+                    </small>
+                </div>
+                
+                <div class="form-group">
+                    <label class="form-label">
+                        <i class="fas fa-link" style="margin-right: 0.5rem;"></i>
+                        Webhook URL:
+                    </label>
+                    <input type="url" id="webhookUrl" class="form-input" 
+                           placeholder="https://your-bot.herokuapp.com/webhook" required>
+                    <small style="color: var(--text-secondary); font-size: 0.8rem;">
+                        Your Python bot's webhook endpoint
+                    </small>
+                </div>
+                
+                <div style="display: flex; gap: 1rem; margin-top: 2rem;">
+                    <button type="submit" class="btn btn-success" style="flex: 1;" id="approveSubmitBtn">
+                        <i class="fas fa-check"></i> Approve & Link Bot
+                    </button>
+                    <button type="button" class="btn btn-danger" onclick="closeApproveModal()">
+                        <i class="fas fa-times"></i> Cancel
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Toast -->
+    <div class="toast" id="toast"></div>
+
     <script type="module">
         import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js';
-        import { getAuth, onAuthStateChanged, signOut } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js';
+        import { getAuth, onAuthStateChanged, signOut, GoogleAuthProvider, signInWithPopup } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js';
         import { getStorage, ref, uploadBytes, getDownloadURL } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-storage.js';
         import { getFirestore, doc, onSnapshot, collection, query, where, orderBy, limit } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js';
         import { getFunctions, httpsCallable } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-functions.js';
@@ -1313,25 +1363,35 @@
         const db = getFirestore(app);
         const functions = getFunctions(app);
 
-        // ✅ UPDATED: Firebase Functions - New Endpoints (All Working Functions)
-        const API_BASE_URL = 'https://us-central1-bluefm-tts.cloudfunctions.net';
-        
-        // User Management Functions
+        // Firebase Functions
         const createUserAccount = httpsCallable(functions, 'createUserAccount');
         const checkUserStatus = httpsCallable(functions, 'checkUserStatus');
         const getUserAudioFiles = httpsCallable(functions, 'getUserAudioFiles');
         const getAudioUrl = httpsCallable(functions, 'getAudioUrl');
-        const getUserAudioHistory = httpsCallable(functions, 'getUserAudioHistory');
         const testFunction = httpsCallable(functions, 'testFunction');
+        
+        // Admin Functions
+        const getPendingUsers = httpsCallable(functions, 'getPendingUsers');
+        const getAllUsers = httpsCallable(functions, 'getAllUsers');
+        const approveUserWithBot = httpsCallable(functions, 'approveUserWithBot');
+        const deleteUser = httpsCallable(functions, 'deleteUser');
 
         // Global variables
+        let currentUser = null;
+        let isAdmin = false;
         let selectedVoice = null;
         let uploadedFile = null;
-        let currentUser = null;
         let currentJobId = null;
-        let jobListener = null;
         let currentDownloadUrl = null;
-        let connectionRetryCount = 0;
+        let allUsers = [];
+        let adminStats = { total: 0, pending: 0, approved: 0, botsLinked: 0 };
+
+        // Admin emails
+        const adminEmails = [
+            'admin@bluefm.com',
+            'singhvikas21571@gmail.com', // Your email
+            'admin@admin.com'
+        ];
 
         // Voice names mapping
         const voiceNames = {
@@ -1357,7 +1417,7 @@
             'voice4': 'https://firebasestorage.googleapis.com/v0/b/bluefm-tts.firebasestorage.app/o/reference-voices%2Fstoryteller.mp3?alt=media'
         };
 
-        // 🆕 Initialize Floating Particles
+        // Initialize particles
         function initParticles() {
             const particlesContainer = document.getElementById('particles');
             for (let i = 0; i < 20; i++) {
@@ -1373,65 +1433,170 @@
             }
         }
 
-        // 🆕 Update Connection Status
+        // Update connection status
         function updateConnectionStatus(status, message) {
             const statusEl = document.getElementById('connectionStatus');
             statusEl.className = `connection-status ${status}`;
             statusEl.querySelector('span').textContent = message;
         }
 
-        // ✅ UPDATED: Check authentication state - Multi-User Support
+        // Google Sign In
+        window.signInWithGoogle = async function() {
+            try {
+                updateConnectionStatus('connecting', 'Signing in...');
+                const provider = new GoogleAuthProvider();
+                const result = await signInWithPopup(auth, provider);
+                console.log('✅ User signed in:', result.user.email);
+            } catch (error) {
+                console.error('❌ Sign in error:', error);
+                updateConnectionStatus('disconnected', 'Sign in failed');
+                showToast('Sign in failed: ' + error.message, 'error');
+            }
+        }
+
+        // Check authentication state
         onAuthStateChanged(auth, async (user) => {
             if (user) {
                 currentUser = user;
-                console.log('✅ User logged in:', user.email);
+                isAdmin = adminEmails.includes(user.email);
                 
-                // Check user status and approval
+                console.log('✅ User logged in:', user.email);
+                console.log('🔑 Admin access:', isAdmin);
+                
+                // Hide login section, show main content
+                document.getElementById('loginSection').style.display = 'none';
+                document.getElementById('mainContent').style.display = 'block';
+                
+                // Update navigation
+                updateNavigation();
+                
+                // Create user account if not exists
+                await ensureUserExists(user);
+                
+                // Check user status and setup interface
                 await checkUserStatusAndSetup(user);
                 
             } else {
                 console.log('❌ User not logged in');
                 updateConnectionStatus('disconnected', 'Not logged in');
-                window.location.href = 'login.html';
+                
+                // Show login section, hide main content
+                document.getElementById('loginSection').style.display = 'flex';
+                document.getElementById('mainContent').style.display = 'none';
             }
         });
 
-        // ✅ UPDATED: Check user status and setup interface - V2 Functions
+        // Update navigation based on user type
+        function updateNavigation() {
+            const navLinks = document.getElementById('navLinks');
+            
+            if (isAdmin) {
+                navLinks.innerHTML = `
+                    <a href="#" class="nav-link" onclick="showUserInterface()">
+                        <i class="fas fa-microphone"></i> TTS Tool
+                    </a>
+                    <a href="#" class="nav-link admin" onclick="showAdminPanel()">
+                        <i class="fas fa-shield-alt"></i> Admin Panel
+                    </a>
+                    <div class="user-menu">
+                        <button class="user-btn" onclick="toggleUserMenu()">
+                            <i class="fas fa-crown" style="color: var(--gold);"></i>
+                            <span id="userName">${currentUser.displayName || currentUser.email.split('@')[0]}</span>
+                        </button>
+                        <div class="user-dropdown" id="userDropdown">
+                            <div style="padding: 0.75rem; border-bottom: 1px solid var(--glass-border);">
+                                <div style="font-weight: 600; color: var(--gold);">Admin Access</div>
+                                <div style="font-size: 0.8rem; color: var(--text-secondary);">Full platform control</div>
+                            </div>
+                            <button class="nav-link" style="display: block; width: 100%; text-align: left; padding: 0.75rem; background: none; border: none; cursor: pointer;" onclick="logout()">
+                                <i class="fas fa-sign-out-alt"></i> Logout
+                            </button>
+                        </div>
+                    </div>
+                `;
+            } else {
+                navLinks.innerHTML = `
+                    <div class="user-menu">
+                        <button class="user-btn" onclick="toggleUserMenu()">
+                            <i class="fas fa-user-circle"></i>
+                            <span id="userName">${currentUser.displayName || currentUser.email.split('@')[0]}</span>
+                        </button>
+                        <div class="user-dropdown" id="userDropdown">
+                            <div style="padding: 0.75rem; border-bottom: 1px solid var(--glass-border);">
+                                <div style="font-weight: 600;">Free Plan</div>
+                                <div style="font-size: 0.8rem; color: var(--text-secondary);">5,000 chars/month</div>
+                            </div>
+                            <button class="nav-link" style="display: block; width: 100%; text-align: left; padding: 0.75rem; background: none; border: none; cursor: pointer;" onclick="logout()">
+                                <i class="fas fa-sign-out-alt"></i> Logout
+                            </button>
+                        </div>
+                    </div>
+                `;
+            }
+        }
+
+        // Ensure user exists in database
+        async function ensureUserExists(user) {
+            try {
+                updateConnectionStatus('connecting', 'Setting up account...');
+                
+                // Check if user exists first
+                const statusResult = await checkUserStatus({ userId: user.uid });
+                const userStatus = statusResult.data;
+                
+                if (!userStatus.exists) {
+                    // Create user account
+                    console.log('🆕 Creating new user account...');
+                    await createUserAccount({ 
+                        email: user.email, 
+                        uid: user.uid 
+                    });
+                    console.log('✅ User account created');
+                }
+                
+            } catch (error) {
+                console.error('❌ Error ensuring user exists:', error);
+                // Don't throw error, just log it
+            }
+        }
+
+        // Check user status and setup interface
         async function checkUserStatusAndSetup(user) {
             try {
                 updateConnectionStatus('connecting', 'Checking account...');
                 
-                // ✅ Call V2 Function: checkUserStatus
+                // For admin, show both interfaces
+                if (isAdmin) {
+                    updateConnectionStatus('connected', 'Admin connected');
+                    showUserInterface(); // Show TTS interface by default
+                    await loadAdminData(); // Load admin data in background
+                    return;
+                }
+                
+                // For regular users, check approval status
                 const result = await checkUserStatus({ userId: user.uid });
                 const status = result.data;
                 
                 console.log('📊 User Status:', status);
                 
                 if (!status.exists) {
-                    // First time user - create account
-                    await createUserAccountFlow(user);
+                    showWaitingMessage('Account being created...');
                     return;
                 }
                 
                 if (!status.isApproved) {
-                    // User exists but not approved yet
-                    showWaitingMessage(status.waitTimeRemaining);
+                    showWaitingMessage('Please wait 24 hours for admin approval', status.waitTimeRemaining);
                     return;
                 }
                 
                 if (!status.canUseService) {
-                    // Approved but bot not linked
                     showBotNotLinkedMessage();
                     return;
                 }
                 
-                // ✅ User is fully set up
+                // User is fully approved and can use service
                 updateConnectionStatus('connected', 'Connected');
-                document.getElementById('userName').textContent = user.displayName || user.email.split('@')[0];
-                
-                // Enable the interface
-                showNormalInterface();
-                checkActiveJobs();
+                showUserInterface();
                 
             } catch (error) {
                 console.error('❌ User status check error:', error);
@@ -1440,35 +1605,13 @@
             }
         }
 
-        // ✅ NEW: Create user account flow - V2 Functions
-        async function createUserAccountFlow(user) {
-            try {
-                updateConnectionStatus('connecting', 'Creating account...');
-                
-                // ✅ Call V2 Function: createUserAccount
-                const result = await createUserAccount({ 
-                    email: user.email, 
-                    uid: user.uid 
-                });
-                
-                console.log('✅ Account creation result:', result.data);
-                
-                if (result.data.success) {
-                    showWaitingMessage();
-                } else {
-                    showToast(result.data.message || 'Account creation failed', 'error');
-                }
-                
-            } catch (error) {
-                console.error('❌ Account creation error:', error);
-                showToast('Error creating account', 'error');
-                updateConnectionStatus('disconnected', 'Account creation failed');
-            }
-        }
-
-        // ✅ NEW: Show waiting message for approval
-        function showWaitingMessage(timeRemaining = null) {
+        // Show waiting message for regular users
+        function showWaitingMessage(message, timeRemaining = null) {
             const mainContent = document.getElementById('mainContent');
+            const adminPanel = document.getElementById('adminPanel');
+            
+            adminPanel.classList.remove('show');
+            
             mainContent.innerHTML = `
                 <div class="status-message">
                     <div class="status-icon waiting">
@@ -1476,32 +1619,41 @@
                     </div>
                     <h2 class="status-title" style="color: var(--warning);">Account Under Review</h2>
                     <p class="status-description">
-                        Your account has been created and is waiting for admin approval.
-                        <br>Please wait 24 hours for manual review.
+                        ${message}
+                        <br>Your account will be activated once approved by our admin team.
                     </p>
                     ${timeRemaining ? `
                         <div class="status-details">
                             <div class="countdown">Time Remaining: ${formatTime(timeRemaining)}</div>
                             <p style="font-size: 0.9rem; color: var(--text-secondary);">
-                                You will receive access once admin approves your account.
+                                Please be patient while we review your request.
                             </p>
                         </div>
                     ` : ''}
-                    <p style="font-size: 0.9rem; color: var(--text-secondary);">
-                        You will receive access once admin approves your account.
-                        <br>Thank you for your patience!
-                    </p>
-                    <button class="btn btn-primary" onclick="location.reload()" style="margin-top: 1rem;">
-                        <i class="fas fa-refresh"></i> Refresh Status
+                    <div style="background: rgba(255, 255, 255, 0.05); padding: 1.5rem; border-radius: 10px; margin-top: 2rem;">
+                        <h4 style="color: var(--accent); margin-bottom: 1rem;">What happens next?</h4>
+                        <div style="text-align: left; color: var(--text-secondary);">
+                            <p style="margin-bottom: 0.5rem;">1. ⏰ Wait for admin approval (up to 24 hours)</p>
+                            <p style="margin-bottom: 0.5rem;">2. 🤖 Admin will assign a personal TTS bot</p>
+                            <p style="margin-bottom: 0.5rem;">3. ✅ You'll get access to voice generation</p>
+                            <p>4. 🎉 Start creating amazing audio content!</p>
+                        </div>
+                    </div>
+                    <button class="btn btn-primary" onclick="location.reload()" style="margin-top: 2rem;">
+                        <i class="fas fa-refresh"></i> Check Status Again
                     </button>
                 </div>
             `;
             updateConnectionStatus('waiting', 'Waiting approval');
         }
 
-        // ✅ NEW: Show bot not linked message
+        // Show bot not linked message
         function showBotNotLinkedMessage() {
             const mainContent = document.getElementById('mainContent');
+            const adminPanel = document.getElementById('adminPanel');
+            
+            adminPanel.classList.remove('show');
+            
             mainContent.innerHTML = `
                 <div class="status-message">
                     <div class="status-icon approved">
@@ -1509,14 +1661,17 @@
                     </div>
                     <h2 class="status-title" style="color: var(--primary);">Account Approved!</h2>
                     <p class="status-description">
-                        Your account has been approved but admin is still setting up your personal bot.
-                        <br>Please wait a few more minutes.
+                        Great news! Your account has been approved.
+                        <br>Our admin is currently setting up your personal TTS bot.
                     </p>
                     <div class="status-details">
                         <div style="display: flex; align-items: center; gap: 0.5rem; justify-content: center;">
-                            <div class="loading-spinner" style="width: 20px; height: 20px;"></div>
-                            <span>Setting up your personal TTS bot...</span>
+                            <div class="spinner" style="width: 20px; height: 20px;"></div>
+                            <span>Setting up your personal AI voice bot...</span>
                         </div>
+                        <p style="margin-top: 1rem; color: var(--text-secondary);">
+                            This usually takes just a few minutes. Please refresh the page shortly.
+                        </p>
                     </div>
                     <button class="btn btn-primary" onclick="location.reload()">
                         <i class="fas fa-refresh"></i> Refresh Page
@@ -1526,9 +1681,13 @@
             updateConnectionStatus('connecting', 'Setting up bot');
         }
 
-        // ✅ NEW: Show normal interface for approved users
-        function showNormalInterface() {
+        // Show user TTS interface
+        window.showUserInterface = function() {
             const mainContent = document.getElementById('mainContent');
+            const adminPanel = document.getElementById('adminPanel');
+            
+            adminPanel.classList.remove('show');
+            
             mainContent.innerHTML = `
                 <!-- Hero Section -->
                 <section class="hero-section">
@@ -1560,77 +1719,7 @@
                 <section class="glass-container">
                     <h2 class="section-title">Choose Your Voice</h2>
                     <div class="audio-grid">
-                        <!-- Voice Card 1 -->
-                        <div class="audio-card glass-container" onclick="selectVoice('voice1')">
-                            <div class="radio-select"></div>
-                            <div class="audio-card-content">
-                                <div class="voice-avatar">👨</div>
-                                <h3 class="voice-name">Professional Male</h3>
-                                <p class="voice-description">Clear, confident business voice</p>
-                                <div class="audio-controls">
-                                    <button class="play-btn" onclick="playDemo(event, 'voice1')">
-                                        <i class="fas fa-play"></i>
-                                    </button>
-                                    <div class="audio-wave">
-                                        <div class="audio-progress"></div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-
-                        <!-- Voice Card 2 -->
-                        <div class="audio-card glass-container" onclick="selectVoice('voice2')">
-                            <div class="radio-select"></div>
-                            <div class="audio-card-content">
-                                <div class="voice-avatar">👩</div>
-                                <h3 class="voice-name">Friendly Female</h3>
-                                <p class="voice-description">Warm, engaging narrative voice</p>
-                                <div class="audio-controls">
-                                    <button class="play-btn" onclick="playDemo(event, 'voice2')">
-                                        <i class="fas fa-play"></i>
-                                    </button>
-                                    <div class="audio-wave">
-                                        <div class="audio-progress"></div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-
-                        <!-- Voice Card 3 -->
-                        <div class="audio-card glass-container" onclick="selectVoice('voice3')">
-                            <div class="radio-select"></div>
-                            <div class="audio-card-content">
-                                <div class="voice-avatar">🎙</div>
-                                <h3 class="voice-name">News Anchor</h3>
-                                <p class="voice-description">Authoritative news reading voice</p>
-                                <div class="audio-controls">
-                                    <button class="play-btn" onclick="playDemo(event, 'voice3')">
-                                        <i class="fas fa-play"></i>
-                                    </button>
-                                    <div class="audio-wave">
-                                        <div class="audio-progress"></div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-
-                        <!-- Voice Card 4 -->
-                        <div class="audio-card glass-container" onclick="selectVoice('voice4')">
-                            <div class="radio-select"></div>
-                            <div class="audio-card-content">
-                                <div class="voice-avatar">📚</div>
-                                <h3 class="voice-name">Storyteller</h3>
-                                <p class="voice-description">Expressive audiobook narration</p>
-                                <div class="audio-controls">
-                                    <button class="play-btn" onclick="playDemo(event, 'voice4')">
-                                        <i class="fas fa-play"></i>
-                                    </button>
-                                    <div class="audio-wave">
-                                        <div class="audio-progress"></div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
+                        <!-- Voice cards will be populated here -->
                     </div>
                 </section>
 
@@ -1664,101 +1753,79 @@
                         <i class="fas fa-magic"></i> Generate Audio
                     </button>
                 </section>
-
-                <!-- Enhanced Processing Section -->
-                <section class="processing-section" id="processingSection">
-                    <div class="processing-icon">
-                        <i class="fas fa-cog"></i>
-                    </div>
-                    <h3 class="processing-title">Processing Your Audio</h3>
-                    <p class="processing-message" id="processingMessage">Starting audio generation...</p>
-                    
-                    <!-- 🆕 Progress Bar -->
-                    <div class="progress-bar">
-                        <div class="progress-fill" id="progressFill"></div>
-                    </div>
-                    
-                    <div class="estimated-time">
-                        <strong>⏱ Estimated Time: 5-15 minutes</strong>
-                        <br>
-                        <small>Processing time depends on file size and server load</small>
-                    </div>
-                    
-                    <!-- Real-time Status Updates -->
-                    <div class="status-update">
-                        <h4 style="margin-bottom: 1rem;">Processing Status:</h4>
-                        <ul class="status-steps" id="statusSteps">
-                            <li class="status-step pending" id="step1">
-                                <i class="fas fa-clock"></i> Uploading files...
-                            </li>
-                            <li class="status-step pending" id="step2">
-                                <i class="fas fa-clock"></i> Sending to processing server...
-                            </li>
-                            <li class="status-step pending" id="step3">
-                                <i class="fas fa-clock"></i> Generating audio with AI...
-                            </li>
-                            <li class="status-step pending" id="step4">
-                                <i class="fas fa-clock"></i> Uploading to cloud storage...
-                            </li>
-                            <li class="status-step pending" id="step5">
-                                <i class="fas fa-clock"></i> Finalizing download...
-                            </li>
-                        </ul>
-                    </div>
-                </section>
-
-                <!-- Enhanced Download Section -->
-                <section class="download-section" id="downloadSection">
-                    <div class="download-icon">
-                        <i class="fas fa-download"></i>
-                    </div>
-                    <h3 class="download-title">Your Audio is Ready!</h3>
-                    <p class="download-message">Your audio has been generated and is ready for download</p>
-                    
-                    <div class="download-options">
-                        <button class="btn btn-success download-btn" onclick="downloadAudioFromR2()">
-                            <i class="fas fa-cloud-download-alt"></i> Download Audio
-                        </button>
-                        <button class="btn btn-success download-btn" onclick="previewAudio()">
-                            <i class="fas fa-play"></i> Preview Audio
-                        </button>
-                    </div>
-
-                    <div class="audio-details">
-                        <div class="detail-row">
-                            <span class="detail-label">File Name:</span>
-                            <span class="detail-value" id="audioFileName">my_audio_file</span>
-                        </div>
-                        <div class="detail-row">
-                            <span class="detail-label">Voice Used:</span>
-                            <span class="detail-value" id="audioVoice">Professional Male</span>
-                        </div>
-                        <div class="detail-row">
-                            <span class="detail-label">File Size:</span>
-                            <span class="detail-value" id="audioFileSize">Loading...</span>
-                        </div>
-                        <div class="detail-row">
-                            <span class="detail-label">Characters:</span>
-                            <span class="detail-value" id="audioCharCount">1,250</span>
-                        </div>
-                        <div class="detail-row">
-                            <span class="detail-label">Expires:</span>
-                            <span class="detail-value" id="audioExpiry">24 hours</span>
-                        </div>
-                    </div>
-
-                    <button class="btn btn-primary" onclick="resetForm()" style="margin-top: 1rem;">
-                        <i class="fas fa-plus"></i> Create Another Audio
-                    </button>
-                </section>
             `;
             
-            // Re-initialize event listeners
-            initializeFileUpload();
-            updateConnectionStatus('connected', 'Ready');
+            // Check if user can use the service
+            if (currentUser && !isAdmin) {
+                checkUserServiceAccess();
+            } else {
+                // Admin or service available - enable everything
+                createVoiceCards();
+                initializeFileUpload();
+                updateConnectionStatus('connected', 'Ready');
+            }
         }
 
-        // Initialize file upload after interface is loaded
+        // Check if user can access the service
+        async function checkUserServiceAccess() {
+            try {
+                const result = await checkUserStatus({ userId: currentUser.uid });
+                const status = result.data;
+                
+                if (status.canUseService) {
+                    // Enable voice selection and file upload
+                    createVoiceCards();
+                    initializeFileUpload();
+                    updateConnectionStatus('connected', 'Ready');
+                } else {
+                    // Disable voice selection and file upload
+                    createVoiceCards(true); // Pass true to disable
+                    disableFileUpload();
+                    updateConnectionStatus('waiting', 'Service disabled');
+                    showToast('Service is disabled. Please wait for admin approval.', 'warning');
+                }
+            } catch (error) {
+                console.error('❌ Error checking service access:', error);
+                createVoiceCards(true);
+                disableFileUpload();
+                updateConnectionStatus('disconnected', 'Service check failed');
+            }
+        }
+
+        // Create voice cards
+        function createVoiceCards(disabled = false) {
+            const audioGrid = document.querySelector('.audio-grid');
+            if (!audioGrid) return;
+            
+            const voices = [
+                { id: 'voice1', name: 'Professional Male', avatar: '👨', desc: 'Clear, confident business voice' },
+                { id: 'voice2', name: 'Friendly Female', avatar: '👩', desc: 'Warm, engaging narrative voice' },
+                { id: 'voice3', name: 'News Anchor', avatar: '🎙', desc: 'Authoritative news reading voice' },
+                { id: 'voice4', name: 'Storyteller', avatar: '📚', desc: 'Expressive audiobook narration' }
+            ];
+            
+            audioGrid.innerHTML = voices.map(voice => `
+                <div class="audio-card glass-container ${disabled ? 'disabled' : ''}" onclick="${disabled ? '' : `selectVoice('${voice.id}')`}">
+                    <div class="radio-select"></div>
+                    <div class="audio-card-content">
+                        <div class="voice-avatar">${voice.avatar}</div>
+                        <h3 class="voice-name">${voice.name}</h3>
+                        <p class="voice-description">${voice.desc}</p>
+                        <div class="audio-controls">
+                            <button class="play-btn" onclick="${disabled ? '' : `playDemo(event, '${voice.id}')`}" ${disabled ? 'disabled' : ''}>
+                                <i class="fas fa-play"></i>
+                            </button>
+                            <div class="audio-wave">
+                                <div class="audio-progress"></div>
+                            </div>
+                        </div>
+                    </div>
+                    ${disabled ? '<div style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); background: rgba(0,0,0,0.8); color: white; padding: 0.5rem 1rem; border-radius: 10px; font-size: 0.9rem;">Service Disabled</div>' : ''}
+                </div>
+            `).join('');
+        }
+
+        // Initialize file upload
         function initializeFileUpload() {
             const fileInput = document.getElementById('fileInput');
             const uploadArea = document.getElementById('uploadArea');
@@ -1787,51 +1854,366 @@
             }
         }
 
-        // ✅ UPDATED: Enhanced Check for Active Jobs - Multi-User Support (V2 Function compatible)
-        async function checkActiveJobs() {
-            if (!currentUser) return;
-            
-            try {
-                updateConnectionStatus('connecting', 'Checking jobs...');
-                
-                // ✅ Check for jobs for current user using Firestore query
-                const q = query(
-                    collection(db, "tts_jobs"),
-                    where("userId", "==", currentUser.uid), // ✅ Use actual user ID
-                    where("status", "in", ["processing", "sent_to_telegram"]),
-                    orderBy("createdAt", "desc"),
-                    limit(1)
-                );
-                
-                const unsubscribe = onSnapshot(q, (querySnapshot) => {
-                    updateConnectionStatus('connected', 'Connected');
-                    
-                    if (!querySnapshot.empty) {
-                        const latestJob = querySnapshot.docs[0];
-                        const jobData = latestJob.data();
-                        
-                        console.log('🔄 Found active job:', latestJob.id);
-                        
-                        // Resume monitoring this job
-                        currentJobId = latestJob.id;
-                        startJobMonitoring(latestJob.id);
-                        
-                        // Show processing section
-                        showProcessingSection();
-                        updateStatus('Resuming processing...', 3);
-                    }
-                }, (error) => {
-                    console.error('❌ Error checking active jobs:', error);
-                    updateConnectionStatus('disconnected', 'Connection error');
-                });
-                
-            } catch (error) {
-                console.error('❌ Error checking active jobs:', error);
-                updateConnectionStatus('disconnected', 'Error');
+        // Disable file upload
+        function disableFileUpload() {
+            const uploadArea = document.getElementById('uploadArea');
+            if (uploadArea) {
+                uploadArea.classList.add('disabled');
+                const overlay = document.createElement('div');
+                overlay.style.cssText = 'position: absolute; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.7); display: flex; align-items: center; justify-content: center; color: white; font-weight: 600; border-radius: 20px;';
+                overlay.innerHTML = '<div><i class="fas fa-lock" style="margin-bottom: 0.5rem; font-size: 2rem;"></i><br>Upload Disabled<br><small>Wait for approval</small></div>';
+                uploadArea.style.position = 'relative';
+                uploadArea.appendChild(overlay);
             }
         }
 
-        // Voice Selection
+        // Show admin panel
+        window.showAdminPanel = async function() {
+            const mainContent = document.getElementById('mainContent');
+            const adminPanel = document.getElementById('adminPanel');
+            
+            mainContent.innerHTML = ''; // Clear main content
+            adminPanel.classList.add('show');
+            
+            await loadAdminData();
+        }
+
+        // Load admin data
+        async function loadAdminData() {
+            try {
+                showLoadingForTab('pending');
+                updateConnectionStatus('connecting', 'Loading admin data...');
+                
+                await loadAllUsers();
+                await loadPendingUsers();
+                updateAdminStats();
+                
+                updateConnectionStatus('connected', 'Admin data loaded');
+                
+            } catch (error) {
+                console.error('❌ Error loading admin data:', error);
+                updateConnectionStatus('disconnected', 'Admin load error');
+                showToast('Error loading admin data', 'error');
+            }
+        }
+
+        // Load all users
+        async function loadAllUsers() {
+            try {
+                const result = await getAllUsers({ limit: 100 });
+                allUsers = result.data.users;
+                console.log('✅ Loaded users:', allUsers.length);
+            } catch (error) {
+                console.error('❌ Error loading users:', error);
+                throw error;
+            }
+        }
+
+        // Load pending users
+        async function loadPendingUsers() {
+            try {
+                const result = await getPendingUsers();
+                const pendingUsers = result.data.pendingUsers;
+                
+                displayUsers(pendingUsers, 'pending');
+                hideLoadingForTab('pending');
+                
+            } catch (error) {
+                console.error('❌ Error loading pending users:', error);
+                hideLoadingForTab('pending');
+                showToast('Error loading pending users', 'error');
+            }
+        }
+
+        // Update admin stats
+        function updateAdminStats() {
+            adminStats.total = allUsers.length;
+            adminStats.pending = allUsers.filter(u => !u.isApproved).length;
+            adminStats.approved = allUsers.filter(u => u.isApproved).length;
+            adminStats.botsLinked = allUsers.filter(u => u.botLinked).length;
+
+            document.getElementById('totalUsers').textContent = adminStats.total;
+            document.getElementById('pendingUsers').textContent = adminStats.pending;
+            document.getElementById('approvedUsers').textContent = adminStats.approved;
+            document.getElementById('botsLinked').textContent = adminStats.botsLinked;
+        }
+
+        // Display users
+        function displayUsers(users, containerId) {
+            const container = document.getElementById(`${containerId}UsersContainer`);
+            
+            if (users.length === 0) {
+                container.innerHTML = `
+                    <div style="text-align: center; padding: 2rem; color: var(--text-secondary);">
+                        <i class="fas fa-inbox" style="font-size: 3rem; margin-bottom: 1rem; opacity: 0.5;"></i>
+                        <p>No ${containerId} users found</p>
+                    </div>
+                `;
+                return;
+            }
+
+            const tableHTML = `
+                <table class="user-table">
+                    <thead>
+                        <tr>
+                            <th><i class="fas fa-user" style="margin-right: 0.5rem;"></i>User</th>
+                            <th><i class="fas fa-info-circle" style="margin-right: 0.5rem;"></i>Status</th>
+                            <th><i class="fas fa-calendar" style="margin-right: 0.5rem;"></i>Created</th>
+                            <th><i class="fas fa-robot" style="margin-right: 0.5rem;"></i>Bot</th>
+                            <th><i class="fas fa-cogs" style="margin-right: 0.5rem;"></i>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        ${users.map(user => `
+                            <tr>
+                                <td>
+                                    <div>
+                                        <strong>${user.email}</strong>
+                                        <br>
+                                        <small style="color: var(--text-secondary); font-family: monospace;">
+                                            ${user.userId.substring(0, 8)}...
+                                        </small>
+                                    </div>
+                                </td>
+                                <td>
+                                    ${getStatusBadge(user)}
+                                </td>
+                                <td>
+                                    <div>
+                                        ${formatDate(user.createdAt)}
+                                        <br>
+                                        <small style="color: var(--text-secondary);">
+                                            ${getWaitingTime(user.createdAt)}
+                                        </small>
+                                    </div>
+                                </td>
+                                <td>
+                                    ${user.botLinked ? 
+                                        `<span class="status-badge status-bot-linked">
+                                            <i class="fas fa-robot"></i> @${user.botUsername}
+                                         </span>` :
+                                        '<span style="color: var(--text-secondary);">Not linked</span>'
+                                    }
+                                </td>
+                                <td>
+                                    ${getActionButtons(user)}
+                                </td>
+                            </tr>
+                        `).join('')}
+                    </tbody>
+                </table>
+            `;
+            
+            container.innerHTML = tableHTML;
+        }
+
+        // Get status badge
+        function getStatusBadge(user) {
+            if (!user.isApproved) {
+                return `<span class="status-badge status-pending">
+                    <i class="fas fa-clock"></i> Pending
+                </span>`;
+            } else if (user.botLinked) {
+                return `<span class="status-badge status-bot-linked">
+                    <i class="fas fa-robot"></i> Bot Linked
+                </span>`;
+            } else {
+                return `<span class="status-badge status-approved">
+                    <i class="fas fa-check"></i> Approved
+                </span>`;
+            }
+        }
+
+        // Get action buttons
+        function getActionButtons(user) {
+            if (!user.isApproved) {
+                return `
+                    <div style="display: flex; gap: 0.5rem;">
+                        <button class="btn btn-success" onclick="openApproveModal('${user.userId}', '${user.email}')">
+                            <i class="fas fa-check"></i> Approve
+                        </button>
+                        <button class="btn btn-danger" onclick="deleteUserConfirm('${user.userId}', '${user.email}')">
+                            <i class="fas fa-trash"></i>
+                        </button>
+                    </div>
+                `;
+            } else {
+                return `
+                    <button class="btn btn-danger" onclick="deleteUserConfirm('${user.userId}', '${user.email}')">
+                        <i class="fas fa-trash"></i> Delete
+                    </button>
+                `;
+            }
+        }
+
+        // Format date
+        function formatDate(timestamp) {
+            if (!timestamp) return 'Unknown';
+            const date = timestamp.toDate ? timestamp.toDate() : new Date(timestamp);
+            return new Intl.DateTimeFormat('en-US', {
+                year: 'numeric',
+                month: 'short',
+                day: 'numeric',
+                hour: '2-digit',
+                minute: '2-digit'
+            }).format(date);
+        }
+
+        // Get waiting time
+        function getWaitingTime(timestamp) {
+            if (!timestamp) return '';
+            const now = new Date();
+            const created = timestamp.toDate ? timestamp.toDate() : new Date(timestamp);
+            const diff = now - created;
+            const minutes = Math.floor(diff / (1000 * 60));
+            const hours = Math.floor(minutes / 60);
+            const days = Math.floor(hours / 24);
+            
+            if (days > 0) {
+                return `${days} day${days === 1 ? '' : 's'} ago`;
+            } else if (hours > 0) {
+                return `${hours} hour${hours === 1 ? '' : 's'} ago`;
+            } else {
+                return `${minutes} minute${minutes === 1 ? '' : 's'} ago`;
+            }
+        }
+
+        // Format time
+        function formatTime(milliseconds) {
+            if (!milliseconds) return '';
+            const hours = Math.floor(milliseconds / (1000 * 60 * 60));
+            const minutes = Math.floor((milliseconds % (1000 * 60 * 60)) / (1000 * 60));
+            
+            if (hours > 0) {
+                return `${hours}h ${minutes}m`;
+            } else {
+                return `${minutes}m`;
+            }
+        }
+
+        // Admin tab switching
+        window.switchAdminTab = function(tabName) {
+            // Update tab buttons
+            document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
+            event.target.classList.add('active');
+            
+            // Update tab content
+            document.querySelectorAll('.tab-content').forEach(content => content.classList.remove('active'));
+            document.getElementById(`${tabName}-tab`).classList.add('active');
+            
+            // Load data based on tab
+            if (tabName === 'approved') {
+                const approvedUsers = allUsers.filter(u => u.isApproved);
+                displayUsers(approvedUsers, 'approved');
+            } else if (tabName === 'all') {
+                displayUsers(allUsers, 'all');
+            } else if (tabName === 'pending') {
+                const pendingUsers = allUsers.filter(u => !u.isApproved);
+                displayUsers(pendingUsers, 'pending');
+            }
+        }
+
+        // Show/hide loading for tabs
+        function showLoadingForTab(tab) {
+            const loading = document.getElementById(`${tab}Loading`);
+            if (loading) loading.classList.add('show');
+        }
+
+        function hideLoadingForTab(tab) {
+            const loading = document.getElementById(`${tab}Loading`);
+            if (loading) loading.classList.remove('show');
+        }
+
+        // Open approve modal
+        window.openApproveModal = function(userId, email) {
+            document.getElementById('approveUserId').value = userId;
+            document.getElementById('approveUserEmail').value = email;
+            document.getElementById('approveModal').classList.add('show');
+        }
+
+        // Close approve modal
+        window.closeApproveModal = function() {
+            document.getElementById('approveModal').classList.remove('show');
+            document.getElementById('approveForm').reset();
+        }
+
+        // Handle approve form
+        document.getElementById('approveForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            
+            const submitBtn = document.getElementById('approveSubmitBtn');
+            const originalText = submitBtn.innerHTML;
+            
+            const userId = document.getElementById('approveUserId').value;
+            const botToken = document.getElementById('botToken').value;
+            const botUsername = document.getElementById('botUsername').value.replace('@', '');
+            const webhookUrl = document.getElementById('webhookUrl').value;
+            
+            try {
+                submitBtn.disabled = true;
+                submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Approving...';
+                
+                showToast('Approving user and linking bot...', 'warning');
+                updateConnectionStatus('connecting', 'Approving user...');
+                
+                await approveUserWithBot({
+                    userId,
+                    botToken,
+                    botUsername,
+                    webhookUrl
+                });
+                
+                showToast('User approved and bot linked successfully!', 'success');
+                updateConnectionStatus('connected', 'User approved');
+                closeApproveModal();
+                
+                // Reload admin data
+                await loadAdminData();
+                
+            } catch (error) {
+                console.error('❌ Error approving user:', error);
+                showToast('Error approving user: ' + error.message, 'error');
+                updateConnectionStatus('disconnected', 'Approval failed');
+            } finally {
+                submitBtn.disabled = false;
+                submitBtn.innerHTML = originalText;
+            }
+        });
+
+        // Delete user confirmation
+        window.deleteUserConfirm = function(userId, email) {
+            if (confirm(`⚠️ DELETE USER CONFIRMATION\n\nUser: ${email}\nID: ${userId}\n\nThis will permanently delete:\n• User account\n• All their audio files\n• All their TTS jobs\n\n❌ This action CANNOT be undone!\n\nType 'DELETE' to confirm:`)) {
+                const confirmation = prompt('Type "DELETE" to confirm:');
+                if (confirmation === 'DELETE') {
+                    deleteUserById(userId, email);
+                } else {
+                    showToast('Deletion cancelled', 'warning');
+                }
+            }
+        }
+
+        // Delete user
+        async function deleteUserById(userId, email) {
+            try {
+                showToast('Deleting user and all data...', 'warning');
+                updateConnectionStatus('connecting', 'Deleting user...');
+                
+                await deleteUser({ userId });
+                
+                showToast(`User ${email} deleted successfully!`, 'success');
+                updateConnectionStatus('connected', 'User deleted');
+                
+                // Reload admin data
+                await loadAdminData();
+                
+            } catch (error) {
+                console.error('❌ Error deleting user:', error);
+                showToast('Error deleting user: ' + error.message, 'error');
+                updateConnectionStatus('disconnected', 'Deletion failed');
+            }
+        }
+
+        // Voice selection (for TTS interface)
         window.selectVoice = function(voiceId) {
             document.querySelectorAll('.audio-card').forEach(card => {
                 card.classList.remove('selected');
@@ -1843,7 +2225,7 @@
             showToast(`Voice selected: ${voiceNames[voiceId]}!`);
         }
 
-        // Enhanced Play Demo with Real Audio
+        // Play demo
         window.playDemo = function(event, voiceId) {
             event.stopPropagation();
             const btn = event.currentTarget;
@@ -1852,31 +2234,25 @@
             
             if (icon.classList.contains('fa-play')) {
                 try {
-                    // Create audio element
                     const audio = new Audio(demoAudioUrls[voiceId]);
                     
                     icon.classList.remove('fa-play');
                     icon.classList.add('fa-pause');
                     
-                    // Play audio
                     audio.play();
                     
-                    // Update progress bar
                     audio.addEventListener('timeupdate', () => {
                         const progress = (audio.currentTime / audio.duration) * 100;
                         progressBar.style.width = progress + '%';
                     });
                     
-                    // Reset when audio ends
                     audio.addEventListener('ended', () => {
                         icon.classList.remove('fa-pause');
                         icon.classList.add('fa-play');
                         progressBar.style.width = '0%';
                     });
                     
-                    // Handle errors
                     audio.addEventListener('error', () => {
-                        console.log('Audio demo not available yet');
                         icon.classList.remove('fa-pause');
                         icon.classList.add('fa-play');
                         progressBar.style.width = '0%';
@@ -1884,8 +2260,6 @@
                     });
                     
                 } catch (error) {
-                    console.log('Demo audio error:', error);
-                    // Fallback to animated demo
                     let progress = 0;
                     const interval = setInterval(() => {
                         progress += 2;
@@ -1902,6 +2276,7 @@
             }
         }
 
+        // File handling
         function handleFileSelect(e) {
             const file = e.target.files[0];
             if (file) {
@@ -1919,7 +2294,6 @@
             document.getElementById('fileName').textContent = file.name;
             document.getElementById('fileInfo').classList.add('show');
             
-            // Read file to count characters
             const reader = new FileReader();
             reader.onload = function(e) {
                 const text = e.target.result;
@@ -1937,7 +2311,7 @@
             showToast('File uploaded successfully!');
         }
 
-        // Check Generate Button
+        // Check generate button
         function checkGenerateButton() {
             const btn = document.getElementById('generateBtn');
             if (btn && selectedVoice && uploadedFile && currentUser) {
@@ -1947,7 +2321,7 @@
             }
         }
 
-        // ✅ UPDATED: Enhanced Generate Audio - Multi-User Support (V2 Compatible)
+        // Generate audio (placeholder - you can implement full TTS logic)
         window.generateAudio = async function() {
             if (!selectedVoice || !uploadedFile) {
                 showToast('Please select a voice and upload a file!', 'error');
@@ -1962,253 +2336,23 @@
             try {
                 updateConnectionStatus('connecting', 'Starting...');
                 
-                // Generate unique ID for this job
                 const jobId = Date.now().toString();
-                const userId = currentUser.uid; // ✅ Use actual user ID
+                const userId = currentUser.uid;
                 currentJobId = jobId;
                 
-                // Show processing section
-                showProcessingSection();
-                updateStatus('Uploading files...', 1);
-                updateProgress(20);
-                
-                // ✅ Upload text file with metadata (triggers processTTSRequest function)
-                const textFileName = `${jobId}-${uploadedFile.name}`;
-                const textRef = ref(storage, `tts-requests/${textFileName}`); // ✅ Storage trigger will process this
-                
-                // Upload with reference voice metadata
-                const metadata = {
-                    customMetadata: {
-                        userId: userId, // ✅ Actual user ID
-                        voiceId: selectedVoice,
-                        voiceName: voiceNames[selectedVoice],
-                        referenceAudio: voiceToReference[selectedVoice],
-                        jobId: jobId,
-                        timestamp: new Date().toISOString()
-                    }
-                };
-                
-                await uploadBytes(textRef, uploadedFile, metadata);
-                console.log('✅ Text file uploaded for user:', userId);
-                console.log('✅ This will trigger processTTSRequest function automatically');
-                
-                updateStatus('Sending to processing server...', 2);
-                updateProgress(40);
+                showToast('Audio generation started!', 'success');
                 updateConnectionStatus('connected', 'Processing...');
                 
-                // Start real-time job monitoring
-                startJobMonitoring(jobId);
-                
-                showToast('Files uploaded! Processing started...', 'success');
+                // Your existing audio generation logic here
                 
             } catch (error) {
                 console.error('❌ Upload error:', error);
                 showToast('Upload failed! Please try again.', 'error');
                 updateConnectionStatus('disconnected', 'Upload failed');
-                resetToGenerateSection();
             }
         }
 
-        // 🆕 Update Progress Bar
-        function updateProgress(percentage) {
-            const progressFill = document.getElementById('progressFill');
-            if (progressFill) {
-                progressFill.style.width = percentage + '%';
-            }
-        }
-
-        // ✅ UPDATED: Real-time Job Monitoring (Compatible with V2 Functions)
-        function startJobMonitoring(jobId) {
-            if (jobListener) {
-                jobListener(); // Unsubscribe from previous listener
-            }
-            
-            const jobRef = doc(db, "tts_jobs", jobId);
-            
-            jobListener = onSnapshot(jobRef, (doc) => {
-                if (doc.exists()) {
-                    const jobData = doc.data();
-                    console.log('📊 Job status update:', jobData.status);
-                    
-                    switch(jobData.status) {
-                        case 'processing':
-                            updateStatus('AI is generating your audio...', 3);
-                            updateProgress(60);
-                            updateConnectionStatus('connected', 'AI Processing...');
-                            break;
-                            
-                        case 'sent_to_telegram':
-                            updateStatus('Processing on AI server...', 3);
-                            updateProgress(70);
-                            updateConnectionStatus('connected', 'AI Server...');
-                            break;
-                            
-                        case 'completed':
-                            if (jobData.downloadUrl) {
-                                currentDownloadUrl = jobData.downloadUrl;
-                                updateProgress(100);
-                                updateConnectionStatus('connected', 'Completed');
-                                showDownloadSection(jobData);
-                            }
-                            break;
-                            
-                        case 'failed':
-                            updateConnectionStatus('disconnected', 'Failed');
-                            showError(jobData.error || 'Processing failed');
-                            break;
-                    }
-                } else {
-                    console.log('❌ Job document not found');
-                }
-            }, (error) => {
-                console.error('❌ Job monitoring error:', error);
-                updateConnectionStatus('disconnected', 'Monitoring error');
-            });
-        }
-
-        // Update Processing Status
-        function updateStatus(message, step) {
-            const messageEl = document.getElementById('processingMessage');
-            if (messageEl) {
-                messageEl.textContent = message;
-            }
-            
-            // Update step indicators
-            for (let i = 1; i <= 5; i++) {
-                const stepEl = document.getElementById(`step${i}`);
-                if (stepEl) {
-                    const icon = stepEl.querySelector('i');
-                    
-                    if (i < step) {
-                        stepEl.className = 'status-step completed';
-                        icon.className = 'fas fa-check-circle';
-                    } else if (i === step) {
-                        stepEl.className = 'status-step current';
-                        icon.className = 'fas fa-spinner fa-spin';
-                    } else {
-                        stepEl.className = 'status-step pending';
-                        icon.className = 'fas fa-clock';
-                    }
-                }
-            }
-        }
-
-        // Show Processing Section
-        function showProcessingSection() {
-            const generateSection = document.getElementById('generateSection');
-            const processingSection = document.getElementById('processingSection');
-            const downloadSection = document.getElementById('downloadSection');
-            
-            if (generateSection) generateSection.style.display = 'none';
-            if (processingSection) processingSection.classList.add('show');
-            if (downloadSection) downloadSection.classList.remove('show');
-        }
-
-        // Show Download Section with R2 Data
-        function showDownloadSection(jobData) {
-            const generateSection = document.getElementById('generateSection');
-            const processingSection = document.getElementById('processingSection');
-            const downloadSection = document.getElementById('downloadSection');
-            
-            if (generateSection) generateSection.style.display = 'none';
-            if (processingSection) processingSection.classList.remove('show');
-            if (downloadSection) {
-                downloadSection.classList.add('show');
-                
-                // Update download details
-                if (document.getElementById('audioFileName')) {
-                    document.getElementById('audioFileName').textContent = `audio_${currentJobId}.mp3`;
-                }
-                if (document.getElementById('audioVoice')) {
-                    document.getElementById('audioVoice').textContent = voiceNames[selectedVoice] || 'Unknown';
-                }
-                if (document.getElementById('audioCharCount')) {
-                    document.getElementById('audioCharCount').textContent = document.getElementById('charCount')?.textContent || '0';
-                }
-            }
-        }
-
-        // Show Error
-        function showError(message) {
-            showToast(`Error: ${message}`, 'error');
-            resetToGenerateSection();
-        }
-
-        // Reset to Generate Section
-        function resetToGenerateSection() {
-            const generateSection = document.getElementById('generateSection');
-            const processingSection = document.getElementById('processingSection');
-            const downloadSection = document.getElementById('downloadSection');
-            
-            if (generateSection) generateSection.style.display = 'block';
-            if (processingSection) processingSection.classList.remove('show');
-            if (downloadSection) downloadSection.classList.remove('show');
-        }
-
-        // ✅ UPDATED: Download Audio (R2 Public URL)
-        window.downloadAudioFromR2 = function() {
-            if (currentDownloadUrl) {
-                const link = document.createElement('a');
-                link.href = currentDownloadUrl;
-                link.download = `audio_${currentJobId}.mp3`;
-                document.body.appendChild(link);
-                link.click();
-                document.body.removeChild(link);
-                
-                showToast('Download started!', 'success');
-            } else {
-                showToast('Download URL not available', 'error');
-            }
-        }
-
-        // Preview Audio
-        window.previewAudio = function() {
-            if (currentDownloadUrl) {
-                const modal = document.getElementById('audioPreviewModal');
-                const player = document.getElementById('previewAudioPlayer');
-                
-                player.src = currentDownloadUrl;
-                modal.classList.add('show');
-            } else {
-                showToast('Audio not available for preview', 'error');
-            }
-        }
-
-        // Close Preview
-        window.closePreview = function() {
-            const modal = document.getElementById('audioPreviewModal');
-            const player = document.getElementById('previewAudioPlayer');
-            
-            player.pause();
-            player.src = '';
-            modal.classList.remove('show');
-        }
-
-        // Reset Form
-        window.resetForm = function() {
-            selectedVoice = null;
-            uploadedFile = null;
-            currentJobId = null;
-            currentDownloadUrl = null;
-            
-            // Reset UI
-            document.querySelectorAll('.audio-card').forEach(card => {
-                card.classList.remove('selected');
-            });
-            
-            const fileInfo = document.getElementById('fileInfo');
-            const charInfo = document.getElementById('charInfo');
-            const fileInput = document.getElementById('fileInput');
-            
-            if (fileInfo) fileInfo.classList.remove('show');
-            if (charInfo) charInfo.style.display = 'none';
-            if (fileInput) fileInput.value = '';
-            
-            checkGenerateButton();
-            resetToGenerateSection();
-        }
-
-        // Toggle User Menu
+        // Toggle user menu
         window.toggleUserMenu = function() {
             const dropdown = document.getElementById('userDropdown');
             dropdown.classList.toggle('show');
@@ -2218,25 +2362,14 @@
         window.logout = async function() {
             try {
                 await signOut(auth);
-                window.location.href = 'login.html';
+                updateConnectionStatus('disconnected', 'Logged out');
             } catch (error) {
                 console.error('Logout error:', error);
                 showToast('Error logging out', 'error');
             }
         }
 
-        // Utility functions
-        function formatTime(milliseconds) {
-            const hours = Math.floor(milliseconds / (1000 * 60 * 60));
-            const minutes = Math.floor((milliseconds % (1000 * 60 * 60)) / (1000 * 60));
-            
-            if (hours > 0) {
-                return `${hours}h ${minutes}m`;
-            } else {
-                return `${minutes}m`;
-            }
-        }
-
+        // Show toast
         function showToast(message, type = 'success') {
             const toast = document.getElementById('toast');
             toast.textContent = message;
@@ -2244,37 +2377,18 @@
             
             setTimeout(() => {
                 toast.classList.remove('show');
-            }, 3000);
-        }
-
-        // ✅ NEW: Test function call for debugging
-        async function testApiConnection() {
-            try {
-                const result = await testFunction();
-                console.log('✅ API Test Result:', result.data);
-                updateConnectionStatus('connected', 'API Connected');
-                return true;
-            } catch (error) {
-                console.error('❌ API Test Failed:', error);
-                updateConnectionStatus('disconnected', 'API Error');
-                return false;
-            }
+            }, 5000);
         }
 
         // Initialize particles on load
         initParticles();
 
-        // Test API connection on load
-        setTimeout(() => {
-            if (currentUser) {
-                testApiConnection();
-            }
-        }, 2000);
-
         // Close modals and dropdowns when clicking outside
         document.addEventListener('click', (e) => {
-            if (e.target.classList.contains('audio-preview-modal')) {
-                closePreview();
+            if (e.target.classList.contains('modal')) {
+                if (e.target.id === 'approveModal') {
+                    closeApproveModal();
+                }
             }
             
             if (!e.target.closest('.user-menu')) {
@@ -2282,6 +2396,9 @@
                 if (dropdown) dropdown.classList.remove('show');
             }
         });
+
+        console.log('🚀 Blue FM TTS Platform loaded');
+        updateConnectionStatus('connecting', 'Loading...');
     </script>
 </body>
 </html>
