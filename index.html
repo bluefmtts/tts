@@ -92,7 +92,7 @@
 
         .users-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+            grid-template-columns: repeat(auto-fill, minmax(380px, 1fr));
             gap: 1.5rem;
             margin-bottom: 2rem;
         }
@@ -188,7 +188,7 @@
         .current-bot {
             background: rgba(16, 185, 129, 0.2);
             border: 1px solid var(--success);
-            padding: 0.75rem;
+            padding: 1rem;
             border-radius: 10px;
             margin-bottom: 1rem;
         }
@@ -224,16 +224,20 @@
             color: var(--text-primary);
         }
 
+        .form-input::placeholder {
+            color: var(--text-secondary);
+        }
+
         .bots-list {
             display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
             gap: 1rem;
         }
 
         .bot-card {
             background: var(--glass-bg);
             border: 1px solid var(--glass-border);
-            padding: 1rem;
+            padding: 1.25rem;
             border-radius: 10px;
             position: relative;
         }
@@ -247,11 +251,23 @@
             font-weight: 600;
             color: var(--accent);
             margin-bottom: 0.5rem;
+            font-size: 1.1rem;
         }
 
         .bot-status {
             font-size: 0.9rem;
             color: var(--text-secondary);
+            margin-bottom: 0.5rem;
+        }
+
+        .bot-webhook {
+            font-size: 0.8rem;
+            color: var(--text-secondary);
+            background: rgba(255, 255, 255, 0.05);
+            padding: 0.5rem;
+            border-radius: 5px;
+            margin: 0.5rem 0;
+            word-break: break-all;
         }
 
         .remove-bot-btn {
@@ -265,6 +281,18 @@
             border-radius: 5px;
             cursor: pointer;
             font-size: 0.8rem;
+        }
+
+        .bot-actions {
+            display: flex;
+            gap: 0.5rem;
+            margin-top: 1rem;
+        }
+
+        .btn-small {
+            padding: 0.25rem 0.75rem;
+            font-size: 0.8rem;
+            border-radius: 5px;
         }
 
         /* 🆕 Waiting Section Styles */
@@ -732,6 +760,16 @@
             box-shadow: 0 10px 30px rgba(16, 185, 129, 0.4);
         }
 
+        .btn-danger {
+            background: linear-gradient(45deg, var(--danger), #dc2626);
+            color: white;
+        }
+
+        .btn-danger:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 30px rgba(239, 68, 68, 0.4);
+        }
+
         .file-info {
             margin-top: 1rem;
             padding: 1rem;
@@ -1014,6 +1052,14 @@
                 width: 100%;
                 max-width: 300px;
             }
+
+            .users-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .bots-list {
+                grid-template-columns: 1fr;
+            }
         }
 
         @media (max-width: 480px) {
@@ -1080,8 +1126,8 @@
         <!-- 🆕 Admin Panel Section -->
         <section class="admin-panel glass-container" id="adminPanel">
             <div class="admin-header">
-                <h2><i class="fas fa-user-shield"></i> Admin Control Panel</h2>
-                <p>Manage users and bot assignments</p>
+                <h2><i class="fas fa-user-shield"></i> Multi-User Admin Control Panel</h2>
+                <p>Manage users, bots, and webhook assignments</p>
             </div>
 
             <div class="admin-tabs">
@@ -1105,25 +1151,33 @@
             <div class="admin-content" id="botsTab">
                 <h3 style="margin-bottom: 1.5rem;">Bot Pool Management</h3>
                 
-                <!-- Add New Bot Form -->
+                <!-- 🆕 UPDATED Add New Bot Form -->
                 <div class="add-bot-form">
-                    <h4 style="margin-bottom: 1rem;">Add New Bot</h4>
+                    <h4 style="margin-bottom: 1rem;"><i class="fas fa-plus"></i> Add New Bot</h4>
                     <div class="form-group">
-                        <label class="form-label">Bot Token</label>
+                        <label class="form-label">Bot Token *</label>
                         <input type="text" class="form-input" id="newBotToken" placeholder="7052826278:AAELhGTJP...">
                     </div>
                     <div class="form-group">
-                        <label class="form-label">Bot Username</label>
+                        <label class="form-label">Bot Username *</label>
                         <input type="text" class="form-input" id="newBotUsername" placeholder="@userbot1">
                     </div>
+                    <!-- 🆕 Webhook URL Field -->
+                    <div class="form-group">
+                        <label class="form-label">Webhook URL (Optional)</label>
+                        <input type="text" class="form-input" id="newBotWebhook" placeholder="https://userbot1.onrender.com/webhook">
+                        <small style="color: var(--text-secondary); font-size: 0.8rem; margin-top: 0.5rem; display: block;">
+                            💡 Leave empty to auto-generate based on username (e.g., @userbot1 → https://userbot1.onrender.com/webhook)
+                        </small>
+                    </div>
                     <button class="btn btn-primary" onclick="addNewBot()">
-                        <i class="fas fa-plus"></i> Add Bot
+                        <i class="fas fa-plus"></i> Add Bot to Pool
                     </button>
                 </div>
 
                 <!-- Bot List -->
                 <div class="bot-pool-section">
-                    <h4 style="margin-bottom: 1rem;">Available Bots</h4>
+                    <h4 style="margin-bottom: 1rem;"><i class="fas fa-list"></i> Available Bots</h4>
                     <div class="bots-list" id="botsList">
                         <!-- Bots will be loaded here dynamically -->
                     </div>
@@ -1406,7 +1460,7 @@
         import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js';
         import { getAuth, onAuthStateChanged, signOut } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js';
         import { getStorage, ref, uploadBytes, getDownloadURL } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-storage.js';
-        import { getFirestore, doc, onSnapshot, collection, query, where, orderBy, limit, setDoc, getDoc, getDocs, updateDoc, addDoc } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js';
+        import { getFirestore, doc, onSnapshot, collection, query, where, orderBy, limit, setDoc, getDoc, getDocs, updateDoc, addDoc, deleteDoc } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js';
 
         // Firebase configuration
         const firebaseConfig = {
@@ -1424,8 +1478,8 @@
         const storage = getStorage(app);
         const db = getFirestore(app);
 
-        // 🆕 Admin email (change this to your admin email)
-        const ADMIN_EMAIL = 'admin@bluefm.com'; // ⚠️ IMPORTANT: Change this to your admin email
+        // 🆕 Admin email (⚠️ CHANGE THIS TO YOUR ADMIN EMAIL)
+        const ADMIN_EMAIL = 'vikassingh44999@gmail.com'; // ⚠️ IMPORTANT: Change this to your admin email
 
         // Global variables
         let selectedVoice = null;
@@ -1506,6 +1560,7 @@
                         isApproved: false,
                         telegramBotToken: null,
                         telegramBotUsername: null,
+                        botWebhookUrl: null,
                         createdAt: new Date()
                     });
                     
@@ -1558,7 +1613,7 @@
             }
         }
 
-        // 🆕 Admin Functions
+        // 🆕 UPDATED Admin Functions with Webhook URL Support
         window.toggleAdminPanel = function() {
             const adminPanel = document.getElementById('adminPanel');
             const isShowing = adminPanel.classList.contains('show');
@@ -1588,70 +1643,94 @@
         async function loadAdminData() {
             if (!isAdmin) return;
             
-            // Load all users
-            const usersQuery = query(collection(db, 'users'), orderBy('createdAt', 'desc'));
-            const usersSnapshot = await getDocs(usersQuery);
-            
-            const usersGrid = document.getElementById('usersGrid');
-            usersGrid.innerHTML = '';
-            
-            // Load available bots for dropdown
-            const botsQuery = query(collection(db, 'botPool'), where('isAssigned', '==', false));
-            const availableBotsSnapshot = await getDocs(botsQuery);
-            const availableBots = [];
-            availableBotsSnapshot.forEach(doc => {
-                availableBots.push({ id: doc.id, ...doc.data() });
-            });
-            
-            usersSnapshot.forEach(doc => {
-                const userData = doc.data();
-                const userId = doc.id;
+            try {
+                // Load all users
+                const usersQuery = query(collection(db, 'users'), orderBy('createdAt', 'desc'));
+                const usersSnapshot = await getDocs(usersQuery);
                 
-                const userCard = document.createElement('div');
-                userCard.className = 'user-card';
+                const usersGrid = document.getElementById('usersGrid');
+                usersGrid.innerHTML = '';
                 
-                userCard.innerHTML = `
-                    <div class="user-info">
-                        <div class="user-email">${userData.email}</div>
-                        <div class="user-status">
-                            <span class="status-badge ${userData.isApproved ? 'approved' : 'pending'}">
-                                ${userData.isApproved ? 'Approved' : 'Pending'}
-                            </span>
-                        </div>
-                        <div style="font-size: 0.8rem; color: var(--text-secondary);">
-                            Registered: ${userData.registrationTime ? new Date(userData.registrationTime.toDate()).toLocaleDateString() : 'Unknown'}
-                        </div>
-                    </div>
+                // Load available bots for dropdown
+                const botsQuery = query(collection(db, 'botPool'), where('isAssigned', '==', false));
+                const availableBotsSnapshot = await getDocs(botsQuery);
+                const availableBots = [];
+                availableBotsSnapshot.forEach(doc => {
+                    availableBots.push({ id: doc.id, ...doc.data() });
+                });
+                
+                usersSnapshot.forEach(doc => {
+                    const userData = doc.data();
+                    const userId = doc.id;
                     
-                    ${userData.telegramBotToken ? `
-                        <div class="current-bot">
-                            <div style="font-weight: 600; margin-bottom: 0.5rem;">Current Bot:</div>
-                            <div>${userData.telegramBotUsername || 'Bot assigned'}</div>
-                            <button class="btn btn-danger" style="margin-top: 0.5rem; padding: 0.5rem 1rem; font-size: 0.9rem;" 
-                                onclick="removeUserBot('${userId}')">
-                                <i class="fas fa-trash"></i> Remove Bot
-                            </button>
+                    const userCard = document.createElement('div');
+                    userCard.className = 'user-card';
+                    
+                    userCard.innerHTML = `
+                        <div class="user-info">
+                            <div class="user-email">${userData.email}</div>
+                            <div class="user-status">
+                                <span class="status-badge ${userData.isApproved ? 'approved' : 'pending'}">
+                                    ${userData.isApproved ? 'Approved' : 'Pending'}
+                                </span>
+                            </div>
+                            <div style="font-size: 0.8rem; color: var(--text-secondary);">
+                                Registered: ${userData.registrationTime ? new Date(userData.registrationTime.toDate()).toLocaleDateString() : 'Unknown'}
+                            </div>
                         </div>
-                    ` : `
-                        <div class="bot-selection">
-                            <label style="font-weight: 600; display: block; margin-bottom: 0.5rem;">Assign Bot:</label>
-                            <select class="bot-dropdown" id="botSelect_${userId}">
-                                <option value="">Select a bot...</option>
-                                ${availableBots.map(bot => 
-                                    `<option value="${bot.id}">${bot.username}</option>`
-                                ).join('')}
-                            </select>
-                            <button class="assign-btn" onclick="assignBotToUser('${userId}')">
-                                <i class="fas fa-robot"></i> Assign Bot
-                            </button>
-                        </div>
-                    `}
-                `;
-                
-                usersGrid.appendChild(userCard);
-            });
+                        
+                        ${userData.telegramBotToken ? `
+                            <div class="current-bot">
+                                <div style="font-weight: 600; margin-bottom: 0.5rem; color: var(--success);">
+                                    <i class="fas fa-robot"></i> Current Bot:
+                                </div>
+                                <div style="margin-bottom: 0.5rem;">${userData.telegramBotUsername || 'Bot assigned'}</div>
+                                <div class="bot-webhook">
+                                    <strong>Webhook:</strong> ${userData.botWebhookUrl || 'Not set'}
+                                </div>
+                                <div class="bot-actions">
+                                    <button class="btn btn-primary btn-small" onclick="updateWebhookUrl('${userId}')">
+                                        <i class="fas fa-link"></i> Update Webhook
+                                    </button>
+                                    <button class="btn btn-danger btn-small" onclick="removeUserBot('${userId}')">
+                                        <i class="fas fa-trash"></i> Remove Bot
+                                    </button>
+                                </div>
+                            </div>
+                        ` : `
+                            <div class="bot-selection">
+                                <label style="font-weight: 600; display: block; margin-bottom: 0.5rem;">
+                                    <i class="fas fa-robot"></i> Assign Bot:
+                                </label>
+                                <select class="bot-dropdown" id="botSelect_${userId}">
+                                    <option value="">Select a bot...</option>
+                                    ${availableBots.map(bot => 
+                                        `<option value="${bot.id}">${bot.username} ${bot.webhookUrl ? '✅' : '⚠️'}</option>`
+                                    ).join('')}
+                                </select>
+                                <button class="assign-btn" onclick="assignBotToUser('${userId}')">
+                                    <i class="fas fa-robot"></i> Assign Bot
+                                </button>
+                            </div>
+                        `}
+                    `;
+                    
+                    usersGrid.appendChild(userCard);
+                });
+            } catch (error) {
+                console.error('❌ Error loading admin data:', error);
+                showToast('Error loading admin data', 'error');
+            }
         }
 
+        // 🆕 Generate webhook URL based on bot username
+        function generateWebhookUrl(botUsername) {
+            // Remove @ from username and create Render URL
+            const cleanUsername = botUsername.replace('@', '');
+            return `https://${cleanUsername}.onrender.com/webhook`;
+        }
+
+        // 🆕 UPDATED assignBotToUser with webhook URL
         window.assignBotToUser = async function(userId) {
             const selectElement = document.getElementById(`botSelect_${userId}`);
             const selectedBotId = selectElement.value;
@@ -1666,6 +1745,9 @@
                 const botDoc = await getDoc(doc(db, 'botPool', selectedBotId));
                 const botData = botDoc.data();
                 
+                // 🆕 Generate webhook URL based on bot username
+                const botWebhookUrl = botData.webhookUrl || generateWebhookUrl(botData.username);
+                
                 // Update bot status
                 await updateDoc(doc(db, 'botPool', selectedBotId), {
                     isAssigned: true,
@@ -1673,16 +1755,16 @@
                     assignedAt: new Date()
                 });
                 
-                // Update user document
+                // 🆕 Update user document with webhook URL
                 await updateDoc(doc(db, 'users', userId), {
                     telegramBotToken: botData.token,
                     telegramBotUsername: botData.username,
+                    botWebhookUrl: botWebhookUrl, // 🆕 Set webhook URL
                     isApproved: true,
-                    botWebhookUrl: botData.webhookUrl || null,
                     approvedAt: new Date()
                 });
                 
-                showToast(`✅ Bot ${botData.username} assigned successfully!`, 'success');
+                showToast(`✅ Bot ${botData.username} assigned with webhook: ${botWebhookUrl}`, 'success');
                 
                 // Reload admin data
                 loadAdminData();
@@ -1690,6 +1772,33 @@
             } catch (error) {
                 console.error('❌ Error assigning bot:', error);
                 showToast('Failed to assign bot!', 'error');
+            }
+        }
+
+        // 🆕 Update webhook URL function
+        window.updateWebhookUrl = async function(userId) {
+            const newWebhookUrl = prompt('Enter new webhook URL:');
+            
+            if (!newWebhookUrl) return;
+            
+            // Validate URL format
+            if (!newWebhookUrl.startsWith('http')) {
+                showToast('Please enter a valid URL starting with http:// or https://', 'error');
+                return;
+            }
+            
+            try {
+                await updateDoc(doc(db, 'users', userId), {
+                    botWebhookUrl: newWebhookUrl,
+                    webhookUpdatedAt: new Date()
+                });
+                
+                showToast('✅ Webhook URL updated successfully!', 'success');
+                loadAdminData();
+                
+            } catch (error) {
+                console.error('❌ Error updating webhook:', error);
+                showToast('Failed to update webhook URL!', 'error');
             }
         }
 
@@ -1721,8 +1830,8 @@
                 await updateDoc(doc(db, 'users', userId), {
                     telegramBotToken: null,
                     telegramBotUsername: null,
-                    isApproved: false,
-                    botWebhookUrl: null
+                    botWebhookUrl: null, // 🆕 Clear webhook URL
+                    isApproved: false
                 });
                 
                 showToast('Bot removed successfully!', 'success');
@@ -1734,31 +1843,37 @@
             }
         }
 
+        // 🆕 UPDATED addNewBot with webhook URL
         window.addNewBot = async function() {
             const token = document.getElementById('newBotToken').value.trim();
             const username = document.getElementById('newBotUsername').value.trim();
+            const webhookUrl = document.getElementById('newBotWebhook').value.trim();
             
             if (!token || !username) {
-                showToast('Please fill all fields!', 'error');
+                showToast('Please fill required fields!', 'error');
                 return;
             }
+            
+            // Auto-generate webhook if not provided
+            const finalWebhookUrl = webhookUrl || generateWebhookUrl(username);
             
             try {
                 // Add bot to pool
                 await addDoc(collection(db, 'botPool'), {
                     token: token,
                     username: username,
+                    webhookUrl: finalWebhookUrl, // 🆕 Store webhook URL
                     isAssigned: false,
                     assignedTo: null,
-                    addedAt: new Date(),
-                    webhookUrl: null
+                    addedAt: new Date()
                 });
                 
                 // Clear form
                 document.getElementById('newBotToken').value = '';
                 document.getElementById('newBotUsername').value = '';
+                document.getElementById('newBotWebhook').value = '';
                 
-                showToast('Bot added successfully!', 'success');
+                showToast(`✅ Bot added with webhook: ${finalWebhookUrl}`, 'success');
                 loadBotPool();
                 loadAdminData();
                 
@@ -1769,35 +1884,79 @@
         }
 
         async function loadBotPool() {
-            const botsQuery = query(collection(db, 'botPool'), orderBy('addedAt', 'desc'));
-            const botsSnapshot = await getDocs(botsQuery);
+            try {
+                const botsQuery = query(collection(db, 'botPool'), orderBy('addedAt', 'desc'));
+                const botsSnapshot = await getDocs(botsQuery);
+                
+                const botsList = document.getElementById('botsList');
+                botsList.innerHTML = '';
+                
+                botsSnapshot.forEach(doc => {
+                    const botData = doc.data();
+                    const botId = doc.id;
+                    
+                    const botCard = document.createElement('div');
+                    botCard.className = `bot-card ${botData.isAssigned ? 'assigned' : ''}`;
+                    
+                    botCard.innerHTML = `
+                        <button class="remove-bot-btn" onclick="removeBot('${botId}')">
+                            <i class="fas fa-times"></i>
+                        </button>
+                        <div class="bot-username">${botData.username}</div>
+                        <div class="bot-status">
+                            ${botData.isAssigned ? 
+                                `<i class="fas fa-check-circle" style="color: var(--success);"></i> Assigned` : 
+                                `<i class="fas fa-circle" style="color: var(--text-secondary);"></i> Available`}
+                        </div>
+                        <div class="bot-webhook">
+                            <strong>Webhook:</strong> ${botData.webhookUrl || 'Not set'}
+                        </div>
+                        ${botData.isAssigned && botData.assignedTo ? 
+                            `<div style="font-size: 0.8rem; margin-top: 0.5rem; color: var(--text-secondary);">
+                                <strong>User:</strong> ${botData.assignedTo.substring(0, 8)}...
+                            </div>` : ''}
+                        
+                        ${!botData.isAssigned ? `
+                            <div class="bot-actions">
+                                <button class="btn btn-primary btn-small" onclick="updateBotWebhook('${botId}')">
+                                    <i class="fas fa-link"></i> Update Webhook
+                                </button>
+                            </div>
+                        ` : ''}
+                    `;
+                    
+                    botsList.appendChild(botCard);
+                });
+            } catch (error) {
+                console.error('❌ Error loading bot pool:', error);
+                showToast('Error loading bot pool', 'error');
+            }
+        }
+
+        // 🆕 Update bot webhook URL
+        window.updateBotWebhook = async function(botId) {
+            const newWebhookUrl = prompt('Enter new webhook URL:');
             
-            const botsList = document.getElementById('botsList');
-            botsList.innerHTML = '';
+            if (!newWebhookUrl) return;
             
-            botsSnapshot.forEach(doc => {
-                const botData = doc.data();
-                const botId = doc.id;
+            if (!newWebhookUrl.startsWith('http')) {
+                showToast('Please enter a valid URL starting with http:// or https://', 'error');
+                return;
+            }
+            
+            try {
+                await updateDoc(doc(db, 'botPool', botId), {
+                    webhookUrl: newWebhookUrl,
+                    webhookUpdatedAt: new Date()
+                });
                 
-                const botCard = document.createElement('div');
-                botCard.className = `bot-card ${botData.isAssigned ? 'assigned' : ''}`;
+                showToast('✅ Bot webhook URL updated!', 'success');
+                loadBotPool();
                 
-                botCard.innerHTML = `
-                    <button class="remove-bot-btn" onclick="removeBot('${botId}')">
-                        <i class="fas fa-times"></i>
-                    </button>
-                    <div class="bot-username">${botData.username}</div>
-                    <div class="bot-status">
-                        ${botData.isAssigned ? 
-                            `<i class="fas fa-check-circle" style="color: var(--success);"></i> Assigned` : 
-                            `<i class="fas fa-circle" style="color: var(--text-secondary);"></i> Available`}
-                    </div>
-                    ${botData.isAssigned && botData.assignedTo ? 
-                        `<div style="font-size: 0.8rem; margin-top: 0.5rem;">User ID: ${botData.assignedTo.substring(0, 8)}...</div>` : ''}
-                `;
-                
-                botsList.appendChild(botCard);
-            });
+            } catch (error) {
+                console.error('❌ Error updating bot webhook:', error);
+                showToast('Failed to update webhook URL!', 'error');
+            }
         }
 
         window.removeBot = async function(botId) {
