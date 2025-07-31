@@ -25,6 +25,7 @@
             --gold: #fbbf24;
             --success: #10b981;
             --warning: #f59e0b;
+            --danger: #ef4444;
             --glass-bg: rgba(255, 255, 255, 0.1);
             --glass-border: rgba(255, 255, 255, 0.2);
             --text-primary: #ffffff;
@@ -39,6 +40,231 @@
             color: var(--text-primary);
             overflow-x: hidden;
             position: relative;
+        }
+
+        /* 🆕 Admin Panel Styles */
+        .admin-panel {
+            display: none;
+            margin-bottom: 3rem;
+        }
+
+        .admin-panel.show {
+            display: block;
+        }
+
+        .admin-header {
+            background: linear-gradient(45deg, var(--danger), #dc2626);
+            padding: 1.5rem;
+            border-radius: 15px;
+            margin-bottom: 2rem;
+            text-align: center;
+        }
+
+        .admin-tabs {
+            display: flex;
+            gap: 1rem;
+            margin-bottom: 2rem;
+            border-bottom: 2px solid var(--glass-border);
+            padding-bottom: 1rem;
+        }
+
+        .admin-tab {
+            padding: 0.75rem 1.5rem;
+            background: var(--glass-bg);
+            border: 1px solid var(--glass-border);
+            border-radius: 10px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .admin-tab.active {
+            background: var(--primary);
+            border-color: var(--primary);
+        }
+
+        .admin-content {
+            display: none;
+        }
+
+        .admin-content.active {
+            display: block;
+        }
+
+        .users-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+
+        .user-card {
+            background: var(--glass-bg);
+            border: 1px solid var(--glass-border);
+            border-radius: 15px;
+            padding: 1.5rem;
+            transition: all 0.3s ease;
+        }
+
+        .user-card:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+        }
+
+        .user-info {
+            margin-bottom: 1rem;
+        }
+
+        .user-email {
+            font-weight: 600;
+            color: var(--accent);
+            margin-bottom: 0.5rem;
+        }
+
+        .user-status {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .status-badge {
+            padding: 0.25rem 0.75rem;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            font-weight: 600;
+        }
+
+        .status-badge.approved {
+            background: var(--success);
+            color: white;
+        }
+
+        .status-badge.pending {
+            background: var(--warning);
+            color: white;
+        }
+
+        .bot-selection {
+            margin-top: 1rem;
+        }
+
+        .bot-dropdown {
+            width: 100%;
+            padding: 0.75rem;
+            background: var(--glass-bg);
+            border: 1px solid var(--glass-border);
+            border-radius: 10px;
+            color: var(--text-primary);
+            margin-bottom: 1rem;
+        }
+
+        .bot-dropdown option {
+            background: #1e3a8a;
+            color: white;
+        }
+
+        .assign-btn {
+            width: 100%;
+            padding: 0.75rem;
+            background: var(--primary);
+            color: white;
+            border: none;
+            border-radius: 10px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.3s ease;
+        }
+
+        .assign-btn:hover {
+            background: var(--secondary);
+            transform: translateY(-2px);
+        }
+
+        .assign-btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        .current-bot {
+            background: rgba(16, 185, 129, 0.2);
+            border: 1px solid var(--success);
+            padding: 0.75rem;
+            border-radius: 10px;
+            margin-bottom: 1rem;
+        }
+
+        .bot-pool-section {
+            margin-bottom: 2rem;
+        }
+
+        .add-bot-form {
+            background: var(--glass-bg);
+            border: 1px solid var(--glass-border);
+            padding: 2rem;
+            border-radius: 15px;
+            margin-bottom: 2rem;
+        }
+
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+
+        .form-label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-weight: 600;
+        }
+
+        .form-input {
+            width: 100%;
+            padding: 0.75rem;
+            background: var(--glass-bg);
+            border: 1px solid var(--glass-border);
+            border-radius: 10px;
+            color: var(--text-primary);
+        }
+
+        .bots-list {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 1rem;
+        }
+
+        .bot-card {
+            background: var(--glass-bg);
+            border: 1px solid var(--glass-border);
+            padding: 1rem;
+            border-radius: 10px;
+            position: relative;
+        }
+
+        .bot-card.assigned {
+            border-color: var(--success);
+            background: rgba(16, 185, 129, 0.1);
+        }
+
+        .bot-username {
+            font-weight: 600;
+            color: var(--accent);
+            margin-bottom: 0.5rem;
+        }
+
+        .bot-status {
+            font-size: 0.9rem;
+            color: var(--text-secondary);
+        }
+
+        .remove-bot-btn {
+            position: absolute;
+            top: 0.5rem;
+            right: 0.5rem;
+            background: var(--danger);
+            color: white;
+            border: none;
+            padding: 0.25rem 0.5rem;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 0.8rem;
         }
 
         /* 🆕 Waiting Section Styles */
@@ -195,6 +421,17 @@
         .nav-link.audio-link:hover {
             transform: translateY(-2px);
             box-shadow: 0 5px 20px rgba(16, 185, 129, 0.4);
+        }
+
+        .nav-link.admin-link {
+            background: linear-gradient(45deg, var(--danger), #dc2626);
+            color: white;
+            font-weight: 600;
+        }
+
+        .nav-link.admin-link:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 20px rgba(239, 68, 68, 0.4);
         }
 
         .user-menu {
@@ -812,6 +1049,10 @@
                 <a href="membership.html" class="nav-link premium">
                     <i class="fas fa-crown"></i> Premium
                 </a>
+                <!-- 🆕 Admin Panel Link (Only shows for admin) -->
+                <a href="#" class="nav-link admin-link" id="adminLink" style="display: none;" onclick="toggleAdminPanel()">
+                    <i class="fas fa-user-shield"></i> Admin Panel
+                </a>
                 <div class="user-menu">
                     <button class="user-btn" onclick="toggleUserMenu()">
                         <i class="fas fa-user-circle"></i>
@@ -836,6 +1077,60 @@
 
     <!-- Main Content -->
     <main class="main-content">
+        <!-- 🆕 Admin Panel Section -->
+        <section class="admin-panel glass-container" id="adminPanel">
+            <div class="admin-header">
+                <h2><i class="fas fa-user-shield"></i> Admin Control Panel</h2>
+                <p>Manage users and bot assignments</p>
+            </div>
+
+            <div class="admin-tabs">
+                <div class="admin-tab active" onclick="switchAdminTab('users')">
+                    <i class="fas fa-users"></i> User Management
+                </div>
+                <div class="admin-tab" onclick="switchAdminTab('bots')">
+                    <i class="fas fa-robot"></i> Bot Pool
+                </div>
+            </div>
+
+            <!-- User Management Tab -->
+            <div class="admin-content active" id="usersTab">
+                <h3 style="margin-bottom: 1.5rem;">All Users</h3>
+                <div class="users-grid" id="usersGrid">
+                    <!-- Users will be loaded here dynamically -->
+                </div>
+            </div>
+
+            <!-- Bot Pool Tab -->
+            <div class="admin-content" id="botsTab">
+                <h3 style="margin-bottom: 1.5rem;">Bot Pool Management</h3>
+                
+                <!-- Add New Bot Form -->
+                <div class="add-bot-form">
+                    <h4 style="margin-bottom: 1rem;">Add New Bot</h4>
+                    <div class="form-group">
+                        <label class="form-label">Bot Token</label>
+                        <input type="text" class="form-input" id="newBotToken" placeholder="7052826278:AAELhGTJP...">
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Bot Username</label>
+                        <input type="text" class="form-input" id="newBotUsername" placeholder="@userbot1">
+                    </div>
+                    <button class="btn btn-primary" onclick="addNewBot()">
+                        <i class="fas fa-plus"></i> Add Bot
+                    </button>
+                </div>
+
+                <!-- Bot List -->
+                <div class="bot-pool-section">
+                    <h4 style="margin-bottom: 1rem;">Available Bots</h4>
+                    <div class="bots-list" id="botsList">
+                        <!-- Bots will be loaded here dynamically -->
+                    </div>
+                </div>
+            </div>
+        </section>
+
         <!-- 🆕 User Waiting Section (24h wait + approval) -->
         <section class="waiting-section glass-container" id="waitingSection">
             <div class="waiting-icon">
@@ -1111,7 +1406,7 @@
         import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js';
         import { getAuth, onAuthStateChanged, signOut } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js';
         import { getStorage, ref, uploadBytes, getDownloadURL } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-storage.js';
-        import { getFirestore, doc, onSnapshot, collection, query, where, orderBy, limit, setDoc, getDoc } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js';
+        import { getFirestore, doc, onSnapshot, collection, query, where, orderBy, limit, setDoc, getDoc, getDocs, updateDoc, addDoc } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js';
 
         // Firebase configuration
         const firebaseConfig = {
@@ -1129,6 +1424,9 @@
         const storage = getStorage(app);
         const db = getFirestore(app);
 
+        // 🆕 Admin email (change this to your admin email)
+        const ADMIN_EMAIL = 'admin@bluefm.com'; // ⚠️ IMPORTANT: Change this to your admin email
+
         // Global variables
         let selectedVoice = null;
         let uploadedFile = null;
@@ -1139,6 +1437,7 @@
         let userBotToken = null;
         let userBotUsername = null;
         let countdownInterval = null;
+        let isAdmin = false;
 
         // Voice names mapping
         const voiceNames = {
@@ -1167,6 +1466,13 @@
             if (user) {
                 currentUser = user;
                 console.log('✅ User logged in:', user.email);
+                
+                // 🆕 Check if admin
+                isAdmin = (user.email === ADMIN_EMAIL);
+                if (isAdmin) {
+                    document.getElementById('adminLink').style.display = 'flex';
+                    console.log('👑 Admin logged in');
+                }
                 
                 // Update UI with user info
                 document.getElementById('userName').textContent = user.displayName || user.email.split('@')[0];
@@ -1210,6 +1516,13 @@
                 const userData = userDoc.data();
                 console.log('👤 User data:', userData);
 
+                // 🆕 Admin always gets access
+                if (isAdmin) {
+                    showMainApp();
+                    loadAdminData();
+                    return;
+                }
+
                 if (userData.isApproved && userData.telegramBotToken) {
                     // ✅ User is approved and has bot
                     userBotToken = userData.telegramBotToken;
@@ -1242,6 +1555,270 @@
             } catch (error) {
                 console.error('❌ Error checking user status:', error);
                 showToast('Error checking account status', 'error');
+            }
+        }
+
+        // 🆕 Admin Functions
+        window.toggleAdminPanel = function() {
+            const adminPanel = document.getElementById('adminPanel');
+            const isShowing = adminPanel.classList.contains('show');
+            
+            if (isShowing) {
+                adminPanel.classList.remove('show');
+            } else {
+                adminPanel.classList.add('show');
+                loadAdminData();
+            }
+        }
+
+        window.switchAdminTab = function(tab) {
+            // Update tab buttons
+            document.querySelectorAll('.admin-tab').forEach(t => t.classList.remove('active'));
+            event.target.classList.add('active');
+            
+            // Update content
+            document.querySelectorAll('.admin-content').forEach(c => c.classList.remove('active'));
+            document.getElementById(`${tab}Tab`).classList.add('active');
+            
+            if (tab === 'bots') {
+                loadBotPool();
+            }
+        }
+
+        async function loadAdminData() {
+            if (!isAdmin) return;
+            
+            // Load all users
+            const usersQuery = query(collection(db, 'users'), orderBy('createdAt', 'desc'));
+            const usersSnapshot = await getDocs(usersQuery);
+            
+            const usersGrid = document.getElementById('usersGrid');
+            usersGrid.innerHTML = '';
+            
+            // Load available bots for dropdown
+            const botsQuery = query(collection(db, 'botPool'), where('isAssigned', '==', false));
+            const availableBotsSnapshot = await getDocs(botsQuery);
+            const availableBots = [];
+            availableBotsSnapshot.forEach(doc => {
+                availableBots.push({ id: doc.id, ...doc.data() });
+            });
+            
+            usersSnapshot.forEach(doc => {
+                const userData = doc.data();
+                const userId = doc.id;
+                
+                const userCard = document.createElement('div');
+                userCard.className = 'user-card';
+                
+                userCard.innerHTML = `
+                    <div class="user-info">
+                        <div class="user-email">${userData.email}</div>
+                        <div class="user-status">
+                            <span class="status-badge ${userData.isApproved ? 'approved' : 'pending'}">
+                                ${userData.isApproved ? 'Approved' : 'Pending'}
+                            </span>
+                        </div>
+                        <div style="font-size: 0.8rem; color: var(--text-secondary);">
+                            Registered: ${userData.registrationTime ? new Date(userData.registrationTime.toDate()).toLocaleDateString() : 'Unknown'}
+                        </div>
+                    </div>
+                    
+                    ${userData.telegramBotToken ? `
+                        <div class="current-bot">
+                            <div style="font-weight: 600; margin-bottom: 0.5rem;">Current Bot:</div>
+                            <div>${userData.telegramBotUsername || 'Bot assigned'}</div>
+                            <button class="btn btn-danger" style="margin-top: 0.5rem; padding: 0.5rem 1rem; font-size: 0.9rem;" 
+                                onclick="removeUserBot('${userId}')">
+                                <i class="fas fa-trash"></i> Remove Bot
+                            </button>
+                        </div>
+                    ` : `
+                        <div class="bot-selection">
+                            <label style="font-weight: 600; display: block; margin-bottom: 0.5rem;">Assign Bot:</label>
+                            <select class="bot-dropdown" id="botSelect_${userId}">
+                                <option value="">Select a bot...</option>
+                                ${availableBots.map(bot => 
+                                    `<option value="${bot.id}">${bot.username}</option>`
+                                ).join('')}
+                            </select>
+                            <button class="assign-btn" onclick="assignBotToUser('${userId}')">
+                                <i class="fas fa-robot"></i> Assign Bot
+                            </button>
+                        </div>
+                    `}
+                `;
+                
+                usersGrid.appendChild(userCard);
+            });
+        }
+
+        window.assignBotToUser = async function(userId) {
+            const selectElement = document.getElementById(`botSelect_${userId}`);
+            const selectedBotId = selectElement.value;
+            
+            if (!selectedBotId) {
+                showToast('Please select a bot!', 'error');
+                return;
+            }
+            
+            try {
+                // Get bot details
+                const botDoc = await getDoc(doc(db, 'botPool', selectedBotId));
+                const botData = botDoc.data();
+                
+                // Update bot status
+                await updateDoc(doc(db, 'botPool', selectedBotId), {
+                    isAssigned: true,
+                    assignedTo: userId,
+                    assignedAt: new Date()
+                });
+                
+                // Update user document
+                await updateDoc(doc(db, 'users', userId), {
+                    telegramBotToken: botData.token,
+                    telegramBotUsername: botData.username,
+                    isApproved: true,
+                    botWebhookUrl: botData.webhookUrl || null,
+                    approvedAt: new Date()
+                });
+                
+                showToast(`✅ Bot ${botData.username} assigned successfully!`, 'success');
+                
+                // Reload admin data
+                loadAdminData();
+                
+            } catch (error) {
+                console.error('❌ Error assigning bot:', error);
+                showToast('Failed to assign bot!', 'error');
+            }
+        }
+
+        window.removeUserBot = async function(userId) {
+            if (!confirm('Are you sure you want to remove this bot assignment?')) return;
+            
+            try {
+                // Get user's current bot
+                const userDoc = await getDoc(doc(db, 'users', userId));
+                const userData = userDoc.data();
+                
+                if (userData.telegramBotToken) {
+                    // Find and update bot in pool
+                    const botsQuery = query(collection(db, 'botPool'), 
+                        where('token', '==', userData.telegramBotToken));
+                    const botsSnapshot = await getDocs(botsQuery);
+                    
+                    if (!botsSnapshot.empty) {
+                        const botDoc = botsSnapshot.docs[0];
+                        await updateDoc(doc(db, 'botPool', botDoc.id), {
+                            isAssigned: false,
+                            assignedTo: null,
+                            assignedAt: null
+                        });
+                    }
+                }
+                
+                // Update user document
+                await updateDoc(doc(db, 'users', userId), {
+                    telegramBotToken: null,
+                    telegramBotUsername: null,
+                    isApproved: false,
+                    botWebhookUrl: null
+                });
+                
+                showToast('Bot removed successfully!', 'success');
+                loadAdminData();
+                
+            } catch (error) {
+                console.error('❌ Error removing bot:', error);
+                showToast('Failed to remove bot!', 'error');
+            }
+        }
+
+        window.addNewBot = async function() {
+            const token = document.getElementById('newBotToken').value.trim();
+            const username = document.getElementById('newBotUsername').value.trim();
+            
+            if (!token || !username) {
+                showToast('Please fill all fields!', 'error');
+                return;
+            }
+            
+            try {
+                // Add bot to pool
+                await addDoc(collection(db, 'botPool'), {
+                    token: token,
+                    username: username,
+                    isAssigned: false,
+                    assignedTo: null,
+                    addedAt: new Date(),
+                    webhookUrl: null
+                });
+                
+                // Clear form
+                document.getElementById('newBotToken').value = '';
+                document.getElementById('newBotUsername').value = '';
+                
+                showToast('Bot added successfully!', 'success');
+                loadBotPool();
+                loadAdminData();
+                
+            } catch (error) {
+                console.error('❌ Error adding bot:', error);
+                showToast('Failed to add bot!', 'error');
+            }
+        }
+
+        async function loadBotPool() {
+            const botsQuery = query(collection(db, 'botPool'), orderBy('addedAt', 'desc'));
+            const botsSnapshot = await getDocs(botsQuery);
+            
+            const botsList = document.getElementById('botsList');
+            botsList.innerHTML = '';
+            
+            botsSnapshot.forEach(doc => {
+                const botData = doc.data();
+                const botId = doc.id;
+                
+                const botCard = document.createElement('div');
+                botCard.className = `bot-card ${botData.isAssigned ? 'assigned' : ''}`;
+                
+                botCard.innerHTML = `
+                    <button class="remove-bot-btn" onclick="removeBot('${botId}')">
+                        <i class="fas fa-times"></i>
+                    </button>
+                    <div class="bot-username">${botData.username}</div>
+                    <div class="bot-status">
+                        ${botData.isAssigned ? 
+                            `<i class="fas fa-check-circle" style="color: var(--success);"></i> Assigned` : 
+                            `<i class="fas fa-circle" style="color: var(--text-secondary);"></i> Available`}
+                    </div>
+                    ${botData.isAssigned && botData.assignedTo ? 
+                        `<div style="font-size: 0.8rem; margin-top: 0.5rem;">User ID: ${botData.assignedTo.substring(0, 8)}...</div>` : ''}
+                `;
+                
+                botsList.appendChild(botCard);
+            });
+        }
+
+        window.removeBot = async function(botId) {
+            if (!confirm('Are you sure you want to remove this bot from the pool?')) return;
+            
+            try {
+                const botDoc = await getDoc(doc(db, 'botPool', botId));
+                const botData = botDoc.data();
+                
+                if (botData.isAssigned) {
+                    showToast('Cannot remove assigned bot! Remove from user first.', 'error');
+                    return;
+                }
+                
+                await deleteDoc(doc(db, 'botPool', botId));
+                showToast('Bot removed successfully!', 'success');
+                loadBotPool();
+                
+            } catch (error) {
+                console.error('❌ Error removing bot:', error);
+                showToast('Failed to remove bot!', 'error');
             }
         }
 
@@ -1306,7 +1883,9 @@
                 document.getElementById('userBot').textContent = userBotUsername;
             }
 
-            showToast('🎉 Welcome! Your account is approved!', 'success');
+            if (!isAdmin) {
+                showToast('🎉 Welcome! Your account is approved!', 'success');
+            }
         }
 
         // 🆕 Check for Active Jobs (only if approved)
@@ -1463,7 +2042,7 @@
 
         function checkGenerateButton() {
             const btn = document.getElementById('generateBtn');
-            if (selectedVoice && uploadedFile && currentUser && userBotToken) {
+            if (selectedVoice && uploadedFile && currentUser && (userBotToken || isAdmin)) {
                 btn.disabled = false;
             } else {
                 btn.disabled = true;
@@ -1477,7 +2056,8 @@
                 return;
             }
 
-            if (!userBotToken) {
+            // Admin can test without bot
+            if (!isAdmin && !userBotToken) {
                 showToast('Your personal bot is not configured yet!', 'error');
                 return;
             }
@@ -1502,8 +2082,8 @@
                         voiceName: voiceNames[selectedVoice],
                         referenceAudio: voiceToReference[selectedVoice],
                         jobId: jobId,
-                        telegramBotToken: userBotToken,
-                        telegramBotUsername: userBotUsername,
+                        telegramBotToken: userBotToken || 'admin-test',
+                        telegramBotUsername: userBotUsername || '@admin-test',
                         timestamp: new Date().toISOString()
                     }
                 };
