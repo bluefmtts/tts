@@ -1,261 +1,1862 @@
-import os
-import sys
-import nest_asyncio
-import json
-import time
-import asyncio
-import aiohttp
-import requests
-from dotenv import load_dotenv
-from flask import Flask, request, jsonify
-import threading
-from datetime import datetime
-import traceback
-
-# Apply nest_asyncio FIRST
-nest_asyncio.apply()
-
-# Force compatibility
-import warnings
-warnings.filterwarnings("ignore", category=SyntaxWarning)
-
-try:
-    from telegram import Bot
-    print("✅ All imports successful!")
-except ImportError as e:
-    print(f"❌ Import Error: {e}")
-    sys.exit(1)
-
-# Flask app setup
-app = Flask(__name__)
-
-@app.route('/')
-def home():
-    return "🎵 Multi-Bot TTS Service - Webhook Mode Active (2 Bots Configured)"
-
-@app.route('/health')
-def health():
-    return {"status": "healthy", "timestamp": datetime.now().isoformat(), "bots": 2}, 200
-
-# 🔥 Webhook endpoint for Firebase
-@app.route('/webhook', methods=['POST'])
-def webhook():
-    """Handle webhook from Firebase with dynamic bot support"""
-    try:
-        data = request.get_json()
-        print("📨 Received webhook data:", json.dumps(data, indent=2))
-        
-        # Extract bot token and user info from request
-        bot_token = data.get('botToken')
-        user_id = data.get('userId')
-        user_email = data.get('userEmail')
-        
-        if not bot_token:
-            return jsonify({"error": "Bot token not provided"}), 400
-        
-        # Log which bot is being used
-        bot_info = "Unknown Bot"
-        if "kd2U6Bk1OU1l1uLNIBQAQ_9gIH5qLI" in bot_token:
-            bot_info = "@Myttsmasterbot (Bot1)"
-        elif "AAGKEb19mjeBVo4r-HGpmKydPQIOstHuoCQ" in bot_token:
-            bot_info = "@g080ydbot (Bot2)"
-        
-        print(f"🤖 Using bot: {bot_info} for user: {user_email}")
-        
-        # Process the webhook data
-        if data and 'message' in data:
-            # Extract command and parameters
-            message = data.get('message', {})
-            text = message.get('text', '')
-            
-            if text.startswith('/process'):
-                print(f"🔄 Processing webhook command for user {user_email} with {bot_info}: {text}")
-                
-                # Run async handler in thread with specific bot token
-                def process_update():
-                    try:
-                        # Create bot instance with user's specific token
-                        user_bot = Bot(token=bot_token)
-                        
-                        # Process the command with user's bot
-                        asyncio.run(handle_process_command_webhook(
-                            user_bot, 
-                            message, 
-                            text, 
-                            user_id, 
-                            user_email,
-                            bot_token,
-                            bot_info
-                        ))
-                        
-                    except Exception as e:
-                        print(f"❌ Webhook processing error for user {user_email}: {e}")
-                        traceback.print_exc()
-                
-                # Run in background thread
-                thread = threading.Thread(target=process_update)
-                thread.daemon = True
-                thread.start()
-                
-                return jsonify({
-                    "status": "success", 
-                    "message": "Processing started",
-                    "user": user_email,
-                    "bot": bot_info
-                }), 200
-            else:
-                return jsonify({"error": "Invalid command"}), 400
-        else:
-            return jsonify({"error": "Invalid data format"}), 400
-            
-    except Exception as e:
-        print(f"❌ Webhook error: {e}")
-        traceback.print_exc()
-        return jsonify({"error": str(e)}), 500
-
-def run_flask():
-    port = int(os.environ.get('PORT', 5000))
-    app.run(host='0.0.0.0', port=port, debug=False, use_reloader=False)
-
-# Load environment variables
-load_dotenv()
-
-# 🔥 UPDATED BOT URLs - Both bots supported
-BOT_URL = os.getenv('BOT_URL', 'https://onetts-tuc2.onrender.com')  # Updated URL
-
-# 🔥 Firebase Configuration
-FIREBASE_PROJECT_ID = os.getenv('FIREBASE_PROJECT_ID', 'bluefm-tts')
-FIREBASE_FUNCTION_URL = f'https://us-central1-{FIREBASE_PROJECT_ID}.cloudfunctions.net'
-
-print(f"🔑 Bot URL: {BOT_URL}")
-print(f"🔑 Firebase Project: {FIREBASE_PROJECT_ID}")
-print(f"🔑 Firebase Function URL: {FIREBASE_FUNCTION_URL}")
-print(f"🤖 Supporting 2 bots:")
-print(f"   📱 Bot1: @Myttsmasterbot")
-print(f"   📱 Bot2: @g080ydbot")
-
-# Bot instances cache (optional, for performance)
-BOT_CACHE = {}
-
-def get_or_create_bot(bot_token):
-    """Get bot instance from cache or create new one"""
-    if bot_token not in BOT_CACHE:
-        BOT_CACHE[bot_token] = Bot(token=bot_token)
-    return BOT_CACHE[bot_token]
-
-# ==================== WEBHOOK SPECIFIC FUNCTIONS ====================
-async def handle_process_command_webhook(bot, message_data, text, user_id, user_email, bot_token, bot_info):
-    """Handle /process command from Firebase webhook with user-specific bot"""
-    try:
-        parts = text.split()
-        if len(parts) < 4:
-            print("❌ Invalid process command format")
-            return
-        
-        text_url = parts[1]
-        audio_url = parts[2] 
-        job_id = parts[3]
-        
-        chat_id = message_data.get('chat', {}).get('id')
-        
-        print(f"🔄 Processing webhook for {user_email} with {bot_info}: text={text_url}, audio={audio_url}, job={job_id}")
-        
-        # Send processing message using user's bot
-        await bot.send_message(
-            chat_id=chat_id,
-            text=f"🚀 Firebase request received!\n"
-                 f"👤 User: {user_email}\n"
-                 f"🤖 Bot: {bot_info}\n"
-                 f"📝 Job ID: {job_id}\n"
-                 f"🔄 Files received from Firebase..."
-        )
-        
-        # Send notification about the files received
-        await bot.send_message(
-            chat_id=chat_id,
-            text=f"✅ Files received successfully!\n"
-                 f"📄 Text file URL: {text_url}\n"
-                 f"🎵 Audio file URL: {audio_url}\n"
-                 f"📝 Job ID: {job_id}\n"
-                 f"👤 User: {user_email} ({user_id})\n"
-                 f"🤖 Using {bot_info} for this user\n\n"
-                 f"🚫 No further processing (Kaggle disabled)"
-        )
-        
-        # Send status back to Firebase with user info
-        await send_status_to_firebase(job_id, "received", "Files received on Telegram", user_id, user_email)
-        
-    except Exception as e:
-        print(f"❌ Process command error for {user_email}: {e}")
-        traceback.print_exc()
-        if 'chat_id' in locals():
-            try:
-                await bot.send_message(chat_id=chat_id, text=f"❌ Processing error: {str(e)}")
-                await send_status_to_firebase(job_id, "failed", str(e), user_id, user_email)
-            except:
-                pass
-
-# 🔥 Function to send status to Firebase
-async def send_status_to_firebase(job_id, status, details="", user_id="", user_email=""):
-    """Send processing status back to Firebase with user info"""
-    try:
-        data = {
-            "userId": user_id,
-            "userEmail": user_email,
-            "jobId": str(job_id),
-            "status": status,
-            "details": details,
-            "timestamp": datetime.now().isoformat()
-        }
-        
-        if status == "failed":
-            data["error"] = details
-        
-        firebase_status_url = f"{FIREBASE_FUNCTION_URL}/updateJobStatus"
-        
-        async with aiohttp.ClientSession() as session:
-            async with session.post(
-                firebase_status_url, 
-                json=data, 
-                headers={"Content-Type": "application/json"},
-                timeout=30
-            ) as resp:
-                if resp.status == 200:
-                    print(f"✅ Status sent to Firebase for {user_email}: {status}")
-                else:
-                    print(f"❌ Firebase webhook failed for {user_email}: {resp.status}")
-                    
-    except Exception as e:
-        print(f"❌ Error sending to Firebase: {e}")
-
-# ==================== MAIN FUNCTION ====================
-def main():
-    """Main function to start the multi-bot service"""
-    print("🚀 Starting Multi-Bot TTS Service...")
-    print("🤖 Dynamic bot assignment enabled!")
-    print("✅ Supporting 2 users with 2 bots!")
-    print("📱 Bot1: @Myttsmasterbot for vikassingh44999@gmail.com")
-    print("📱 Bot2: @g080ydbot for god662135@gmail.com")
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Blue FM TTS - Text to Speech Platform (2 Bots)</title>
     
-    # Start Flask server
-    flask_thread = threading.Thread(target=run_flask)
-    flask_thread.daemon = True
-    flask_thread.start()
-    print("🌐 Flask webhook server started!")
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+    
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <!-- Firebase SDKs -->
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-storage-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
+    
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
 
-    print("🚀 Multi-Bot Service Started!")
-    print("🤖 WEBHOOK-ONLY MODE!")
-    print("✅ FIREBASE TO TELEGRAM: ENABLED")
-    print(f"🔗 Webhook URL: {BOT_URL}/webhook")
-    print(f"🔥 Firebase Function URL: {FIREBASE_FUNCTION_URL}")
-    print("👥 Supporting 2 users with individual bots!")
+        :root {
+            --primary: #2563eb;
+            --secondary: #3b82f6;
+            --accent: #60a5fa;
+            --gold: #fbbf24;
+            --success: #10b981;
+            --warning: #f59e0b;
+            --glass-bg: rgba(255, 255, 255, 0.1);
+            --glass-border: rgba(255, 255, 255, 0.2);
+            --text-primary: #ffffff;
+            --text-secondary: #e0e0ff;
+            --shadow: rgba(37, 99, 235, 0.3);
+        }
 
-    # Keep Flask running
-    try:
-        while True:
-            time.sleep(1)
-    except KeyboardInterrupt:
-        print("🛑 Bot service stopped")
+        body {
+            font-family: 'Poppins', sans-serif;
+            min-height: 100vh;
+            background: linear-gradient(135deg, #1e3a8a 0%, #2563eb 50%, #3b82f6 100%);
+            color: var(--text-primary);
+            overflow-x: hidden;
+            position: relative;
+        }
 
-if __name__ == "__main__":
-    main()
+        /* Login Section Styles */
+        .login-section {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(135deg, #1e3a8a 0%, #2563eb 50%, #3b82f6 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+        }
+
+        .login-container {
+            background: var(--glass-bg);
+            backdrop-filter: blur(10px);
+            border: 1px solid var(--glass-border);
+            border-radius: 20px;
+            padding: 3rem;
+            max-width: 500px;
+            width: 90%;
+            text-align: center;
+            box-shadow: 0 8px 32px var(--shadow);
+        }
+
+        .login-title {
+            font-size: 2.2rem;
+            margin-bottom: 0.5rem;
+            color: var(--text-primary);
+        }
+
+        .login-subtitle {
+            color: var(--text-secondary);
+            margin-bottom: 1.5rem;
+            font-size: 1.1rem;
+        }
+
+        /* 🔥 NEW: Bot Status Display */
+        .bot-status {
+            background: rgba(16, 185, 129, 0.1);
+            border: 1px solid var(--success);
+            padding: 1rem;
+            border-radius: 10px;
+            margin-bottom: 2rem;
+            text-align: left;
+        }
+
+        .bot-info {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 0.5rem;
+        }
+
+        .bot-name {
+            font-weight: 600;
+            color: var(--success);
+        }
+
+        .bot-email {
+            font-size: 0.9rem;
+            color: var(--text-secondary);
+        }
+
+        .form-group {
+            margin-bottom: 1.5rem;
+            text-align: left;
+        }
+
+        .form-label {
+            display: block;
+            margin-bottom: 0.5rem;
+            color: var(--text-primary);
+            font-weight: 500;
+        }
+
+        .form-input {
+            width: 100%;
+            padding: 0.75rem 1rem;
+            border: 1px solid var(--glass-border);
+            border-radius: 10px;
+            background: rgba(255, 255, 255, 0.1);
+            color: var(--text-primary);
+            font-size: 1rem;
+        }
+
+        .form-input::placeholder {
+            color: var(--text-secondary);
+        }
+
+        .form-input:focus {
+            outline: none;
+            border-color: var(--accent);
+            box-shadow: 0 0 0 2px rgba(96, 165, 250, 0.2);
+        }
+
+        .login-btn {
+            width: 100%;
+            padding: 0.75rem;
+            background: linear-gradient(45deg, var(--primary), var(--secondary));
+            border: none;
+            border-radius: 10px;
+            color: white;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .login-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 30px var(--shadow);
+        }
+
+        .login-btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .error-message {
+            color: #ef4444;
+            background: rgba(239, 68, 68, 0.1);
+            border: 1px solid #ef4444;
+            padding: 0.75rem;
+            border-radius: 10px;
+            margin-top: 1rem;
+            display: none;
+        }
+
+        .success-message {
+            color: var(--success);
+            background: rgba(16, 185, 129, 0.1);
+            border: 1px solid var(--success);
+            padding: 0.75rem;
+            border-radius: 10px;
+            margin-top: 1rem;
+            display: none;
+        }
+
+        /* Background Animation */
+        .bg-animation {
+            position: fixed;
+            width: 100%;
+            height: 100%;
+            top: 0;
+            left: 0;
+            z-index: -1;
+            overflow: hidden;
+        }
+
+        .sound-wave {
+            position: absolute;
+            width: 100%;
+            height: 100px;
+            bottom: 0;
+            background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1440 320"><path fill="%2360a5fa" fill-opacity="0.3" d="M0,160L48,170.7C96,181,192,203,288,197.3C384,192,480,160,576,165.3C672,171,768,213,864,213.3C960,213,1056,171,1152,160C1248,149,1344,171,1392,181.3L1440,192L1440,320L1392,320C1344,320,1248,320,1152,320C1056,320,960,320,864,320C768,320,672,320,576,320C480,320,384,320,288,320C192,320,96,320,48,320L0,320Z"></path></svg>');
+            animation: wave 20s linear infinite;
+        }
+
+        @keyframes wave {
+            0% { transform: translateX(0); }
+            100% { transform: translateX(-50%); }
+        }
+
+        /* Navigation */
+        nav {
+            position: fixed;
+            top: 0;
+            width: 100%;
+            z-index: 100;
+            background: var(--glass-bg);
+            backdrop-filter: blur(10px);
+            padding: 1rem 2rem;
+            border-bottom: 1px solid var(--glass-border);
+        }
+
+        .nav-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo {
+            font-size: 1.75rem;
+            font-weight: 700;
+            color: var(--text-primary);
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .logo i {
+            color: var(--accent);
+        }
+
+        .nav-links {
+            display: flex;
+            align-items: center;
+            gap: 1.5rem;
+        }
+
+        .nav-link {
+            color: var(--text-primary);
+            text-decoration: none;
+            font-weight: 500;
+            transition: all 0.3s ease;
+            position: relative;
+            padding: 0.5rem 1rem;
+            border-radius: 25px;
+        }
+
+        .nav-link:hover {
+            color: var(--accent);
+            background: rgba(255, 255, 255, 0.1);
+        }
+
+        .nav-link.premium {
+            background: linear-gradient(45deg, var(--gold), #f59e0b);
+            color: #1f2937;
+            font-weight: 600;
+        }
+
+        .nav-link.premium:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 20px rgba(251, 191, 36, 0.4);
+        }
+
+        .nav-link.audio-link {
+            background: linear-gradient(45deg, var(--success), #059669);
+            color: white;
+            font-weight: 600;
+        }
+
+        .nav-link.audio-link:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 20px rgba(16, 185, 129, 0.4);
+        }
+
+        /* User Menu */
+        .user-menu {
+            position: relative;
+        }
+
+        .user-btn {
+            background: var(--glass-bg);
+            border: 1px solid var(--glass-border);
+            padding: 0.5rem 1rem;
+            border-radius: 25px;
+            color: var(--text-primary);
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            transition: all 0.3s ease;
+        }
+
+        .user-btn:hover {
+            background: rgba(255, 255, 255, 0.2);
+        }
+
+        .user-dropdown {
+            position: absolute;
+            top: 100%;
+            right: 0;
+            margin-top: 0.5rem;
+            background: var(--glass-bg);
+            backdrop-filter: blur(10px);
+            border: 1px solid var(--glass-border);
+            border-radius: 10px;
+            padding: 0.5rem;
+            min-width: 250px;
+            display: none;
+        }
+
+        .user-dropdown.show {
+            display: block;
+            animation: fadeIn 0.3s ease-out;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(-10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* Glass Container */
+        .glass-container {
+            background: var(--glass-bg);
+            backdrop-filter: blur(10px);
+            border: 1px solid var(--glass-border);
+            border-radius: 20px;
+            padding: 2rem;
+            box-shadow: 0 8px 32px var(--shadow);
+        }
+
+        /* Main Content */
+        .main-content {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 6rem 1rem 2rem;
+        }
+
+        /* Hero Section */
+        .hero-section {
+            text-align: center;
+            margin-bottom: 3rem;
+        }
+
+        .hero-title {
+            font-size: 3rem;
+            font-weight: 700;
+            margin-bottom: 1rem;
+            background: linear-gradient(45deg, var(--text-primary), var(--accent));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .hero-subtitle {
+            font-size: 1.25rem;
+            color: var(--text-secondary);
+            margin-bottom: 2rem;
+        }
+
+        /* 🔥 NEW: Current Bot Display */
+        .current-bot-display {
+            background: rgba(96, 165, 250, 0.1);
+            border: 1px solid var(--accent);
+            padding: 1rem;
+            border-radius: 15px;
+            margin-bottom: 2rem;
+            text-align: center;
+        }
+
+        .current-bot-title {
+            font-size: 1.2rem;
+            color: var(--accent);
+            margin-bottom: 0.5rem;
+        }
+
+        .current-bot-info {
+            font-size: 1rem;
+            color: var(--text-primary);
+        }
+
+        /* Stats */
+        .stats-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1rem;
+            margin-bottom: 3rem;
+        }
+
+        .stat-card {
+            background: rgba(255, 255, 255, 0.05);
+            padding: 1.5rem;
+            border-radius: 15px;
+            text-align: center;
+            border: 1px solid var(--glass-border);
+        }
+
+        .stat-number {
+            font-size: 2rem;
+            font-weight: 700;
+            color: var(--accent);
+        }
+
+        .stat-label {
+            font-size: 0.9rem;
+            color: var(--text-secondary);
+        }
+
+        /* Audio Cards */
+        .section-title {
+            font-size: 2rem;
+            margin-bottom: 2rem;
+            text-align: center;
+        }
+
+        .audio-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 2rem;
+            margin-bottom: 3rem;
+        }
+
+        .audio-card {
+            cursor: pointer;
+            transition: all 0.3s ease;
+            position: relative;
+        }
+
+        .audio-card:hover {
+            transform: translateY(-5px);
+        }
+
+        .audio-card.selected {
+            box-shadow: 0 0 30px var(--accent);
+            border-color: var(--accent);
+        }
+
+        .audio-card-content {
+            padding: 1.5rem;
+        }
+
+        .voice-avatar {
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            margin: 0 auto 1rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 2rem;
+            background: linear-gradient(45deg, var(--primary), var(--secondary));
+        }
+
+        .voice-name {
+            font-size: 1.25rem;
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+        }
+
+        .voice-description {
+            font-size: 0.9rem;
+            color: var(--text-secondary);
+            margin-bottom: 1rem;
+        }
+
+        .audio-controls {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .play-btn {
+            background: var(--primary);
+            border: none;
+            color: white;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s ease;
+        }
+
+        .play-btn:hover {
+            background: var(--secondary);
+            transform: scale(1.1);
+        }
+
+        .audio-wave {
+            flex: 1;
+            height: 40px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 20px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .audio-progress {
+            height: 100%;
+            background: linear-gradient(90deg, var(--primary), var(--secondary));
+            width: 0%;
+            border-radius: 20px;
+            transition: width 0.3s ease;
+        }
+
+        .radio-select {
+            position: absolute;
+            top: 1rem;
+            right: 1rem;
+            width: 24px;
+            height: 24px;
+            border: 2px solid var(--glass-border);
+            border-radius: 50%;
+            background: transparent;
+            cursor: pointer;
+        }
+
+        .audio-card.selected .radio-select {
+            background: var(--accent);
+            border-color: var(--accent);
+        }
+
+        .audio-card.selected .radio-select::after {
+            content: '✓';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            color: white;
+            font-size: 14px;
+        }
+
+        /* Upload Section */
+        .upload-section {
+            margin-bottom: 3rem;
+        }
+
+        .upload-area {
+            border: 2px dashed var(--glass-border);
+            border-radius: 20px;
+            padding: 3rem;
+            text-align: center;
+            transition: all 0.3s ease;
+            position: relative;
+        }
+
+        .upload-area:hover {
+            border-color: var(--accent);
+            background: rgba(96, 165, 250, 0.1);
+        }
+
+        .upload-area.drag-over {
+            border-color: var(--accent);
+            background: rgba(96, 165, 250, 0.2);
+        }
+
+        .upload-icon {
+            font-size: 3rem;
+            color: var(--accent);
+            margin-bottom: 1rem;
+        }
+
+        .btn {
+            padding: 0.75rem 2rem;
+            border: none;
+            border-radius: 50px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .btn-primary {
+            background: linear-gradient(45deg, var(--primary), var(--secondary));
+            color: white;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 30px var(--shadow);
+        }
+
+        .btn-primary:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        .btn-success {
+            background: linear-gradient(45deg, var(--success), #059669);
+            color: white;
+        }
+
+        .btn-success:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 30px rgba(16, 185, 129, 0.4);
+        }
+
+        .file-info {
+            margin-top: 1rem;
+            padding: 1rem;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 10px;
+            display: none;
+        }
+
+        .file-info.show {
+            display: block;
+        }
+
+        /* Generate Section */
+        .generate-section {
+            text-align: center;
+            padding: 2rem;
+            background: linear-gradient(45deg, rgba(37, 99, 235, 0.1), rgba(96, 165, 250, 0.1));
+            border-radius: 20px;
+            margin-bottom: 2rem;
+        }
+
+        .generate-btn {
+            font-size: 1.25rem;
+            padding: 1rem 3rem;
+        }
+
+        /* Processing Status Section */
+        .processing-section {
+            display: none;
+            text-align: center;
+            padding: 2rem;
+            background: linear-gradient(45deg, rgba(245, 158, 11, 0.1), rgba(251, 191, 36, 0.1));
+            border-radius: 20px;
+            margin-bottom: 2rem;
+            border: 1px solid var(--warning);
+        }
+
+        .processing-section.show {
+            display: block;
+            animation: slideDown 0.5s ease-out;
+        }
+
+        @keyframes slideDown {
+            from { opacity: 0; transform: translateY(-20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .processing-icon {
+            font-size: 3rem;
+            color: var(--warning);
+            margin-bottom: 1rem;
+            animation: spin 2s linear infinite;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .processing-title {
+            font-size: 1.5rem;
+            color: var(--warning);
+            margin-bottom: 0.5rem;
+        }
+
+        .processing-message {
+            color: var(--text-secondary);
+            font-size: 1rem;
+            margin-bottom: 1rem;
+        }
+
+        .estimated-time {
+            background: rgba(245, 158, 11, 0.2);
+            border: 1px solid var(--warning);
+            padding: 1rem;
+            border-radius: 10px;
+            margin-top: 1rem;
+        }
+
+        /* Real-time Status Update Section */
+        .status-update {
+            background: rgba(59, 130, 246, 0.1);
+            border: 1px solid var(--secondary);
+            padding: 1rem;
+            border-radius: 10px;
+            margin-top: 1rem;
+            text-align: left;
+        }
+
+        .status-steps {
+            list-style: none;
+            padding: 0;
+        }
+
+        .status-step {
+            padding: 0.5rem 0;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .status-step.completed {
+            color: var(--success);
+        }
+
+        .status-step.current {
+            color: var(--warning);
+        }
+
+        .status-step.pending {
+            color: var(--text-secondary);
+        }
+
+        /* Download Section */
+        .download-section {
+            display: none;
+            text-align: center;
+            padding: 2rem;
+            background: linear-gradient(45deg, rgba(16, 185, 129, 0.1), rgba(5, 150, 105, 0.1));
+            border-radius: 20px;
+            margin-bottom: 2rem;
+            border: 1px solid var(--success);
+        }
+
+        .download-section.show {
+            display: block;
+            animation: slideDown 0.5s ease-out;
+        }
+
+        .download-icon {
+            font-size: 3rem;
+            color: var(--success);
+            margin-bottom: 1rem;
+            animation: bounce 2s infinite;
+        }
+
+        @keyframes bounce {
+            0%, 20%, 50%, 80%, 100% { transform: translateY(0); }
+            40% { transform: translateY(-10px); }
+            60% { transform: translateY(-5px); }
+        }
+
+        .download-title {
+            font-size: 1.5rem;
+            color: var(--success);
+            margin-bottom: 0.5rem;
+        }
+
+        .download-message {
+            color: var(--text-secondary);
+            margin-bottom: 2rem;
+        }
+
+        .download-options {
+            display: flex;
+            justify-content: center;
+            gap: 1rem;
+            margin-bottom: 1rem;
+            flex-wrap: wrap;
+        }
+
+        .download-btn {
+            padding: 0.75rem 1.5rem;
+            font-size: 1rem;
+        }
+
+        .audio-details {
+            background: rgba(16, 185, 129, 0.1);
+            border: 1px solid var(--success);
+            padding: 1rem;
+            border-radius: 10px;
+            margin-top: 1rem;
+            text-align: left;
+        }
+
+        .detail-row {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 0.5rem;
+        }
+
+        .detail-label {
+            color: var(--text-secondary);
+        }
+
+        .detail-value {
+            color: var(--text-primary);
+            font-weight: 600;
+        }
+
+        /* Character Counter */
+        .character-info {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-top: 1rem;
+            padding: 1rem;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 10px;
+        }
+
+        .char-count {
+            font-size: 0.9rem;
+            color: var(--text-secondary);
+        }
+
+        .char-limit {
+            font-size: 0.9rem;
+            color: var(--accent);
+        }
+
+        /* Toast */
+        .toast {
+            position: fixed;
+            bottom: 2rem;
+            right: 2rem;
+            background: var(--glass-bg);
+            backdrop-filter: blur(10px);
+            padding: 1rem 2rem;
+            border-radius: 10px;
+            border: 1px solid var(--glass-border);
+            display: none;
+            animation: slideUp 0.3s ease-out;
+            z-index: 1000;
+        }
+
+        @keyframes slideUp {
+            from { transform: translateY(100px); opacity: 0; }
+            to { transform: translateY(0); opacity: 1; }
+        }
+
+        .toast.show {
+            display: block;
+        }
+
+        .toast.success {
+            border-color: var(--success);
+            color: var(--success);
+        }
+
+        .toast.error {
+            border-color: #ef4444;
+            color: #ef4444;
+        }
+
+        .toast.warning {
+            border-color: var(--warning);
+            color: var(--warning);
+        }
+
+        /* Footer */
+        footer {
+            text-align: center;
+            padding: 2rem;
+            color: var(--text-secondary);
+            border-top: 1px solid var(--glass-border);
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .hero-title { font-size: 2rem; }
+            .nav-links { gap: 0.5rem; }
+            .nav-link { padding: 0.5rem 0.75rem; font-size: 0.9rem; }
+            .audio-grid { grid-template-columns: 1fr; }
+            .stats-container { grid-template-columns: 1fr; }
+            .download-options { flex-direction: column; align-items: center; }
+            .download-btn { width: 100%; max-width: 300px; }
+            .login-container { padding: 2rem; }
+        }
+
+        @media (max-width: 480px) {
+            .nav-links { flex-direction: column; gap: 0.25rem; }
+            .nav-link { padding: 0.25rem 0.5rem; font-size: 0.8rem; }
+            .login-container { padding: 1.5rem; }
+        }
+    </style>
+</head>
+<body>
+    <!-- Background Animation -->
+    <div class="bg-animation">
+        <div class="sound-wave"></div>
+    </div>
+
+    <!-- Login Section -->
+    <div class="login-section" id="loginSection">
+        <div class="login-container">
+            <h2 class="login-title">
+                <i class="fas fa-microphone-alt" style="color: var(--accent);"></i>
+                Blue FM TTS
+            </h2>
+            <p class="login-subtitle">Enter your email to access your personal TTS bot</p>
+            
+            <!-- 🔥 NEW: Bot Status Display -->
+            <div class="bot-status">
+                <h4 style="color: var(--success); margin-bottom: 1rem;">
+                    <i class="fas fa-robot"></i> Available Bots
+                </h4>
+                <div class="bot-info">
+                    <span class="bot-name">@Myttsmasterbot</span>
+                    <span class="bot-email">vikassingh44999@gmail.com</span>
+                </div>
+                <div class="bot-info">
+                    <span class="bot-name">@g080ydbot</span>
+                    <span class="bot-email">god662135@gmail.com</span>
+                </div>
+            </div>
+            
+            <form id="loginForm">
+                <div class="form-group">
+                    <label class="form-label" for="userEmail">Email Address</label>
+                    <input 
+                        type="email" 
+                        id="userEmail" 
+                        class="form-input" 
+                        placeholder="Enter your registered email"
+                        required
+                    >
+                </div>
+                
+                <button type="submit" class="login-btn" id="loginBtn">
+                    <i class="fas fa-sign-in-alt"></i>
+                    Access My TTS Bot
+                </button>
+                
+                <div class="error-message" id="errorMessage"></div>
+                <div class="success-message" id="successMessage"></div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Navigation -->
+    <nav>
+        <div class="nav-container">
+            <a href="#" class="logo">
+                <i class="fas fa-microphone-alt"></i>
+                Blue FM TTS
+            </a>
+            <div class="nav-links">
+                <a href="my-audio.html" class="nav-link audio-link">
+                    <i class="fas fa-headphones"></i> Your Audio
+                </a>
+                <a href="membership.html" class="nav-link premium">
+                    <i class="fas fa-crown"></i> Premium
+                </a>
+                <div class="user-menu">
+                    <button class="user-btn" onclick="toggleUserMenu()">
+                        <i class="fas fa-user-circle"></i>
+                        <span id="userName">User</span>
+                    </button>
+                    <div class="user-dropdown" id="userDropdown">
+                        <div style="padding: 0.75rem; border-bottom: 1px solid var(--glass-border);">
+                            <div style="font-weight: 600;" id="userPlan">Free Plan</div>
+                            <div style="font-size: 0.8rem; color: var(--text-secondary);">5,000 chars/month</div>
+                            <div style="font-size: 0.8rem; color: var(--accent);" id="userBot">Bot: Loading...</div>
+                            <div style="font-size: 0.8rem; color: var(--text-secondary);" id="userEmail">Email: Loading...</div>
+                        </div>
+                        <a href="membership.html" class="nav-link" style="display: block; padding: 0.75rem;">
+                            <i class="fas fa-gem"></i> Upgrade to Premium
+                        </a>
+                        <button class="nav-link" style="display: block; width: 100%; text-align: left; padding: 0.75rem; background: none; border: none; cursor: pointer;" onclick="userLogout()">
+                            <i class="fas fa-sign-out-alt"></i> Logout
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <main class="main-content" id="mainContent" style="display: none;">
+        <!-- Hero Section -->
+        <section class="hero-section">
+            <h1 class="hero-title">Transform Text to Natural Speech</h1>
+            <p class="hero-subtitle">Create professional voiceovers with your personal AI bot</p>
+            
+            <!-- 🔥 NEW: Current Bot Display -->
+            <div class="current-bot-display" id="currentBotDisplay">
+                <div class="current-bot-title">Your Personal TTS Bot</div>
+                <div class="current-bot-info" id="currentBotInfo">
+                    <i class="fas fa-robot"></i> Loading bot information...
+                </div>
+            </div>
+        </section>
+
+        <!-- Stats Section -->
+        <section class="stats-container">
+            <div class="stat-card">
+                <div class="stat-number">4</div>
+                <div class="stat-label">Natural Voices</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-number">20+</div>
+                <div class="stat-label">Languages</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-number">2</div>
+                <div class="stat-label">Active Bots</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-number">99.9%</div>
+                <div class="stat-label">Accuracy</div>
+            </div>
+        </section>
+
+        <!-- Voice Selection -->
+        <section class="glass-container">
+            <h2 class="section-title">Choose Your Voice</h2>
+            <div class="audio-grid">
+                <!-- Voice Card 1 -->
+                <div class="audio-card glass-container" onclick="selectVoice('voice1')">
+                    <div class="radio-select"></div>
+                    <div class="audio-card-content">
+                        <div class="voice-avatar">👨</div>
+                        <h3 class="voice-name">Professional Male</h3>
+                        <p class="voice-description">Clear, confident business voice</p>
+                        <div class="audio-controls">
+                            <button class="play-btn" onclick="playDemo(event, 'voice1')">
+                                <i class="fas fa-play"></i>
+                            </button>
+                            <div class="audio-wave">
+                                <div class="audio-progress"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Voice Card 2 -->
+                <div class="audio-card glass-container" onclick="selectVoice('voice2')">
+                    <div class="radio-select"></div>
+                    <div class="audio-card-content">
+                        <div class="voice-avatar">👩</div>
+                        <h3 class="voice-name">Friendly Female</h3>
+                        <p class="voice-description">Warm, engaging narrative voice</p>
+                        <div class="audio-controls">
+                            <button class="play-btn" onclick="playDemo(event, 'voice2')">
+                                <i class="fas fa-play"></i>
+                            </button>
+                            <div class="audio-wave">
+                                <div class="audio-progress"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Voice Card 3 -->
+                <div class="audio-card glass-container" onclick="selectVoice('voice3')">
+                    <div class="radio-select"></div>
+                    <div class="audio-card-content">
+                        <div class="voice-avatar">🎙</div>
+                        <h3 class="voice-name">News Anchor</h3>
+                        <p class="voice-description">Authoritative news reading voice</p>
+                        <div class="audio-controls">
+                            <button class="play-btn" onclick="playDemo(event, 'voice3')">
+                                <i class="fas fa-play"></i>
+                            </button>
+                            <div class="audio-wave">
+                                <div class="audio-progress"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Voice Card 4 -->
+                <div class="audio-card glass-container" onclick="selectVoice('voice4')">
+                    <div class="radio-select"></div>
+                    <div class="audio-card-content">
+                        <div class="voice-avatar">📚</div>
+                        <h3 class="voice-name">Storyteller</h3>
+                        <p class="voice-description">Expressive audiobook narration</p>
+                        <div class="audio-controls">
+                            <button class="play-btn" onclick="playDemo(event, 'voice4')">
+                                <i class="fas fa-play"></i>
+                            </button>
+                            <div class="audio-wave">
+                                <div class="audio-progress"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Upload Section -->
+        <section class="upload-section glass-container">
+            <h2 class="section-title">Upload Your Text</h2>
+            <div class="upload-area" id="uploadArea">
+                <div class="upload-icon">
+                    <i class="fas fa-file-alt"></i>
+                </div>
+                <p style="margin-bottom: 1rem;">Drag & drop your .txt file here or</p>
+                <button class="btn btn-primary" onclick="document.getElementById('fileInput').click()">
+                    <i class="fas fa-upload"></i> Browse Files
+                </button>
+                <input type="file" id="fileInput" style="display: none;" accept=".txt">
+                <div class="file-info" id="fileInfo">
+                    <i class="fas fa-check-circle" style="color: #10b981;"></i>
+                    <span id="fileName"></span>
+                </div>
+            </div>
+            <div class="character-info" id="charInfo" style="display: none;">
+                <span class="char-count">Characters: <span id="charCount">0</span></span>
+                <span class="char-limit">Monthly Limit: 5,000 (Free Plan)</span>
+            </div>
+        </section>
+
+        <!-- Generate Section -->
+        <section class="generate-section" id="generateSection">
+            <h3 style="margin-bottom: 1rem;">Ready to Create Your Audio?</h3>
+            <button class="btn btn-primary generate-btn" id="generateBtn" disabled onclick="generateAudio()">
+                <i class="fas fa-magic"></i> Generate Audio
+            </button>
+        </section>
+
+        <!-- Processing Section -->
+        <section class="processing-section" id="processingSection">
+            <div class="processing-icon">
+                <i class="fas fa-cog"></i>
+            </div>
+            <h3 class="processing-title">Processing Your Audio</h3>
+            <p class="processing-message" id="processingMessage">Starting audio generation...</p>
+            <div class="estimated-time">
+                <strong>⏱ Estimated Time: 5-15 minutes</strong>
+                <br>
+                <small>Processing time depends on file size and server load</small>
+            </div>
+            
+            <div class="status-update">
+                <h4 style="margin-bottom: 1rem;">Processing Status:</h4>
+                <ul class="status-steps" id="statusSteps">
+                    <li class="status-step pending" id="step1">
+                        <i class="fas fa-clock"></i> Uploading files...
+                    </li>
+                    <li class="status-step pending" id="step2">
+                        <i class="fas fa-clock"></i> Sending to your personal bot...
+                    </li>
+                    <li class="status-step pending" id="step3">
+                        <i class="fas fa-clock"></i> Generating audio with AI...
+                    </li>
+                    <li class="status-step pending" id="step4">
+                        <i class="fas fa-clock"></i> Uploading to cloud storage...
+                    </li>
+                    <li class="status-step pending" id="step5">
+                        <i class="fas fa-clock"></i> Finalizing download...
+                    </li>
+                </ul>
+            </div>
+        </section>
+
+        <!-- Download Section -->
+        <section class="download-section" id="downloadSection">
+            <div class="download-icon">
+                <i class="fas fa-download"></i>
+            </div>
+            <h3 class="download-title">Your Audio is Ready!</h3>
+            <p class="download-message">Your audio has been generated and is ready for download</p>
+            
+            <div class="download-options">
+                <button class="btn btn-success download-btn" onclick="downloadAudio()">
+                    <i class="fas fa-cloud-download-alt"></i> Download Audio
+                </button>
+            </div>
+
+            <div class="audio-details">
+                <div class="detail-row">
+                    <span class="detail-label">File Name:</span>
+                    <span class="detail-value" id="audioFileName">my_audio_file</span>
+                </div>
+                <div class="detail-row">
+                    <span class="detail-label">Voice Used:</span>
+                    <span class="detail-value" id="audioVoice">Professional Male</span>
+                </div>
+                <div class="detail-row">
+                    <span class="detail-label">Bot Used:</span>
+                    <span class="detail-value" id="audioBotUsed">Loading...</span>
+                </div>
+                <div class="detail-row">
+                    <span class="detail-label">File Size:</span>
+                    <span class="detail-value" id="audioFileSize">Loading...</span>
+                </div>
+                <div class="detail-row">
+                    <span class="detail-label">Characters:</span>
+                    <span class="detail-value" id="audioCharCount">1,250</span>
+                </div>
+                <div class="detail-row">
+                    <span class="detail-label">Expires:</span>
+                    <span class="detail-value" id="audioExpiry">24 hours</span>
+                </div>
+            </div>
+
+            <button class="btn btn-primary" onclick="resetAppForm()" style="margin-top: 1rem;">
+                <i class="fas fa-plus"></i> Create Another Audio
+            </button>
+        </section>
+    </main>
+
+    <!-- Footer -->
+    <footer>
+        <p>&copy; 2024 Blue FM TTS. All rights reserved. | 2 Bots Active</p>
+    </footer>
+
+    <!-- Toast -->
+    <div class="toast" id="toast"></div>
+
+    <script>
+        // 🚀 COMPLETE FIREBASE INTEGRATION WITH 2 BOTS SUPPORT
+        
+        // Firebase configuration
+        const firebaseConfig = {
+            apiKey: "AIzaSyCmBZmN-BCa3Qkb7f7K9TjXuK1_ma1ukbw",
+            authDomain: "bluefm-tts.firebaseapp.com",
+            projectId: "bluefm-tts",
+            storageBucket: "bluefm-tts.firebasestorage.app",
+            messagingSenderId: "184060585228",
+            appId: "1:184060585228:web:045fdd4e5d4429fc7e9529",
+            measurementId: "G-ZTZNZG8YSJ"
+        };
+
+        // Initialize Firebase
+        firebase.initializeApp(firebaseConfig);
+        
+        // Get Firebase services
+        const storage = firebase.storage();
+        const firestore = firebase.firestore();
+        const auth = firebase.auth();
+        
+        console.log('✅ Firebase initialized successfully');
+        console.log('📦 Storage:', storage);
+        console.log('🗄️ Firestore:', firestore);
+        console.log('🔐 Auth:', auth);
+
+        const ttsApp = {
+            // Data storage
+            data: {
+                selectedVoice: null,
+                uploadedFile: null,
+                currentUser: null,
+                currentJobId: null,
+                currentDownloadUrl: null,
+                userBotData: null,
+                jobListener: null
+            },
+            
+            // Voice configurations
+            voices: {
+                'voice1': { name: 'Professional Male', ref: 'professional-male.mp3' },
+                'voice2': { name: 'Friendly Female', ref: 'friendly-female.mp3' },
+                'voice3': { name: 'News Anchor', ref: 'news-anchor.mp3' },
+                'voice4': { name: 'Storyteller', ref: 'storyteller.mp3' }
+            },
+            
+            // 🔥 NEW: User database for 2 bots
+            userDatabase: {
+                'vikassingh44999@gmail.com': {
+                    userId: 'vikassingh44999_gmail_com',
+                    email: 'vikassingh44999@gmail.com',
+                    assignedBot: {
+                        botToken: '8033863091:AAF7-kd2U6Bk1OU1l1uLNIBQAQ_9gIH5qLI',
+                        botUsername: '@Myttsmasterbot'
+                    }
+                },
+                'god662135@gmail.com': {
+                    userId: 'god662135_gmail_com',
+                    email: 'god662135@gmail.com',
+                    assignedBot: {
+                        botToken: '7702304564:AAGKEb19mjeBVo4r-HGpmKydPQIOstHuoCQ',
+                        botUsername: '@g080ydbot'
+                    }
+                }
+            },
+            
+            // Initialize application
+            init: function() {
+                console.log('🚀 Initializing TTS App with 2 bots support...');
+                
+                const savedUser = localStorage.getItem('currentUser');
+                if (savedUser) {
+                    try {
+                        this.data.currentUser = JSON.parse(savedUser);
+                        this.data.userBotData = this.data.currentUser.assignedBot;
+                        console.log('👤 User loaded:', this.data.currentUser.email);
+                        console.log('🤖 Bot assigned:', this.data.userBotData.botUsername);
+                        this.showMain();
+                        this.updateUI();
+                        this.checkActiveJobs();
+                    } catch (error) {
+                        console.error('❌ Error loading user:', error);
+                        this.showLogin();
+                    }
+                } else {
+                    this.showLogin();
+                }
+                this.setupEvents();
+            },
+            
+            // 🔥 NEW: Update UI with user and bot info
+            updateUI: function() {
+                if (!this.data.currentUser) return;
+                
+                const userNameEl = document.getElementById('userName');
+                const userBotEl = document.getElementById('userBot');
+                const userEmailEl = document.getElementById('userEmail');
+                const currentBotInfoEl = document.getElementById('currentBotInfo');
+                
+                if (userNameEl) {
+                    userNameEl.textContent = this.data.currentUser.email.split('@')[0];
+                }
+                
+                if (userBotEl) {
+                    userBotEl.textContent = `Bot: ${this.data.userBotData.botUsername}`;
+                }
+                
+                if (userEmailEl) {
+                    userEmailEl.textContent = `Email: ${this.data.currentUser.email}`;
+                }
+                
+                if (currentBotInfoEl) {
+                    currentBotInfoEl.innerHTML = `
+                        <i class="fas fa-robot"></i> ${this.data.userBotData.botUsername} 
+                        <small style="color: var(--text-secondary);">(Assigned to ${this.data.currentUser.email})</small>
+                    `;
+                }
+            },
+            
+            // Check for active jobs
+            checkActiveJobs: function() {
+                if (!this.data.currentUser) return;
+                
+                console.log('🔍 Checking for active jobs...');
+                
+                firestore.collection('tts_jobs')
+                    .where('userId', '==', this.data.currentUser.userId)
+                    .where('status', 'in', ['processing', 'sent_to_telegram'])
+                    .orderBy('createdAt', 'desc')
+                    .limit(1)
+                    .get()
+                    .then((querySnapshot) => {
+                        if (!querySnapshot.empty) {
+                            const jobDoc = querySnapshot.docs[0];
+                            const jobData = jobDoc.data();
+                            
+                            console.log('🔄 Found active job:', jobDoc.id, jobData);
+                            
+                            this.data.currentJobId = jobDoc.id;
+                            this.showProcessing();
+                            this.monitorJob(jobDoc.id);
+                        } else {
+                            console.log('📝 No active jobs found');
+                        }
+                    })
+                    .catch((error) => {
+                        console.error('❌ Error checking active jobs:', error);
+                        if (error.code === 'permission-denied') {
+                            console.log('⚠️ Firestore permissions error - please update security rules');
+                            this.showNotification('⚠️ Database access error. Contact admin.', 'error');
+                        }
+                    });
+            },
+            
+            // Setup event listeners
+            setupEvents: function() {
+                const self = this;
+                
+                // Login form
+                document.getElementById('loginForm').addEventListener('submit', function(e) {
+                    self.handleLogin(e);
+                });
+                
+                // File input
+                document.getElementById('fileInput').addEventListener('change', function(e) {
+                    if (e.target.files[0]) self.handleFile(e.target.files[0]);
+                });
+                
+                // Drag and drop
+                const uploadArea = document.getElementById('uploadArea');
+                uploadArea.addEventListener('dragover', function(e) {
+                    e.preventDefault();
+                    uploadArea.classList.add('drag-over');
+                });
+                
+                uploadArea.addEventListener('dragleave', function() {
+                    uploadArea.classList.remove('drag-over');
+                });
+                
+                uploadArea.addEventListener('drop', function(e) {
+                    e.preventDefault();
+                    uploadArea.classList.remove('drag-over');
+                    if (e.dataTransfer.files[0]) self.handleFile(e.dataTransfer.files[0]);
+                });
+                
+                // Outside click
+                window.addEventListener('click', function(e) {
+                    if (!e.target.closest('.user-menu')) {
+                        document.getElementById('userDropdown').classList.remove('show');
+                    }
+                });
+            },
+            
+            showLogin: function() {
+                document.getElementById('loginSection').style.display = 'flex';
+                document.getElementById('mainContent').style.display = 'none';
+            },
+            
+            showMain: function() {
+                document.getElementById('loginSection').style.display = 'none';
+                document.getElementById('mainContent').style.display = 'block';
+                this.updateUI();
+            },
+            
+            // 🔥 UPDATED: Handle login with 2 users support
+            handleLogin: function(e) {
+                e.preventDefault();
+                
+                const email = document.getElementById('userEmail').value.trim().toLowerCase();
+                const loginBtn = document.getElementById('loginBtn');
+                const errorDiv = document.getElementById('errorMessage');
+                const successDiv = document.getElementById('successMessage');
+                
+                if (!email) {
+                    this.showLoginError('Please enter your email address');
+                    return;
+                }
+                
+                // Show loading
+                loginBtn.disabled = true;
+                loginBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Checking...';
+                errorDiv.style.display = 'none';
+                successDiv.style.display = 'none';
+                
+                const self = this;
+                
+                // Sign in anonymously with Firebase Auth
+                auth.signInAnonymously()
+                    .then((userCredential) => {
+                        console.log('🔐 Anonymous auth successful, UID:', userCredential.user.uid);
+                        
+                        // 🔥 Check if user exists in our database
+                        if (self.userDatabase[email]) {
+                            self.data.currentUser = self.userDatabase[email];
+                            self.data.userBotData = self.data.currentUser.assignedBot;
+                            localStorage.setItem('currentUser', JSON.stringify(self.data.currentUser));
+                            
+                            console.log(`✅ User authenticated: ${email} with bot ${self.data.userBotData.botUsername}`);
+                            
+                            successDiv.textContent = `✅ Welcome! Your bot ${self.data.userBotData.botUsername} is ready!`;
+                            successDiv.style.display = 'block';
+                            
+                            setTimeout(() => {
+                                self.showMain();
+                                self.showNotification(`Welcome ${self.data.currentUser.email.split('@')[0]}! Connected to ${self.data.userBotData.botUsername}`, 'success');
+                                self.checkActiveJobs();
+                            }, 1000);
+                            
+                        } else {
+                            self.showLoginError('Email not found. Only registered users can access: vikassingh44999@gmail.com, god662135@gmail.com');
+                        }
+                    })
+                    .catch((error) => {
+                        console.error('❌ Auth error:', error);
+                        self.showLoginError('Authentication failed. Please try again.');
+                    })
+                    .finally(() => {
+                        loginBtn.disabled = false;
+                        loginBtn.innerHTML = '<i class="fas fa-sign-in-alt"></i> Access My TTS Bot';
+                    });
+            },
+            
+            showLoginError: function(message) {
+                const errorDiv = document.getElementById('errorMessage');
+                errorDiv.textContent = message;
+                errorDiv.style.display = 'block';
+            },
+            
+            handleFile: function(file) {
+                if (!file.name.endsWith('.txt')) {
+                    this.showNotification('Please upload a .txt file only!', 'error');
+                    return;
+                }
+                
+                this.data.uploadedFile = file;
+                document.getElementById('fileName').textContent = file.name;
+                document.getElementById('fileInfo').classList.add('show');
+                
+                const self = this;
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    const text = e.target.result;
+                    const charCount = text.length;
+                    document.getElementById('charCount').textContent = charCount.toLocaleString();
+                    document.getElementById('charInfo').style.display = 'flex';
+                    
+                    if (charCount > 5000) {
+                        self.showNotification('File exceeds free plan limit. Upgrade to Premium!', 'warning');
+                    }
+                };
+                reader.readAsText(file);
+                
+                this.updateGenerateBtn();
+                this.showNotification('File uploaded successfully!');
+            },
+            
+            updateGenerateBtn: function() {
+                const btn = document.getElementById('generateBtn');
+                if (this.data.selectedVoice && this.data.uploadedFile && this.data.currentUser) {
+                    btn.disabled = false;
+                } else {
+                    btn.disabled = true;
+                }
+            },
+            
+            // 🔥 REAL FIREBASE UPLOAD AND PROCESSING WITH BOT TRACKING
+            processAudio: async function() {
+                if (!this.data.selectedVoice || !this.data.uploadedFile || !this.data.currentUser) {
+                    this.showNotification('Please select a voice and upload a file!', 'error');
+                    return;
+                }
+                
+                try {
+                    const jobId = Date.now().toString();
+                    this.data.currentJobId = jobId;
+                    
+                    console.log('🚀 Starting audio processing...');
+                    console.log('📊 Job ID:', jobId);
+                    console.log('👤 User:', this.data.currentUser.email);
+                    console.log('🤖 Bot:', this.data.userBotData.botUsername);
+                    console.log('🎤 Voice:', this.data.selectedVoice);
+                    console.log('📄 File:', this.data.uploadedFile.name);
+                    
+                    this.showProcessing();
+                    this.updateStatus('Uploading files to Firebase Storage...', 1);
+                    
+                    // 🔥 UPLOAD TO FIREBASE STORAGE
+                    const userId = this.data.currentUser.userId;
+                    const textFileName = `${jobId}-${this.data.uploadedFile.name}`;
+                    const storageRef = storage.ref(`tts-requests/${userId}/${textFileName}`);
+                    
+                    // Prepare metadata with bot info
+                    const metadata = {
+                        customMetadata: {
+                            userId: userId,
+                            userEmail: this.data.currentUser.email,
+                            botToken: this.data.userBotData.botToken,
+                            botUsername: this.data.userBotData.botUsername,
+                            voiceId: this.data.selectedVoice,
+                            voiceName: this.voices[this.data.selectedVoice].name,
+                            referenceAudio: this.voices[this.data.selectedVoice].ref,
+                            jobId: jobId,
+                            timestamp: new Date().toISOString()
+                        }
+                    };
+                    
+                    console.log('📤 Uploading to path:', storageRef.fullPath);
+                    console.log('📝 Metadata:', metadata);
+                    
+                    // Perform the upload
+                    const uploadTask = await storageRef.put(this.data.uploadedFile, metadata);
+                    
+                    console.log('✅ File uploaded successfully!');
+                    console.log('📊 Upload task state:', uploadTask.state);
+                    console.log('📊 Upload metadata:', uploadTask.metadata);
+                    
+                    this.updateStatus('File uploaded! Creating job in database...', 2);
+                    
+                    // Create job document in Firestore
+                    await firestore.collection('tts_jobs').doc(jobId).set({
+                        userId: userId,
+                        userEmail: this.data.currentUser.email,
+                        botToken: this.data.userBotData.botToken,
+                        botUsername: this.data.userBotData.botUsername,
+                        voiceId: this.data.selectedVoice,
+                        voiceName: this.voices[this.data.selectedVoice].name,
+                        fileName: this.data.uploadedFile.name,
+                        textFilePath: storageRef.fullPath,
+                        status: 'processing',
+                        createdAt: firebase.firestore.FieldValue.serverTimestamp(),
+                        updatedAt: firebase.firestore.FieldValue.serverTimestamp()
+                    });
+                    
+                    console.log('✅ Job created in Firestore');
+                    
+                    // Start monitoring job status
+                    this.monitorJob(jobId);
+                    
+                    this.showNotification(`File uploaded! Processing with ${this.data.userBotData.botUsername}...`, 'success');
+                    
+                } catch (error) {
+                    console.error('❌ Upload error:', error);
+                    this.showNotification('Upload failed: ' + error.message, 'error');
+                    this.resetToGenerate();
+                }
+            },
+            
+            // 🔥 MONITOR JOB STATUS IN REAL-TIME
+            monitorJob: function(jobId) {
+                console.log('👀 Starting job monitoring for:', jobId);
+                
+                // Stop any existing listener
+                if (this.data.jobListener) {
+                    this.data.jobListener();
+                }
+                
+                const jobRef = firestore.collection('tts_jobs').doc(jobId);
+                
+                // Create real-time listener
+                this.data.jobListener = jobRef.onSnapshot((doc) => {
+                    if (doc.exists) {
+                        const jobData = doc.data();
+                        console.log('📊 Job status update:', jobData);
+                        
+                        switch(jobData.status) {
+                            case 'processing':
+                                this.updateStatus('AI is generating your audio...', 3);
+                                break;
+                                
+                            case 'sent_to_telegram':
+                                this.updateStatus(`Processing on ${this.data.userBotData.botUsername}...`, 3);
+                                break;
+                                
+                            case 'completed':
+                                this.updateStatus('Audio processing completed!', 4);
+                                if (jobData.downloadUrl) {
+                                    this.data.currentDownloadUrl = jobData.downloadUrl;
+                                    this.showDownload(jobData);
+                                }
+                                // Stop monitoring
+                                if (this.data.jobListener) {
+                                    this.data.jobListener();
+                                    this.data.jobListener = null;
+                                }
+                                break;
+                                
+                            case 'failed':
+                                this.showNotification('Processing failed: ' + (jobData.error || 'Unknown error'), 'error');
+                                this.resetToGenerate();
+                                // Stop monitoring
+                                if (this.data.jobListener) {
+                                    this.data.jobListener();
+                                    this.data.jobListener = null;
+                                }
+                                break;
+                        }
+                    } else {
+                        console.log('⏳ Job document not created yet, waiting...');
+                    }
+                }, (error) => {
+                    console.error('❌ Job monitoring error:', error);
+                    if (error.code === 'permission-denied') {
+                        this.showNotification('⚠️ Database access error. Contact admin.', 'error');
+                    } else {
+                        this.showNotification('Error monitoring job: ' + error.message, 'error');
+                    }
+                });
+                
+                console.log('✅ Job monitoring started');
+            },
+            
+            updateStatus: function(message, step) {
+                document.getElementById('processingMessage').textContent = message;
+                
+                for (let i = 1; i <= 5; i++) {
+                    const stepEl = document.getElementById(`step${i}`);
+                    const icon = stepEl.querySelector('i');
+                    
+                    if (i < step) {
+                        stepEl.className = 'status-step completed';
+                        icon.className = 'fas fa-check-circle';
+                    } else if (i === step) {
+                        stepEl.className = 'status-step current';
+                        icon.className = 'fas fa-spinner fa-spin';
+                    } else {
+                        stepEl.className = 'status-step pending';
+                        icon.className = 'fas fa-clock';
+                    }
+                }
+            },
+            
+            showProcessing: function() {
+                document.getElementById('generateSection').style.display = 'none';
+                document.getElementById('processingSection').classList.add('show');
+                document.getElementById('downloadSection').classList.remove('show');
+            },
+            
+            showDownload: function(jobData) {
+                this.updateStatus('Audio ready for download!', 5);
+                
+                const self = this;
+                setTimeout(() => {
+                    document.getElementById('processingSection').classList.remove('show');
+                    document.getElementById('downloadSection').classList.add('show');
+                    
+                    document.getElementById('audioFileName').textContent = self.data.uploadedFile.name.replace('.txt', '');
+                    document.getElementById('audioVoice').textContent = self.voices[self.data.selectedVoice].name;
+                    document.getElementById('audioBotUsed').textContent = self.data.userBotData.botUsername;
+                    document.getElementById('audioCharCount').textContent = document.getElementById('charCount').textContent;
+                    
+                    if (jobData.downloadUrlExpiresAt) {
+                        const expiryDate = jobData.downloadUrlExpiresAt.toDate();
+                        const now = new Date();
+                        const hoursLeft = Math.ceil((expiryDate - now) / (1000 * 60 * 60));
+                        document.getElementById('audioExpiry').textContent = `${hoursLeft} hours`;
+                    } else {
+                        document.getElementById('audioExpiry').textContent = '24 hours';
+                    }
+                    
+                    // Try to get file size
+                    self.getFileSize(self.data.currentDownloadUrl);
+                    
+                    self.showNotification(`🎉 Audio generated by ${self.data.userBotData.botUsername}!`, 'success');
+                }, 1000);
+            },
+            
+            getFileSize: async function(url) {
+                try {
+                    const response = await fetch(url, { method: 'HEAD' });
+                    const contentLength = response.headers.get('content-length');
+                    if (contentLength) {
+                        const sizeInMB = (parseInt(contentLength) / (1024 * 1024)).toFixed(1);
+                        document.getElementById('audioFileSize').textContent = `${sizeInMB} MB`;
+                    } else {
+                        document.getElementById('audioFileSize').textContent = 'Unknown';
+                    }
+                } catch (error) {
+                    console.log('Could not get file size:', error);
+                    document.getElementById('audioFileSize').textContent = 'Unknown';
+                }
+            },
+            
+            resetToGenerate: function() {
+                document.getElementById('generateSection').style.display = 'block';
+                document.getElementById('processingSection').classList.remove('show');
+                document.getElementById('downloadSection').classList.remove('show');
+            },
+            
+            resetAll: function() {
+                // Stop job monitoring
+                if (this.data.jobListener) {
+                    this.data.jobListener();
+                    this.data.jobListener = null;
+                }
+                
+                this.data.selectedVoice = null;
+                this.data.uploadedFile = null;
+                this.data.currentJobId = null;
+                this.data.currentDownloadUrl = null;
+                
+                this.resetToGenerate();
+                
+                document.querySelectorAll('.audio-card').forEach(card => {
+                    card.classList.remove('selected');
+                });
+                
+                document.getElementById('fileInfo').classList.remove('show');
+                document.getElementById('charInfo').style.display = 'none';
+                document.getElementById('fileInput').value = '';
+                
+                this.updateGenerateBtn();
+                this.showNotification('Ready for new audio generation!');
+            },
+            
+            showNotification: function(message, type = 'success') {
+                const toast = document.getElementById('toast');
+                toast.textContent = message;
+                toast.className = `toast show ${type}`;
+                
+                setTimeout(() => {
+                    toast.classList.remove('show');
+                }, 4000);
+            },
+            
+            doLogout: function() {
+                // Stop job monitoring
+                if (this.data.jobListener) {
+                    this.data.jobListener();
+                    this.data.jobListener = null;
+                }
+                
+                // Sign out from Firebase Auth
+                auth.signOut().then(() => {
+                    console.log('🔐 Signed out from Firebase Auth');
+                }).catch((error) => {
+                    console.error('❌ Sign out error:', error);
+                });
+                
+                localStorage.removeItem('currentUser');
+                this.data.currentUser = null;
+                this.data.userBotData = null;
+                this.resetAll();
+                this.showLogin();
+                this.showNotification('Logged out successfully!');
+            }
+        };
+
+        // Global functions for onclick events
+        function selectVoice(voiceId) {
+            document.querySelectorAll('.audio-card').forEach(card => {
+                card.classList.remove('selected');
+            });
+            
+            event.currentTarget.classList.add('selected');
+            ttsApp.data.selectedVoice = voiceId;
+            ttsApp.updateGenerateBtn();
+            ttsApp.showNotification(`Voice selected: ${ttsApp.voices[voiceId].name}!`);
+        }
+
+        function playDemo(event, voiceId) {
+            event.stopPropagation();
+            ttsApp.showNotification('Demo audio will be available soon!', 'warning');
+        }
+
+        function generateAudio() {
+            ttsApp.processAudio();
+        }
+
+        function downloadAudio() {
+            if (ttsApp.data.currentDownloadUrl) {
+                window.open(ttsApp.data.currentDownloadUrl, '_blank');
+                ttsApp.showNotification('Download started!', 'success');
+            } else {
+                ttsApp.showNotification('Download URL not available!', 'error');
+            }
+        }
+
+        function resetAppForm() {
+            ttsApp.resetAll();
+        }
+
+        function toggleUserMenu() {
+            const dropdown = document.getElementById('userDropdown');
+            dropdown.classList.toggle('show');
+        }
+
+        function userLogout() {
+            ttsApp.doLogout();
+        }
+
+        // Initialize when page loads
+        document.addEventListener('DOMContentLoaded', function() {
+            console.log('🌟 DOM loaded, initializing 2-Bot TTS App...');
+            ttsApp.init();
+        });
+
+        console.log('✅ TTS App script loaded with complete 2-bot Firebase integration!');
+        console.log('🤖 Supporting bots: @Myttsmasterbot, @g080ydbot');
+    </script>
+</body>
+</html>
