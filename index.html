@@ -143,18 +143,14 @@
             display: none;
         }
 
-        .bot-info {
+        .success-message {
+            color: var(--success);
             background: rgba(16, 185, 129, 0.1);
             border: 1px solid var(--success);
-            padding: 1rem;
+            padding: 0.75rem;
             border-radius: 10px;
             margin-top: 1rem;
             display: none;
-        }
-
-        .bot-info h4 {
-            color: var(--success);
-            margin-bottom: 0.5rem;
         }
 
         /* Background Animation */
@@ -891,7 +887,7 @@
                         type="email" 
                         id="userEmail" 
                         class="form-input" 
-                        placeholder="your@email.com"
+                        placeholder="vikassingh44999@gmail.com"
                         required
                     >
                 </div>
@@ -902,10 +898,7 @@
                 </button>
                 
                 <div class="error-message" id="errorMessage"></div>
-                <div class="bot-info" id="botInfo">
-                    <h4>🤖 Your Personal Bot:</h4>
-                    <p id="botUsername">Loading...</p>
-                </div>
+                <div class="success-message" id="successMessage"></div>
             </form>
         </div>
     </div>
@@ -933,7 +926,7 @@
                         <div style="padding: 0.75rem; border-bottom: 1px solid var(--glass-border);">
                             <div style="font-weight: 600;" id="userPlan">Free Plan</div>
                             <div style="font-size: 0.8rem; color: var(--text-secondary);">5,000 chars/month</div>
-                            <div style="font-size: 0.8rem; color: var(--accent);" id="userBot">Bot: Loading...</div>
+                            <div style="font-size: 0.8rem; color: var(--accent);" id="userBot">Bot: @g080ydbot</div>
                         </div>
                         <a href="membership.html" class="nav-link" style="display: block; padding: 0.75rem;">
                             <i class="fas fa-gem"></i> Upgrade to Premium
@@ -1120,7 +1113,7 @@
             </div>
         </section>
 
-        <!-- Download Section (Preview Button Removed) -->
+        <!-- Download Section -->
         <section class="download-section" id="downloadSection">
             <div class="download-icon">
                 <i class="fas fa-download"></i>
@@ -1171,11 +1164,11 @@
     <!-- Toast -->
     <div class="toast" id="toast"></div>
 
+    <!-- Firebase SDKs -->
     <script type="module">
         import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js';
-        import { getStorage, ref, uploadBytes, getDownloadURL } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-storage.js';
+        import { getStorage, ref, uploadBytes } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-storage.js';
         import { getFirestore, doc, onSnapshot, collection, query, where, orderBy, limit } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js';
-        import { getFunctions, httpsCallable } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-functions.js';
 
         // Firebase configuration
         const firebaseConfig = {
@@ -1191,7 +1184,11 @@
         const app = initializeApp(firebaseConfig);
         const storage = getStorage(app);
         const db = getFirestore(app);
-        const functions = getFunctions(app);
+
+        // Make Firebase available globally
+        window.firebaseApp = app;
+        window.firebaseStorage = storage;
+        window.firebaseDb = db;
 
         // Global variables
         let selectedVoice = null;
@@ -1226,13 +1223,14 @@
             'voice4': 'https://firebasestorage.googleapis.com/v0/b/bluefm-tts.firebasestorage.app/o/reference-voices%2Fstoryteller.mp3?alt=media'
         };
 
-        // Initialize App
-        function initializeApp() {
+        // 🔧 SIMPLIFIED LOGIN SYSTEM
+        function initApp() {
             // Check if user is already logged in
             const savedUser = localStorage.getItem('currentUser');
             if (savedUser) {
                 try {
                     currentUser = JSON.parse(savedUser);
+                    userBotData = currentUser.assignedBot;
                     showMainContent();
                     checkActiveJobs();
                 } catch (error) {
@@ -1244,18 +1242,15 @@
             }
         }
 
-        // Show Login Section
         function showLoginSection() {
             document.getElementById('loginSection').style.display = 'flex';
             document.getElementById('mainContent').style.display = 'none';
         }
 
-        // Show Main Content
         function showMainContent() {
             document.getElementById('loginSection').style.display = 'none';
             document.getElementById('mainContent').style.display = 'block';
             
-            // Update UI with user info
             if (currentUser) {
                 document.getElementById('userName').textContent = currentUser.email.split('@')[0];
                 if (currentUser.assignedBot) {
@@ -1264,68 +1259,60 @@
             }
         }
 
-        // Handle Login Form
+        // 🆕 SIMPLIFIED LOGIN HANDLER
         document.getElementById('loginForm').addEventListener('submit', async (e) => {
             e.preventDefault();
             
-            const email = document.getElementById('userEmail').value.trim();
+            const email = document.getElementById('userEmail').value.trim().toLowerCase();
             const loginBtn = document.getElementById('loginBtn');
             const errorDiv = document.getElementById('errorMessage');
-            const botInfoDiv = document.getElementById('botInfo');
+            const successDiv = document.getElementById('successMessage');
             
             if (!email) {
                 showError('Please enter your email address');
                 return;
             }
             
-            // Show loading state
+            // Show loading
             loginBtn.disabled = true;
             loginBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Checking...';
             errorDiv.style.display = 'none';
-            botInfoDiv.style.display = 'none';
+            successDiv.style.display = 'none';
             
             try {
-                // Call Firebase function to authenticate user
-                const authenticateUser = httpsCallable(functions, 'authenticateUser');
-                const result = await authenticateUser({ email: email });
-                
-                if (result.data.success) {
-                    // User found with assigned bot
+                // Check for specific email
+                if (email === 'vikassingh44999@gmail.com') {
+                    // Success login
                     currentUser = {
-                        userId: result.data.userId,
-                        email: result.data.email,
-                        assignedBot: result.data.assignedBot
+                        userId: 'vikassingh44999_gmail_com',
+                        email: 'vikassingh44999@gmail.com',
+                        assignedBot: {
+                            botToken: '7702304564:AAGKEb19mjeBVo4r-HGpmKydPQIOstHuoCQ',
+                            botUsername: '@g080ydbot'
+                        }
                     };
                     
-                    userBotData = result.data.assignedBot;
-                    
-                    // Save user data
+                    userBotData = currentUser.assignedBot;
                     localStorage.setItem('currentUser', JSON.stringify(currentUser));
                     
-                    // Show bot info briefly
-                    document.getElementById('botUsername').textContent = result.data.assignedBot.botUsername;
-                    botInfoDiv.style.display = 'block';
+                    // Show success message
+                    successDiv.textContent = `✅ Welcome! Your bot ${userBotData.botUsername} is ready!`;
+                    successDiv.style.display = 'block';
                     
-                    // Redirect to main content after 1 second
+                    // Redirect after 1 second
                     setTimeout(() => {
                         showMainContent();
-                        showToast(`Welcome! Your bot ${result.data.assignedBot.botUsername} is ready!`, 'success');
+                        showToast(`Welcome ${currentUser.email.split('@')[0]}!`, 'success');
                     }, 1000);
                     
                 } else {
-                    showError('Authentication failed');
+                    // Email not found
+                    showError('Email not found. Contact admin for bot assignment.');
                 }
                 
             } catch (error) {
                 console.error('Login error:', error);
-                
-                if (error.code === 'functions/not-found') {
-                    showError('User not found or no bot assigned. Please contact admin.');
-                } else if (error.code === 'functions/permission-denied') {
-                    showError('No bot assigned to this user. Please contact admin.');
-                } else {
-                    showError('Login failed. Please try again.');
-                }
+                showError('Login failed. Please try again.');
             } finally {
                 // Reset button
                 loginBtn.disabled = false;
@@ -1333,7 +1320,6 @@
             }
         });
 
-        // Show error message
         function showError(message) {
             const errorDiv = document.getElementById('errorMessage');
             errorDiv.textContent = message;
@@ -1356,21 +1342,14 @@
                 const unsubscribe = onSnapshot(q, (querySnapshot) => {
                     if (!querySnapshot.empty) {
                         const latestJob = querySnapshot.docs[0];
-                        const jobData = latestJob.data();
-                        
-                        console.log('🔄 Found active job:', latestJob.id);
-                        
-                        // Resume monitoring this job
                         currentJobId = latestJob.id;
                         startJobMonitoring(latestJob.id);
-                        
-                        // Show processing section
                         showProcessingSection();
                     }
                 });
                 
             } catch (error) {
-                console.error('❌ Error checking active jobs:', error);
+                console.error('Error checking active jobs:', error);
             }
         }
 
@@ -1386,7 +1365,7 @@
             showToast(`Voice selected: ${voiceNames[voiceId]}!`);
         }
 
-        // Play Demo with Real Audio
+        // Play Demo
         window.playDemo = function(event, voiceId) {
             event.stopPropagation();
             const btn = event.currentTarget;
@@ -1395,31 +1374,25 @@
             
             if (icon.classList.contains('fa-play')) {
                 try {
-                    // Create audio element
                     const audio = new Audio(demoAudioUrls[voiceId]);
                     
                     icon.classList.remove('fa-play');
                     icon.classList.add('fa-pause');
                     
-                    // Play audio
                     audio.play();
                     
-                    // Update progress bar
                     audio.addEventListener('timeupdate', () => {
                         const progress = (audio.currentTime / audio.duration) * 100;
                         progressBar.style.width = progress + '%';
                     });
                     
-                    // Reset when audio ends
                     audio.addEventListener('ended', () => {
                         icon.classList.remove('fa-pause');
                         icon.classList.add('fa-play');
                         progressBar.style.width = '0%';
                     });
                     
-                    // Handle errors
                     audio.addEventListener('error', () => {
-                        console.log('Audio demo not available yet');
                         icon.classList.remove('fa-pause');
                         icon.classList.add('fa-play');
                         progressBar.style.width = '0%';
@@ -1428,19 +1401,7 @@
                     
                 } catch (error) {
                     console.log('Demo audio error:', error);
-                    // Fallback to animated demo
-                    let progress = 0;
-                    const interval = setInterval(() => {
-                        progress += 2;
-                        progressBar.style.width = progress + '%';
-                        
-                        if (progress >= 100) {
-                            clearInterval(interval);
-                            icon.classList.remove('fa-pause');
-                            icon.classList.add('fa-play');
-                            progressBar.style.width = '0%';
-                        }
-                    }, 100);
+                    showToast('Demo not available', 'warning');
                 }
             }
         }
@@ -1487,7 +1448,6 @@
             document.getElementById('fileName').textContent = file.name;
             document.getElementById('fileInfo').classList.add('show');
             
-            // Read file to count characters
             const reader = new FileReader();
             reader.onload = function(e) {
                 const text = e.target.result;
@@ -1505,7 +1465,6 @@
             showToast('File uploaded successfully!');
         }
 
-        // Check Generate Button
         function checkGenerateButton() {
             const btn = document.getElementById('generateBtn');
             if (selectedVoice && uploadedFile && currentUser) {
@@ -1515,7 +1474,7 @@
             }
         }
 
-        // Enhanced Generate Audio with User-specific Bot
+        // Generate Audio
         window.generateAudio = async function() {
             if (!selectedVoice || !uploadedFile || !currentUser) {
                 showToast('Please select a voice and upload a file!', 'error');
@@ -1523,23 +1482,18 @@
             }
             
             try {
-                // Generate unique ID for this job
                 const jobId = Date.now().toString();
-                const userId = currentUser.userId;
                 currentJobId = jobId;
                 
-                // Show processing section
                 showProcessingSection();
                 updateStatus('Uploading files...', 1);
                 
-                // Upload text file with metadata including user info
                 const textFileName = `${jobId}-${uploadedFile.name}`;
-                const textRef = ref(storage, `tts-requests/${userId}/${textFileName}`);
+                const textRef = ref(storage, `tts-requests/${currentUser.userId}/${textFileName}`);
                 
-                // Upload with user and bot metadata
                 const metadata = {
                     customMetadata: {
-                        userId: userId,
+                        userId: currentUser.userId,
                         userEmail: currentUser.email,
                         botToken: userBotData.botToken,
                         botUsername: userBotData.botUsername,
@@ -1552,26 +1506,23 @@
                 };
                 
                 await uploadBytes(textRef, uploadedFile, metadata);
-                console.log('✅ Text file uploaded with user-specific bot info');
+                console.log('✅ Text file uploaded');
                 
                 updateStatus('Sending to your personal bot...', 2);
-                
-                // Start real-time job monitoring
                 startJobMonitoring(jobId);
                 
                 showToast(`Files uploaded! Processing with ${userBotData.botUsername}...`, 'success');
                 
             } catch (error) {
-                console.error('❌ Upload error:', error);
+                console.error('Upload error:', error);
                 showToast('Upload failed! Please try again.', 'error');
                 resetToGenerateSection();
             }
         }
 
-        // Real-time Job Monitoring
         function startJobMonitoring(jobId) {
             if (jobListener) {
-                jobListener(); // Unsubscribe from previous listener
+                jobListener();
             }
             
             const jobRef = doc(db, "tts_jobs", jobId);
@@ -1579,7 +1530,7 @@
             jobListener = onSnapshot(jobRef, (doc) => {
                 if (doc.exists()) {
                     const jobData = doc.data();
-                    console.log('📊 Job status update:', jobData.status);
+                    console.log('Job status update:', jobData.status);
                     
                     switch(jobData.status) {
                         case 'processing':
@@ -1602,18 +1553,16 @@
                             break;
                     }
                 } else {
-                    console.log('❌ Job document not found');
+                    console.log('Job document not found');
                 }
             }, (error) => {
-                console.error('❌ Job monitoring error:', error);
+                console.error('Job monitoring error:', error);
             });
         }
 
-        // Update Processing Status
         function updateStatus(message, step) {
             document.getElementById('processingMessage').textContent = message;
             
-            // Update step indicators
             for (let i = 1; i <= 5; i++) {
                 const stepEl = document.getElementById(`step${i}`);
                 const icon = stepEl.querySelector('i');
@@ -1631,14 +1580,12 @@
             }
         }
 
-        // Show Processing Section
         function showProcessingSection() {
             document.getElementById('generateSection').style.display = 'none';
             document.getElementById('processingSection').classList.add('show');
             document.getElementById('downloadSection').classList.remove('show');
         }
 
-        // Show Download Section with R2 Data
         function showDownloadSection(jobData) {
             updateStatus('Audio ready for download!', 5);
             
@@ -1646,12 +1593,10 @@
                 document.getElementById('processingSection').classList.remove('show');
                 document.getElementById('downloadSection').classList.add('show');
                 
-                // Update audio details
                 document.getElementById('audioFileName').textContent = uploadedFile.name.replace('.txt', '');
                 document.getElementById('audioVoice').textContent = voiceNames[selectedVoice];
                 document.getElementById('audioCharCount').textContent = document.getElementById('charCount').textContent;
                 
-                // Calculate expiry time
                 if (jobData.downloadUrlExpiresAt) {
                     const expiryDate = jobData.downloadUrlExpiresAt.toDate();
                     const now = new Date();
@@ -1659,15 +1604,12 @@
                     document.getElementById('audioExpiry').textContent = `${hoursLeft} hours`;
                 }
                 
-                showToast(`🎉 Audio generation completed by ${userBotData.botUsername}!`, 'success');
-                
-                // Get file size from R2 URL
+                showToast(`🎉 Audio generation completed!`, 'success');
                 getFileSizeFromUrl(currentDownloadUrl);
                 
             }, 1000);
         }
 
-        // Get File Size from R2 URL
         async function getFileSizeFromUrl(url) {
             try {
                 const response = await fetch(url, { method: 'HEAD' });
@@ -1677,12 +1619,10 @@
                     document.getElementById('audioFileSize').textContent = `${sizeInMB} MB`;
                 }
             } catch (error) {
-                console.log('Could not get file size:', error);
                 document.getElementById('audioFileSize').textContent = 'Unknown';
             }
         }
 
-        // Download Audio from R2
         window.downloadAudioFromR2 = async function() {
             if (!currentDownloadUrl) {
                 showToast('Download URL not available!', 'error');
@@ -1692,13 +1632,11 @@
             try {
                 showToast('Starting download...', 'success');
                 
-                // Create download link
                 const link = document.createElement('a');
                 link.href = currentDownloadUrl;
                 link.download = `${uploadedFile.name.replace('.txt', '')}_${selectedVoice}.wav`;
                 link.target = '_blank';
                 
-                // Trigger download
                 document.body.appendChild(link);
                 link.click();
                 document.body.removeChild(link);
@@ -1706,40 +1644,34 @@
                 showToast('Download started!', 'success');
                 
             } catch (error) {
-                console.error('❌ Download error:', error);
+                console.error('Download error:', error);
                 showToast('Download failed! Please try again.', 'error');
             }
         }
 
-        // Show Error
         function showError(error) {
             document.getElementById('processingSection').classList.remove('show');
             resetToGenerateSection();
             showToast(`Processing failed: ${error}`, 'error');
         }
 
-        // Reset to Generate Section
         function resetToGenerateSection() {
             document.getElementById('generateSection').style.display = 'block';
             document.getElementById('processingSection').classList.remove('show');
             document.getElementById('downloadSection').classList.remove('show');
         }
 
-        // Reset Form
         window.resetForm = function() {
-            // Stop job monitoring
             if (jobListener) {
                 jobListener();
                 jobListener = null;
             }
             
-            // Reset variables
             selectedVoice = null;
             uploadedFile = null;
             currentJobId = null;
             currentDownloadUrl = null;
             
-            // Reset UI
             resetToGenerateSection();
             
             document.querySelectorAll('.audio-card').forEach(card => {
@@ -1754,32 +1686,24 @@
             showToast('Ready for new audio generation!');
         }
 
-        // User Menu
         window.toggleUserMenu = function() {
             const dropdown = document.getElementById('userDropdown');
             dropdown.classList.toggle('show');
         }
 
-        // Logout
         window.logout = async function() {
             try {
-                // Clear user data
                 localStorage.removeItem('currentUser');
                 currentUser = null;
                 userBotData = null;
                 
-                // Stop job monitoring
                 if (jobListener) {
                     jobListener();
                     jobListener = null;
                 }
                 
-                // Reset form
                 resetForm();
-                
-                // Show login section
                 showLoginSection();
-                
                 showToast('Logged out successfully!');
                 
             } catch (error) {
@@ -1788,7 +1712,6 @@
             }
         }
 
-        // Toast
         function showToast(message, type = 'success') {
             const toast = document.getElementById('toast');
             toast.textContent = message;
@@ -1799,18 +1722,17 @@
             }, 3000);
         }
 
-        // Close dropdown when clicking outside
         window.addEventListener('click', (e) => {
             if (!e.target.closest('.user-menu')) {
                 document.getElementById('userDropdown').classList.remove('show');
             }
         });
 
-        // Make functions available globally
+        // Make functions globally available
         window.checkGenerateButton = checkGenerateButton;
         
-        // Initialize the app when page loads
-        initializeApp();
+        // Initialize app
+        initApp();
     </script>
 </body>
 </html>
