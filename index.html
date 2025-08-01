@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Blue FM TTS - Text to Speech Platform</title>
+    <title>Blue FM TTS - Multi-User Text to Speech Platform</title>
     
     <!-- Google Fonts -->
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
@@ -16,6 +16,7 @@
     <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-auth-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-storage-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-functions-compat.js"></script>
     
     <style>
         * {
@@ -67,14 +68,14 @@
             border: 1px solid var(--glass-border);
             border-radius: 20px;
             padding: 3rem;
-            max-width: 400px;
+            max-width: 450px;
             width: 90%;
             text-align: center;
             box-shadow: 0 8px 32px var(--shadow);
         }
 
         .login-title {
-            font-size: 2rem;
+            font-size: 2.2rem;
             margin-bottom: 0.5rem;
             color: var(--text-primary);
         }
@@ -82,6 +83,7 @@
         .login-subtitle {
             color: var(--text-secondary);
             margin-bottom: 2rem;
+            font-size: 1.1rem;
         }
 
         .form-group {
@@ -126,6 +128,7 @@
             font-weight: 600;
             cursor: pointer;
             transition: all 0.3s ease;
+            font-size: 1rem;
         }
 
         .login-btn:hover {
@@ -157,6 +160,53 @@
             border-radius: 10px;
             margin-top: 1rem;
             display: none;
+        }
+
+        /* Available Users Display */
+        .available-users {
+            margin-top: 2rem;
+            padding: 1.5rem;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 15px;
+            border: 1px solid var(--glass-border);
+        }
+
+        .available-users h3 {
+            color: var(--accent);
+            margin-bottom: 1rem;
+            font-size: 1.1rem;
+        }
+
+        .user-list {
+            list-style: none;
+            padding: 0;
+        }
+
+        .user-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0.75rem;
+            margin-bottom: 0.5rem;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .user-item:hover {
+            background: rgba(255, 255, 255, 0.1);
+            transform: translateX(5px);
+        }
+
+        .user-email {
+            font-weight: 500;
+            color: var(--text-primary);
+        }
+
+        .user-bot {
+            font-size: 0.9rem;
+            color: var(--accent);
         }
 
         /* Background Animation */
@@ -293,7 +343,7 @@
             border: 1px solid var(--glass-border);
             border-radius: 10px;
             padding: 0.5rem;
-            min-width: 200px;
+            min-width: 250px;
             display: none;
         }
 
@@ -554,6 +604,7 @@
         .btn-primary:disabled {
             opacity: 0.5;
             cursor: not-allowed;
+            transform: none;
         }
 
         .btn-success {
@@ -833,11 +884,14 @@
             .stats-container { grid-template-columns: 1fr; }
             .download-options { flex-direction: column; align-items: center; }
             .download-btn { width: 100%; max-width: 300px; }
+            .login-container { padding: 2rem; }
+            .available-users { padding: 1rem; }
         }
 
         @media (max-width: 480px) {
             .nav-links { flex-direction: column; gap: 0.25rem; }
             .nav-link { padding: 0.25rem 0.5rem; font-size: 0.8rem; }
+            .user-dropdown { min-width: 200px; }
         }
     </style>
 </head>
@@ -854,7 +908,7 @@
                 <i class="fas fa-microphone-alt" style="color: var(--accent);"></i>
                 Blue FM TTS
             </h2>
-            <p class="login-subtitle">Enter your email to access your personal TTS bot</p>
+            <p class="login-subtitle">Multi-User Text to Speech Platform<br>Enter your email to access your personal bot</p>
             
             <form id="loginForm">
                 <div class="form-group">
@@ -863,19 +917,43 @@
                         type="email" 
                         id="userEmail" 
                         class="form-input" 
-                        placeholder="vikassingh44999@gmail.com"
+                        placeholder="Enter your registered email"
                         required
                     >
                 </div>
                 
                 <button type="submit" class="login-btn" id="loginBtn">
                     <i class="fas fa-sign-in-alt"></i>
-                    Access My TTS Bot
+                    Access My Personal TTS Bot
                 </button>
                 
                 <div class="error-message" id="errorMessage"></div>
                 <div class="success-message" id="successMessage"></div>
             </form>
+
+            <!-- Available Users Demo -->
+            <div class="available-users">
+                <h3><i class="fas fa-users"></i> Available Demo Users</h3>
+                <ul class="user-list">
+                    <li class="user-item" onclick="fillEmail('user1@example.com')">
+                        <div>
+                            <div class="user-email">user1@example.com</div>
+                            <div class="user-bot">Bot: @Myttsmasterbot</div>
+                        </div>
+                        <i class="fas fa-arrow-right"></i>
+                    </li>
+                    <li class="user-item" onclick="fillEmail('user2@example.com')">
+                        <div>
+                            <div class="user-email">user2@example.com</div>
+                            <div class="user-bot">Bot: @g080ydbot</div>
+                        </div>
+                        <i class="fas fa-arrow-right"></i>
+                    </li>
+                </ul>
+                <small style="color: var(--text-secondary); margin-top: 1rem; display: block;">
+                    <i class="fas fa-info-circle"></i> Click on any user to try the demo
+                </small>
+            </div>
         </div>
     </div>
 
@@ -900,9 +978,10 @@
                     </button>
                     <div class="user-dropdown" id="userDropdown">
                         <div style="padding: 0.75rem; border-bottom: 1px solid var(--glass-border);">
-                            <div style="font-weight: 600;" id="userPlan">Free Plan</div>
+                            <div style="font-weight: 600; color: var(--text-primary);" id="userPlan">Free Plan</div>
                             <div style="font-size: 0.8rem; color: var(--text-secondary);">5,000 chars/month</div>
-                            <div style="font-size: 0.8rem; color: var(--accent);" id="userBot">Bot: @Myttsmasterbot</div>
+                            <div style="font-size: 0.8rem; color: var(--accent); margin-top: 0.5rem;" id="userBot">Bot: Loading...</div>
+                            <div style="font-size: 0.8rem; color: var(--success);" id="userEmail">Email: Loading...</div>
                         </div>
                         <a href="membership.html" class="nav-link" style="display: block; padding: 0.75rem;">
                             <i class="fas fa-gem"></i> Upgrade to Premium
@@ -931,12 +1010,12 @@
                 <div class="stat-label">Natural Voices</div>
             </div>
             <div class="stat-card">
-                <div class="stat-number">20+</div>
-                <div class="stat-label">Languages</div>
+                <div class="stat-number">2+</div>
+                <div class="stat-label">Personal Bots</div>
             </div>
             <div class="stat-card">
-                <div class="stat-number">500+</div>
-                <div class="stat-label">Users Joined</div>
+                <div class="stat-number">20+</div>
+                <div class="stat-label">Languages</div>
             </div>
             <div class="stat-card">
                 <div class="stat-number">99.9%</div>
@@ -1048,8 +1127,9 @@
         <!-- Generate Section -->
         <section class="generate-section" id="generateSection">
             <h3 style="margin-bottom: 1rem;">Ready to Create Your Audio?</h3>
+            <p style="margin-bottom: 1.5rem; color: var(--text-secondary);">Your audio will be processed by your personal bot</p>
             <button class="btn btn-primary generate-btn" id="generateBtn" disabled onclick="generateAudio()">
-                <i class="fas fa-magic"></i> Generate Audio
+                <i class="fas fa-magic"></i> Generate Audio with My Bot
             </button>
         </section>
 
@@ -1112,6 +1192,10 @@
                     <span class="detail-value" id="audioVoice">Professional Male</span>
                 </div>
                 <div class="detail-row">
+                    <span class="detail-label">Processed By:</span>
+                    <span class="detail-value" id="audioBotUsed">Your Personal Bot</span>
+                </div>
+                <div class="detail-row">
                     <span class="detail-label">File Size:</span>
                     <span class="detail-value" id="audioFileSize">Loading...</span>
                 </div>
@@ -1133,14 +1217,14 @@
 
     <!-- Footer -->
     <footer>
-        <p>&copy; 2024 Blue FM TTS. All rights reserved.</p>
+        <p>&copy; 2024 Blue FM TTS - Multi-User Platform. All rights reserved.</p>
     </footer>
 
     <!-- Toast -->
     <div class="toast" id="toast"></div>
 
     <script>
-        // 🚀 COMPLETE FIREBASE INTEGRATION WITH UPDATED BOT
+        // 🚀 COMPLETE MULTI-USER FIREBASE INTEGRATION
         
         // Firebase configuration
         const firebaseConfig = {
@@ -1160,11 +1244,9 @@
         const storage = firebase.storage();
         const firestore = firebase.firestore();
         const auth = firebase.auth();
+        const functions = firebase.functions();
         
         console.log('✅ Firebase initialized successfully');
-        console.log('📦 Storage:', storage);
-        console.log('🗄️ Firestore:', firestore);
-        console.log('🔐 Auth:', auth);
 
         const ttsApp = {
             // Data storage
@@ -1188,7 +1270,7 @@
             
             // Initialize application
             init: function() {
-                console.log('🚀 Initializing TTS App...');
+                console.log('🚀 Initializing Multi-User TTS App...');
                 
                 const savedUser = localStorage.getItem('currentUser');
                 if (savedUser) {
@@ -1196,6 +1278,7 @@
                         this.data.currentUser = JSON.parse(savedUser);
                         this.data.userBotData = this.data.currentUser.assignedBot;
                         console.log('👤 User loaded:', this.data.currentUser.email);
+                        console.log('🤖 Assigned bot:', this.data.userBotData.botUsername);
                         this.showMain();
                         this.checkActiveJobs();
                     } catch (error) {
@@ -1236,10 +1319,7 @@
                     })
                     .catch((error) => {
                         console.error('❌ Error checking active jobs:', error);
-                        if (error.code === 'permission-denied') {
-                            console.log('⚠️ Firestore permissions error - please update security rules');
-                            this.showNotification('⚠️ Database access error. Contact admin.', 'error');
-                        }
+                        this.showNotification('⚠️ Database access error. Contact admin.', 'error');
                     });
             },
             
@@ -1293,12 +1373,15 @@
                 
                 if (this.data.currentUser) {
                     document.getElementById('userName').textContent = this.data.currentUser.email.split('@')[0];
+                    document.getElementById('userEmail').textContent = `Email: ${this.data.currentUser.email}`;
                     if (this.data.currentUser.assignedBot) {
                         document.getElementById('userBot').textContent = `Bot: ${this.data.currentUser.assignedBot.botUsername}`;
                     }
+                    document.getElementById('userPlan').textContent = `${this.data.currentUser.plan || 'Free'} Plan`;
                 }
             },
             
+            // 🔥 MULTI-USER LOGIN HANDLER
             handleLogin: function(e) {
                 e.preventDefault();
                 
@@ -1314,7 +1397,7 @@
                 
                 // Show loading
                 loginBtn.disabled = true;
-                loginBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Checking...';
+                loginBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Authenticating...';
                 errorDiv.style.display = 'none';
                 successDiv.style.display = 'none';
                 
@@ -1325,39 +1408,51 @@
                     .then((userCredential) => {
                         console.log('🔐 Anonymous auth successful, UID:', userCredential.user.uid);
                         
-                        if (email === 'vikassingh44999@gmail.com') {
-                            self.data.currentUser = {
-                                userId: 'vikassingh44999_gmail_com',
-                                email: 'vikassingh44999@gmail.com',
-                                assignedBot: {
-                                    botToken: '8033863091:AAF7-kd2U6Bk1OU1l1uLNIBQAQ_9gIH5qLI',
-                                    botUsername: '@Myttsmasterbot'
-                                }
-                            };
+                        // Call Firebase Function to authenticate user
+                        const authenticateUser = functions.httpsCallable('authenticateUser');
+                        return authenticateUser({ email: email });
+                    })
+                    .then((result) => {
+                        const userData = result.data;
+                        
+                        if (userData.success) {
+                            self.data.currentUser = userData;
+                            self.data.userBotData = userData.assignedBot;
+                            localStorage.setItem('currentUser', JSON.stringify(userData));
                             
-                            self.data.userBotData = self.data.currentUser.assignedBot;
-                            localStorage.setItem('currentUser', JSON.stringify(self.data.currentUser));
+                            console.log('✅ User authenticated:', userData.email);
+                            console.log('🤖 Assigned bot:', userData.assignedBot.botUsername);
                             
-                            successDiv.textContent = `✅ Welcome! Your bot ${self.data.userBotData.botUsername} is ready!`;
+                            successDiv.textContent = `✅ Welcome! Your bot ${userData.assignedBot.botUsername} is ready!`;
                             successDiv.style.display = 'block';
                             
                             setTimeout(() => {
                                 self.showMain();
-                                self.showNotification(`Welcome ${self.data.currentUser.email.split('@')[0]}!`, 'success');
+                                self.showNotification(`Welcome ${userData.email.split('@')[0]}! Bot: ${userData.assignedBot.botUsername}`, 'success');
                                 self.checkActiveJobs();
-                            }, 1000);
+                            }, 1500);
                             
                         } else {
-                            self.showLoginError('Email not found. Contact admin for bot assignment.');
+                            self.showLoginError('Authentication failed');
                         }
                     })
                     .catch((error) => {
                         console.error('❌ Auth error:', error);
-                        self.showLoginError('Authentication failed. Please try again.');
+                        let errorMessage = 'Authentication failed';
+                        
+                        if (error.code === 'functions/not-found') {
+                            errorMessage = 'User not found. Contact admin for bot assignment.';
+                        } else if (error.code === 'functions/permission-denied') {
+                            errorMessage = 'No bot assigned to this user. Contact admin.';
+                        } else if (error.message) {
+                            errorMessage = error.message;
+                        }
+                        
+                        self.showLoginError(errorMessage);
                     })
                     .finally(() => {
                         loginBtn.disabled = false;
-                        loginBtn.innerHTML = '<i class="fas fa-sign-in-alt"></i> Access My TTS Bot';
+                        loginBtn.innerHTML = '<i class="fas fa-sign-in-alt"></i> Access My Personal TTS Bot';
                     });
             },
             
@@ -1404,7 +1499,7 @@
                 }
             },
             
-            // 🔥 REAL FIREBASE UPLOAD AND PROCESSING
+            // 🔥 MULTI-USER AUDIO PROCESSING
             processAudio: async function() {
                 if (!this.data.selectedVoice || !this.data.uploadedFile || !this.data.currentUser) {
                     this.showNotification('Please select a voice and upload a file!', 'error');
@@ -1415,21 +1510,22 @@
                     const jobId = Date.now().toString();
                     this.data.currentJobId = jobId;
                     
-                    console.log('🚀 Starting audio processing...');
+                    console.log('🚀 Starting multi-user audio processing...');
                     console.log('📊 Job ID:', jobId);
                     console.log('👤 User:', this.data.currentUser.email);
+                    console.log('🤖 Bot:', this.data.userBotData.botUsername);
                     console.log('🎤 Voice:', this.data.selectedVoice);
                     console.log('📄 File:', this.data.uploadedFile.name);
                     
                     this.showProcessing();
                     this.updateStatus('Uploading files to Firebase Storage...', 1);
                     
-                    // 🔥 UPLOAD TO FIREBASE STORAGE
+                    // 🔥 UPLOAD WITH USER-SPECIFIC BOT INFO
                     const userId = this.data.currentUser.userId;
                     const textFileName = `${jobId}-${this.data.uploadedFile.name}`;
                     const storageRef = storage.ref(`tts-requests/${userId}/${textFileName}`);
                     
-                    // Prepare metadata
+                    // Prepare metadata with user's bot info
                     const metadata = {
                         customMetadata: {
                             userId: userId,
@@ -1451,10 +1547,8 @@
                     const uploadTask = await storageRef.put(this.data.uploadedFile, metadata);
                     
                     console.log('✅ File uploaded successfully!');
-                    console.log('📊 Upload task state:', uploadTask.state);
-                    console.log('📊 Upload metadata:', uploadTask.metadata);
                     
-                    this.updateStatus('File uploaded! Creating job in database...', 2);
+                    this.updateStatus(`File uploaded! Sending to ${this.data.userBotData.botUsername}...`, 2);
                     
                     // Create job document in Firestore
                     await firestore.collection('tts_jobs').doc(jobId).set({
@@ -1504,7 +1598,7 @@
                         
                         switch(jobData.status) {
                             case 'processing':
-                                this.updateStatus('AI is generating your audio...', 3);
+                                this.updateStatus(`AI is generating your audio with ${this.data.userBotData.botUsername}...`, 3);
                                 break;
                                 
                             case 'sent_to_telegram':
@@ -1539,11 +1633,7 @@
                     }
                 }, (error) => {
                     console.error('❌ Job monitoring error:', error);
-                    if (error.code === 'permission-denied') {
-                        this.showNotification('⚠️ Database access error. Contact admin.', 'error');
-                    } else {
-                        this.showNotification('Error monitoring job: ' + error.message, 'error');
-                    }
+                    this.showNotification('Error monitoring job: ' + error.message, 'error');
                 });
                 
                 console.log('✅ Job monitoring started');
@@ -1585,6 +1675,7 @@
                     
                     document.getElementById('audioFileName').textContent = self.data.uploadedFile.name.replace('.txt', '');
                     document.getElementById('audioVoice').textContent = self.voices[self.data.selectedVoice].name;
+                    document.getElementById('audioBotUsed').textContent = self.data.userBotData.botUsername;
                     document.getElementById('audioCharCount').textContent = document.getElementById('charCount').textContent;
                     
                     if (jobData.downloadUrlExpiresAt) {
@@ -1599,7 +1690,7 @@
                     // Try to get file size
                     self.getFileSize(self.data.currentDownloadUrl);
                     
-                    self.showNotification('🎉 Audio generation completed!', 'success');
+                    self.showNotification(`🎉 Audio generated successfully by ${self.data.userBotData.botUsername}!`, 'success');
                 }, 1000);
             },
             
@@ -1727,13 +1818,19 @@
             ttsApp.doLogout();
         }
 
+        // Demo user fill function
+        function fillEmail(email) {
+            document.getElementById('userEmail').value = email;
+            ttsApp.showNotification(`Demo email filled: ${email}`, 'success');
+        }
+
         // Initialize when page loads
         document.addEventListener('DOMContentLoaded', function() {
-            console.log('🌟 DOM loaded, initializing TTS App...');
+            console.log('🌟 DOM loaded, initializing Multi-User TTS App...');
             ttsApp.init();
         });
 
-        console.log('✅ TTS App script loaded with complete Firebase integration!');
+        console.log('✅ Multi-User TTS App script loaded with complete Firebase integration!');
     </script>
 </body>
 </html>
