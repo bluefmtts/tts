@@ -1326,15 +1326,15 @@
                     .then((userCredential) => {
                         console.log('🔐 Anonymous auth successful, UID:', userCredential.user.uid);
                         
-                        if (email === 'vikassingh44999@gmail.com') {
-                            self.data.currentUser = {
-                                userId: 'vikassingh44999_gmail_com',
-                                email: 'vikassingh44999@gmail.com',
-                                assignedBot: {
-                                    botToken: '8033863091:AAF7-kd2U6Bk1OU1l1uLNIBQAQ_9gIH5qLI',
-                                    botUsername: '@Myttsmasterbot'
-                                }
-                            };
+                       if (email === 'vikassingh44999@gmail.com') {
+    self.data.currentUser = {
+        userId: 'vikassingh44999_gmail_com',
+        email: 'vikassingh44999@gmail.com',
+        assignedBot: {
+            botToken: '8033863091:AAF7-kd2U6Bk1OU1l1uLNIBQAQ_9gIH5qLI',
+            botUsername: '@Myttsmasterbot'
+        }
+    };
                             
                             self.data.userBotData = self.data.currentUser.assignedBot;
                             localStorage.setItem('currentUser', JSON.stringify(self.data.currentUser));
