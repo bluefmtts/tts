@@ -13,10 +13,12 @@
     
     <!-- Firebase SDKs -->
     <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-auth-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-storage-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
     
     <style>
+        /* Same styles as before - no changes needed */
         * {
             margin: 0;
             padding: 0;
@@ -1158,10 +1160,12 @@
         // Get Firebase services
         const storage = firebase.storage();
         const firestore = firebase.firestore();
+        const auth = firebase.auth();
         
         console.log('✅ Firebase initialized successfully');
         console.log('📦 Storage:', storage);
         console.log('🗄️ Firestore:', firestore);
+        console.log('🔐 Auth:', auth);
 
         const ttsApp = {
             // Data storage
@@ -1203,25 +1207,6 @@
                     this.showLogin();
                 }
                 this.setupEvents();
-                this.testFirebase();
-            },
-            
-            // Test Firebase connection
-            testFirebase: function() {
-                console.log('🧪 Testing Firebase connection...');
-                
-                // Test Firestore write
-                firestore.collection('connection_test').add({
-                    test: 'Firebase connection test',
-                    timestamp: new Date(),
-                    user: this.data.currentUser ? this.data.currentUser.email : 'anonymous'
-                }).then((docRef) => {
-                    console.log('✅ Firestore connection successful, doc ID:', docRef.id);
-                    this.showNotification('🔥 Firebase connected successfully!', 'success');
-                }).catch((error) => {
-                    console.error('❌ Firestore connection failed:', error);
-                    this.showNotification('❌ Firebase connection failed!', 'error');
-                });
             },
             
             // Check for active jobs
@@ -1252,6 +1237,10 @@
                     })
                     .catch((error) => {
                         console.error('❌ Error checking active jobs:', error);
+                        if (error.code === 'permission-denied') {
+                            console.log('⚠️ Firestore permissions error - please update security rules');
+                            this.showNotification('⚠️ Database access error. Contact admin.', 'error');
+                        }
                     });
             },
             
@@ -1332,39 +1321,45 @@
                 
                 const self = this;
                 
-                try {
-                    if (email === 'vikassingh44999@gmail.com') {
-                        this.data.currentUser = {
-                            userId: 'vikassingh44999_gmail_com',
-                            email: 'vikassingh44999@gmail.com',
-                            assignedBot: {
-                                botToken: '7702304564:AAGKEb19mjeBVo4r-HGpmKydPQIOstHuoCQ',
-                                botUsername: '@g080ydbot'
-                            }
-                        };
+                // Sign in anonymously with Firebase Auth
+                auth.signInAnonymously()
+                    .then((userCredential) => {
+                        console.log('🔐 Anonymous auth successful, UID:', userCredential.user.uid);
                         
-                        this.data.userBotData = this.data.currentUser.assignedBot;
-                        localStorage.setItem('currentUser', JSON.stringify(this.data.currentUser));
-                        
-                        successDiv.textContent = `✅ Welcome! Your bot ${this.data.userBotData.botUsername} is ready!`;
-                        successDiv.style.display = 'block';
-                        
-                        setTimeout(() => {
-                            self.showMain();
-                            self.showNotification(`Welcome ${self.data.currentUser.email.split('@')[0]}!`, 'success');
-                            self.checkActiveJobs();
-                        }, 1000);
-                        
-                    } else {
-                        this.showLoginError('Email not found. Contact admin for bot assignment.');
-                    }
-                    
-                } catch (error) {
-                    this.showLoginError('Login failed. Please try again.');
-                } finally {
-                    loginBtn.disabled = false;
-                    loginBtn.innerHTML = '<i class="fas fa-sign-in-alt"></i> Access My TTS Bot';
-                }
+                        if (email === 'vikassingh44999@gmail.com') {
+                            self.data.currentUser = {
+                                userId: 'vikassingh44999_gmail_com',
+                                email: 'vikassingh44999@gmail.com',
+                                assignedBot: {
+                                    botToken: '7702304564:AAGKEb19mjeBVo4r-HGpmKydPQIOstHuoCQ',
+                                    botUsername: '@g080ydbot'
+                                }
+                            };
+                            
+                            self.data.userBotData = self.data.currentUser.assignedBot;
+                            localStorage.setItem('currentUser', JSON.stringify(self.data.currentUser));
+                            
+                            successDiv.textContent = `✅ Welcome! Your bot ${self.data.userBotData.botUsername} is ready!`;
+                            successDiv.style.display = 'block';
+                            
+                            setTimeout(() => {
+                                self.showMain();
+                                self.showNotification(`Welcome ${self.data.currentUser.email.split('@')[0]}!`, 'success');
+                                self.checkActiveJobs();
+                            }, 1000);
+                            
+                        } else {
+                            self.showLoginError('Email not found. Contact admin for bot assignment.');
+                        }
+                    })
+                    .catch((error) => {
+                        console.error('❌ Auth error:', error);
+                        self.showLoginError('Authentication failed. Please try again.');
+                    })
+                    .finally(() => {
+                        loginBtn.disabled = false;
+                        loginBtn.innerHTML = '<i class="fas fa-sign-in-alt"></i> Access My TTS Bot';
+                    });
             },
             
             showLoginError: function(message) {
@@ -1460,7 +1455,24 @@
                     console.log('📊 Upload task state:', uploadTask.state);
                     console.log('📊 Upload metadata:', uploadTask.metadata);
                     
-                    this.updateStatus('File uploaded! Waiting for Firebase Function...', 2);
+                    this.updateStatus('File uploaded! Creating job in database...', 2);
+                    
+                    // Create job document in Firestore
+                    await firestore.collection('tts_jobs').doc(jobId).set({
+                        userId: userId,
+                        userEmail: this.data.currentUser.email,
+                        botToken: this.data.userBotData.botToken,
+                        botUsername: this.data.userBotData.botUsername,
+                        voiceId: this.data.selectedVoice,
+                        voiceName: this.voices[this.data.selectedVoice].name,
+                        fileName: this.data.uploadedFile.name,
+                        textFilePath: storageRef.fullPath,
+                        status: 'processing',
+                        createdAt: firebase.firestore.FieldValue.serverTimestamp(),
+                        updatedAt: firebase.firestore.FieldValue.serverTimestamp()
+                    });
+                    
+                    console.log('✅ Job created in Firestore');
                     
                     // Start monitoring job status
                     this.monitorJob(jobId);
@@ -1528,7 +1540,11 @@
                     }
                 }, (error) => {
                     console.error('❌ Job monitoring error:', error);
-                    this.showNotification('Error monitoring job: ' + error.message, 'error');
+                    if (error.code === 'permission-denied') {
+                        this.showNotification('⚠️ Database access error. Contact admin.', 'error');
+                    } else {
+                        this.showNotification('Error monitoring job: ' + error.message, 'error');
+                    }
                 });
                 
                 console.log('✅ Job monitoring started');
@@ -1652,6 +1668,13 @@
                     this.data.jobListener();
                     this.data.jobListener = null;
                 }
+                
+                // Sign out from Firebase Auth
+                auth.signOut().then(() => {
+                    console.log('🔐 Signed out from Firebase Auth');
+                }).catch((error) => {
+                    console.error('❌ Sign out error:', error);
+                });
                 
                 localStorage.removeItem('currentUser');
                 this.data.currentUser = null;
