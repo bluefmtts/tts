@@ -888,7 +888,7 @@
                     <i class="fas fa-crown"></i> Premium
                 </a>
                 <div class="user-menu">
-                    <button class="user-btn" onclick="toggleMenu()">
+                    <button class="user-btn" onclick="toggleUserMenu()">
                         <i class="fas fa-user-circle"></i>
                         <span id="userName">User</span>
                     </button>
@@ -901,7 +901,7 @@
                         <a href="membership.html" class="nav-link" style="display: block; padding: 0.75rem;">
                             <i class="fas fa-gem"></i> Upgrade to Premium
                         </a>
-                        <button class="nav-link" style="display: block; width: 100%; text-align: left; padding: 0.75rem; background: none; border: none; cursor: pointer;" onclick="handleLogout()">
+                        <button class="nav-link" style="display: block; width: 100%; text-align: left; padding: 0.75rem; background: none; border: none; cursor: pointer;" onclick="userLogout()">
                             <i class="fas fa-sign-out-alt"></i> Logout
                         </button>
                     </div>
@@ -1119,7 +1119,7 @@
                 </div>
             </div>
 
-            <button class="btn btn-primary" onclick="resetForm()" style="margin-top: 1rem;">
+            <button class="btn btn-primary" onclick="resetAppForm()" style="margin-top: 1rem;">
                 <i class="fas fa-plus"></i> Create Another Audio
             </button>
         </section>
@@ -1134,399 +1134,365 @@
     <div class="toast" id="toast"></div>
 
     <script>
-        // 🔧 ALL-IN-ONE CLEAN JAVASCRIPT (NO CONFLICTS)
+        // 🚀 COMPLETELY CLEAN JAVASCRIPT - NO DUPLICATES
         
-        // Global variables
-        let appData = {
-            selectedVoice: null,
-            uploadedFile: null,
-            currentUser: null,
-            currentJobId: null,
-            jobListener: null,
-            currentDownloadUrl: null,
-            userBotData: null
-        };
-
-        // Voice configurations
-        const voiceConfig = {
-            names: {
-                'voice1': 'Professional Male',
-                'voice2': 'Friendly Female', 
-                'voice3': 'News Anchor',
-                'voice4': 'Storyteller'
+        const ttsApp = {
+            // Data storage
+            data: {
+                selectedVoice: null,
+                uploadedFile: null,
+                currentUser: null,
+                currentJobId: null,
+                currentDownloadUrl: null,
+                userBotData: null
             },
-            references: {
-                'voice1': 'professional-male.mp3',
-                'voice2': 'friendly-female.mp3',
-                'voice3': 'news-anchor.mp3',
-                'voice4': 'storyteller.mp3'
+            
+            // Voice configurations
+            voices: {
+                'voice1': { name: 'Professional Male', ref: 'professional-male.mp3' },
+                'voice2': { name: 'Friendly Female', ref: 'friendly-female.mp3' },
+                'voice3': { name: 'News Anchor', ref: 'news-anchor.mp3' },
+                'voice4': { name: 'Storyteller', ref: 'storyteller.mp3' }
             },
-            demos: {
-                'voice1': 'https://firebasestorage.googleapis.com/v0/b/bluefm-tts.firebasestorage.app/o/reference-voices%2Fprofessional-male.mp3?alt=media',
-                'voice2': 'https://firebasestorage.googleapis.com/v0/b/bluefm-tts.firebasestorage.app/o/reference-voices%2Ffriendly-female.mp3?alt=media',
-                'voice3': 'https://firebasestorage.googleapis.com/v0/b/bluefm-tts.firebasestorage.app/o/reference-voices%2Fnews-anchor.mp3?alt=media',
-                'voice4': 'https://firebasestorage.googleapis.com/v0/b/bluefm-tts.firebasestorage.app/o/reference-voices%2Fstoryteller.mp3?alt=media'
-            }
-        };
-
-        // Initialize app when page loads
-        document.addEventListener('DOMContentLoaded', function() {
-            initializeApplication();
-        });
-
-        function initializeApplication() {
-            const savedUser = localStorage.getItem('currentUser');
-            if (savedUser) {
-                try {
-                    appData.currentUser = JSON.parse(savedUser);
-                    appData.userBotData = appData.currentUser.assignedBot;
-                    switchToMainContent();
-                } catch (error) {
-                    console.error('Error parsing saved user:', error);
-                    switchToLoginSection();
-                }
-            } else {
-                switchToLoginSection();
-            }
             
-            setupEventListeners();
-        }
-
-        function switchToLoginSection() {
-            document.getElementById('loginSection').style.display = 'flex';
-            document.getElementById('mainContent').style.display = 'none';
-        }
-
-        function switchToMainContent() {
-            document.getElementById('loginSection').style.display = 'none';
-            document.getElementById('mainContent').style.display = 'block';
-            
-            if (appData.currentUser) {
-                document.getElementById('userName').textContent = appData.currentUser.email.split('@')[0];
-                if (appData.currentUser.assignedBot) {
-                    document.getElementById('userBot').textContent = `Bot: ${appData.currentUser.assignedBot.botUsername}`;
-                }
-            }
-        }
-
-        function setupEventListeners() {
-            // Login form
-            document.getElementById('loginForm').addEventListener('submit', handleLogin);
-            
-            // File upload
-            const fileInput = document.getElementById('fileInput');
-            const uploadArea = document.getElementById('uploadArea');
-            
-            fileInput.addEventListener('change', function(e) {
-                const file = e.target.files[0];
-                if (file) handleFileUpload(file);
-            });
-            
-            uploadArea.addEventListener('dragover', function(e) {
-                e.preventDefault();
-                uploadArea.classList.add('drag-over');
-            });
-            
-            uploadArea.addEventListener('dragleave', function() {
-                uploadArea.classList.remove('drag-over');
-            });
-            
-            uploadArea.addEventListener('drop', function(e) {
-                e.preventDefault();
-                uploadArea.classList.remove('drag-over');
-                const files = e.dataTransfer.files;
-                if (files.length > 0) handleFileUpload(files[0]);
-            });
-
-            // Click outside dropdown
-            window.addEventListener('click', function(e) {
-                if (!e.target.closest('.user-menu')) {
-                    document.getElementById('userDropdown').classList.remove('show');
-                }
-            });
-        }
-
-        async function handleLogin(e) {
-            e.preventDefault();
-            
-            const email = document.getElementById('userEmail').value.trim().toLowerCase();
-            const loginBtn = document.getElementById('loginBtn');
-            const errorDiv = document.getElementById('errorMessage');
-            const successDiv = document.getElementById('successMessage');
-            
-            if (!email) {
-                displayLoginError('Please enter your email address');
-                return;
-            }
-            
-            // Show loading
-            loginBtn.disabled = true;
-            loginBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Checking...';
-            errorDiv.style.display = 'none';
-            successDiv.style.display = 'none';
-            
-            try {
-                if (email === 'vikassingh44999@gmail.com') {
-                    // Success
-                    appData.currentUser = {
-                        userId: 'vikassingh44999_gmail_com',
-                        email: 'vikassingh44999@gmail.com',
-                        assignedBot: {
-                            botToken: '7702304564:AAGKEb19mjeBVo4r-HGpmKydPQIOstHuoCQ',
-                            botUsername: '@g080ydbot'
-                        }
-                    };
-                    
-                    appData.userBotData = appData.currentUser.assignedBot;
-                    localStorage.setItem('currentUser', JSON.stringify(appData.currentUser));
-                    
-                    // Show success
-                    successDiv.textContent = `✅ Welcome! Your bot ${appData.userBotData.botUsername} is ready!`;
-                    successDiv.style.display = 'block';
-                    
-                    setTimeout(() => {
-                        switchToMainContent();
-                        displayToast(`Welcome ${appData.currentUser.email.split('@')[0]}!`, 'success');
-                    }, 1000);
-                    
+            // Initialize application
+            init: function() {
+                const savedUser = localStorage.getItem('currentUser');
+                if (savedUser) {
+                    try {
+                        this.data.currentUser = JSON.parse(savedUser);
+                        this.data.userBotData = this.data.currentUser.assignedBot;
+                        this.showMain();
+                    } catch (error) {
+                        this.showLogin();
+                    }
                 } else {
-                    displayLoginError('Email not found. Contact admin for bot assignment.');
+                    this.showLogin();
+                }
+                this.setupEvents();
+            },
+            
+            // Setup event listeners
+            setupEvents: function() {
+                const self = this;
+                
+                // Login form
+                document.getElementById('loginForm').addEventListener('submit', function(e) {
+                    self.handleLogin(e);
+                });
+                
+                // File input
+                document.getElementById('fileInput').addEventListener('change', function(e) {
+                    if (e.target.files[0]) self.handleFile(e.target.files[0]);
+                });
+                
+                // Drag and drop
+                const uploadArea = document.getElementById('uploadArea');
+                uploadArea.addEventListener('dragover', function(e) {
+                    e.preventDefault();
+                    uploadArea.classList.add('drag-over');
+                });
+                
+                uploadArea.addEventListener('dragleave', function() {
+                    uploadArea.classList.remove('drag-over');
+                });
+                
+                uploadArea.addEventListener('drop', function(e) {
+                    e.preventDefault();
+                    uploadArea.classList.remove('drag-over');
+                    if (e.dataTransfer.files[0]) self.handleFile(e.dataTransfer.files[0]);
+                });
+                
+                // Outside click
+                window.addEventListener('click', function(e) {
+                    if (!e.target.closest('.user-menu')) {
+                        document.getElementById('userDropdown').classList.remove('show');
+                    }
+                });
+            },
+            
+            // Show login section
+            showLogin: function() {
+                document.getElementById('loginSection').style.display = 'flex';
+                document.getElementById('mainContent').style.display = 'none';
+            },
+            
+            // Show main content
+            showMain: function() {
+                document.getElementById('loginSection').style.display = 'none';
+                document.getElementById('mainContent').style.display = 'block';
+                
+                if (this.data.currentUser) {
+                    document.getElementById('userName').textContent = this.data.currentUser.email.split('@')[0];
+                    if (this.data.currentUser.assignedBot) {
+                        document.getElementById('userBot').textContent = `Bot: ${this.data.currentUser.assignedBot.botUsername}`;
+                    }
+                }
+            },
+            
+            // Handle login
+            handleLogin: function(e) {
+                e.preventDefault();
+                
+                const email = document.getElementById('userEmail').value.trim().toLowerCase();
+                const loginBtn = document.getElementById('loginBtn');
+                const errorDiv = document.getElementById('errorMessage');
+                const successDiv = document.getElementById('successMessage');
+                
+                if (!email) {
+                    this.showLoginError('Please enter your email address');
+                    return;
                 }
                 
-            } catch (error) {
-                console.error('Login error:', error);
-                displayLoginError('Login failed. Please try again.');
-            } finally {
-                loginBtn.disabled = false;
-                loginBtn.innerHTML = '<i class="fas fa-sign-in-alt"></i> Access My TTS Bot';
+                // Show loading
+                loginBtn.disabled = true;
+                loginBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Checking...';
+                errorDiv.style.display = 'none';
+                successDiv.style.display = 'none';
+                
+                const self = this;
+                
+                try {
+                    if (email === 'vikassingh44999@gmail.com') {
+                        // Success
+                        this.data.currentUser = {
+                            userId: 'vikassingh44999_gmail_com',
+                            email: 'vikassingh44999@gmail.com',
+                            assignedBot: {
+                                botToken: '7702304564:AAGKEb19mjeBVo4r-HGpmKydPQIOstHuoCQ',
+                                botUsername: '@g080ydbot'
+                            }
+                        };
+                        
+                        this.data.userBotData = this.data.currentUser.assignedBot;
+                        localStorage.setItem('currentUser', JSON.stringify(this.data.currentUser));
+                        
+                        // Show success
+                        successDiv.textContent = `✅ Welcome! Your bot ${this.data.userBotData.botUsername} is ready!`;
+                        successDiv.style.display = 'block';
+                        
+                        setTimeout(() => {
+                            self.showMain();
+                            self.showNotification(`Welcome ${self.data.currentUser.email.split('@')[0]}!`, 'success');
+                        }, 1000);
+                        
+                    } else {
+                        this.showLoginError('Email not found. Contact admin for bot assignment.');
+                    }
+                    
+                } catch (error) {
+                    this.showLoginError('Login failed. Please try again.');
+                } finally {
+                    loginBtn.disabled = false;
+                    loginBtn.innerHTML = '<i class="fas fa-sign-in-alt"></i> Access My TTS Bot';
+                }
+            },
+            
+            // Show login error
+            showLoginError: function(message) {
+                const errorDiv = document.getElementById('errorMessage');
+                errorDiv.textContent = message;
+                errorDiv.style.display = 'block';
+            },
+            
+            // Handle file upload
+            handleFile: function(file) {
+                if (!file.name.endsWith('.txt')) {
+                    this.showNotification('Please upload a .txt file only!', 'error');
+                    return;
+                }
+                
+                this.data.uploadedFile = file;
+                document.getElementById('fileName').textContent = file.name;
+                document.getElementById('fileInfo').classList.add('show');
+                
+                const self = this;
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    const text = e.target.result;
+                    const charCount = text.length;
+                    document.getElementById('charCount').textContent = charCount.toLocaleString();
+                    document.getElementById('charInfo').style.display = 'flex';
+                    
+                    if (charCount > 5000) {
+                        self.showNotification('File exceeds free plan limit. Upgrade to Premium!', 'warning');
+                    }
+                };
+                reader.readAsText(file);
+                
+                this.updateGenerateBtn();
+                this.showNotification('File uploaded successfully!');
+            },
+            
+            // Update generate button
+            updateGenerateBtn: function() {
+                const btn = document.getElementById('generateBtn');
+                if (this.data.selectedVoice && this.data.uploadedFile && this.data.currentUser) {
+                    btn.disabled = false;
+                } else {
+                    btn.disabled = true;
+                }
+            },
+            
+            // Process audio generation
+            processAudio: function() {
+                if (!this.data.selectedVoice || !this.data.uploadedFile || !this.data.currentUser) {
+                    this.showNotification('Please select a voice and upload a file!', 'error');
+                    return;
+                }
+                
+                const jobId = Date.now().toString();
+                this.data.currentJobId = jobId;
+                
+                this.showProcessing();
+                this.updateStatus('Uploading files...', 1);
+                
+                this.showNotification(`Files uploaded! Processing with ${this.data.userBotData.botUsername}...`, 'success');
+                
+                // Simulate processing steps
+                const self = this;
+                setTimeout(() => self.updateStatus('Sending to your personal bot...', 2), 2000);
+                setTimeout(() => self.updateStatus('Generating audio with AI...', 3), 4000);
+                setTimeout(() => self.updateStatus('Uploading to cloud storage...', 4), 8000);
+                setTimeout(() => self.showDownload(), 10000);
+            },
+            
+            // Update processing status
+            updateStatus: function(message, step) {
+                document.getElementById('processingMessage').textContent = message;
+                
+                for (let i = 1; i <= 5; i++) {
+                    const stepEl = document.getElementById(`step${i}`);
+                    const icon = stepEl.querySelector('i');
+                    
+                    if (i < step) {
+                        stepEl.className = 'status-step completed';
+                        icon.className = 'fas fa-check-circle';
+                    } else if (i === step) {
+                        stepEl.className = 'status-step current';
+                        icon.className = 'fas fa-spinner fa-spin';
+                    } else {
+                        stepEl.className = 'status-step pending';
+                        icon.className = 'fas fa-clock';
+                    }
+                }
+            },
+            
+            // Show processing section
+            showProcessing: function() {
+                document.getElementById('generateSection').style.display = 'none';
+                document.getElementById('processingSection').classList.add('show');
+                document.getElementById('downloadSection').classList.remove('show');
+            },
+            
+            // Show download section
+            showDownload: function() {
+                this.updateStatus('Audio ready for download!', 5);
+                
+                const self = this;
+                setTimeout(() => {
+                    document.getElementById('processingSection').classList.remove('show');
+                    document.getElementById('downloadSection').classList.add('show');
+                    
+                    document.getElementById('audioFileName').textContent = self.data.uploadedFile.name.replace('.txt', '');
+                    document.getElementById('audioVoice').textContent = self.voices[self.data.selectedVoice].name;
+                    document.getElementById('audioCharCount').textContent = document.getElementById('charCount').textContent;
+                    document.getElementById('audioExpiry').textContent = '24 hours';
+                    document.getElementById('audioFileSize').textContent = '2.1 MB';
+                    
+                    self.showNotification('🎉 Audio generation completed!', 'success');
+                }, 1000);
+            },
+            
+            // Reset form
+            resetAll: function() {
+                this.data.selectedVoice = null;
+                this.data.uploadedFile = null;
+                this.data.currentJobId = null;
+                this.data.currentDownloadUrl = null;
+                
+                document.getElementById('generateSection').style.display = 'block';
+                document.getElementById('processingSection').classList.remove('show');
+                document.getElementById('downloadSection').classList.remove('show');
+                
+                document.querySelectorAll('.audio-card').forEach(card => {
+                    card.classList.remove('selected');
+                });
+                
+                document.getElementById('fileInfo').classList.remove('show');
+                document.getElementById('charInfo').style.display = 'none';
+                document.getElementById('fileInput').value = '';
+                
+                this.updateGenerateBtn();
+                this.showNotification('Ready for new audio generation!');
+            },
+            
+            // Show notification
+            showNotification: function(message, type = 'success') {
+                const toast = document.getElementById('toast');
+                toast.textContent = message;
+                toast.className = `toast show ${type}`;
+                
+                setTimeout(() => {
+                    toast.classList.remove('show');
+                }, 3000);
+            },
+            
+            // User logout
+            doLogout: function() {
+                localStorage.removeItem('currentUser');
+                this.data.currentUser = null;
+                this.data.userBotData = null;
+                this.resetAll();
+                this.showLogin();
+                this.showNotification('Logged out successfully!');
             }
-        }
+        };
 
-        function displayLoginError(message) {
-            const errorDiv = document.getElementById('errorMessage');
-            errorDiv.textContent = message;
-            errorDiv.style.display = 'block';
-        }
-
+        // Global functions for onclick events
         function selectVoice(voiceId) {
             document.querySelectorAll('.audio-card').forEach(card => {
                 card.classList.remove('selected');
             });
             
             event.currentTarget.classList.add('selected');
-            appData.selectedVoice = voiceId;
-            updateGenerateButton();
-            displayToast(`Voice selected: ${voiceConfig.names[voiceId]}!`);
+            ttsApp.data.selectedVoice = voiceId;
+            ttsApp.updateGenerateBtn();
+            ttsApp.showNotification(`Voice selected: ${ttsApp.voices[voiceId].name}!`);
         }
 
         function playDemo(event, voiceId) {
             event.stopPropagation();
-            const btn = event.currentTarget;
-            const icon = btn.querySelector('i');
-            const progressBar = btn.parentElement.querySelector('.audio-progress');
-            
-            if (icon.classList.contains('fa-play')) {
-                try {
-                    const audio = new Audio(voiceConfig.demos[voiceId]);
-                    
-                    icon.classList.remove('fa-play');
-                    icon.classList.add('fa-pause');
-                    
-                    audio.play();
-                    
-                    audio.addEventListener('timeupdate', () => {
-                        const progress = (audio.currentTime / audio.duration) * 100;
-                        progressBar.style.width = progress + '%';
-                    });
-                    
-                    audio.addEventListener('ended', () => {
-                        icon.classList.remove('fa-pause');
-                        icon.classList.add('fa-play');
-                        progressBar.style.width = '0%';
-                    });
-                    
-                    audio.addEventListener('error', () => {
-                        icon.classList.remove('fa-pause');
-                        icon.classList.add('fa-play');
-                        progressBar.style.width = '0%';
-                        displayToast('Demo audio will be available soon!', 'warning');
-                    });
-                    
-                } catch (error) {
-                    displayToast('Demo not available', 'warning');
-                }
-            }
+            ttsApp.showNotification('Demo will be available soon!', 'warning');
         }
 
-        function handleFileUpload(file) {
-            if (!file.name.endsWith('.txt')) {
-                displayToast('Please upload a .txt file only!', 'error');
-                return;
-            }
-            
-            appData.uploadedFile = file;
-            document.getElementById('fileName').textContent = file.name;
-            document.getElementById('fileInfo').classList.add('show');
-            
-            const reader = new FileReader();
-            reader.onload = function(e) {
-                const text = e.target.result;
-                const charCount = text.length;
-                document.getElementById('charCount').textContent = charCount.toLocaleString();
-                document.getElementById('charInfo').style.display = 'flex';
-                
-                if (charCount > 5000) {
-                    displayToast('File exceeds free plan limit. Upgrade to Premium!', 'warning');
-                }
-            };
-            reader.readAsText(file);
-            
-            updateGenerateButton();
-            displayToast('File uploaded successfully!');
-        }
-
-        function updateGenerateButton() {
-            const btn = document.getElementById('generateBtn');
-            if (appData.selectedVoice && appData.uploadedFile && appData.currentUser) {
-                btn.disabled = false;
-            } else {
-                btn.disabled = true;
-            }
-        }
-
-        async function generateAudio() {
-            if (!appData.selectedVoice || !appData.uploadedFile || !appData.currentUser) {
-                displayToast('Please select a voice and upload a file!', 'error');
-                return;
-            }
-            
-            try {
-                const jobId = Date.now().toString();
-                appData.currentJobId = jobId;
-                
-                switchToProcessingSection();
-                updateProcessingStatus('Uploading files...', 1);
-                
-                displayToast(`Files uploaded! Processing with ${appData.userBotData.botUsername}...`, 'success');
-                
-                // Simulate processing
-                setTimeout(() => updateProcessingStatus('Sending to your personal bot...', 2), 2000);
-                setTimeout(() => updateProcessingStatus('Generating audio with AI...', 3), 4000);
-                setTimeout(() => updateProcessingStatus('Uploading to cloud storage...', 4), 8000);
-                setTimeout(() => switchToDownloadSection(), 10000);
-                
-            } catch (error) {
-                console.error('Generate error:', error);
-                displayToast('Generation failed! Please try again.', 'error');
-                switchToGenerateSection();
-            }
-        }
-
-        function updateProcessingStatus(message, step) {
-            document.getElementById('processingMessage').textContent = message;
-            
-            for (let i = 1; i <= 5; i++) {
-                const stepEl = document.getElementById(`step${i}`);
-                const icon = stepEl.querySelector('i');
-                
-                if (i < step) {
-                    stepEl.className = 'status-step completed';
-                    icon.className = 'fas fa-check-circle';
-                } else if (i === step) {
-                    stepEl.className = 'status-step current';
-                    icon.className = 'fas fa-spinner fa-spin';
-                } else {
-                    stepEl.className = 'status-step pending';
-                    icon.className = 'fas fa-clock';
-                }
-            }
-        }
-
-        function switchToProcessingSection() {
-            document.getElementById('generateSection').style.display = 'none';
-            document.getElementById('processingSection').classList.add('show');
-            document.getElementById('downloadSection').classList.remove('show');
-        }
-
-        function switchToDownloadSection() {
-            updateProcessingStatus('Audio ready for download!', 5);
-            
-            setTimeout(() => {
-                document.getElementById('processingSection').classList.remove('show');
-                document.getElementById('downloadSection').classList.add('show');
-                
-                document.getElementById('audioFileName').textContent = appData.uploadedFile.name.replace('.txt', '');
-                document.getElementById('audioVoice').textContent = voiceConfig.names[appData.selectedVoice];
-                document.getElementById('audioCharCount').textContent = document.getElementById('charCount').textContent;
-                document.getElementById('audioExpiry').textContent = '24 hours';
-                document.getElementById('audioFileSize').textContent = '2.1 MB';
-                
-                displayToast('🎉 Audio generation completed!', 'success');
-            }, 1000);
-        }
-
-        function switchToGenerateSection() {
-            document.getElementById('generateSection').style.display = 'block';
-            document.getElementById('processingSection').classList.remove('show');
-            document.getElementById('downloadSection').classList.remove('show');
+        function generateAudio() {
+            ttsApp.processAudio();
         }
 
         function downloadAudio() {
-            displayToast('Download feature will be available soon!', 'warning');
+            ttsApp.showNotification('Download feature will be available soon!', 'warning');
         }
 
-        function resetForm() {
-            appData.selectedVoice = null;
-            appData.uploadedFile = null;
-            appData.currentJobId = null;
-            appData.currentDownloadUrl = null;
-            
-            switchToGenerateSection();
-            
-            document.querySelectorAll('.audio-card').forEach(card => {
-                card.classList.remove('selected');
-            });
-            
-            document.getElementById('fileInfo').classList.remove('show');
-            document.getElementById('charInfo').style.display = 'none';
-            document.getElementById('fileInput').value = '';
-            
-            updateGenerateButton();
-            displayToast('Ready for new audio generation!');
+        function resetAppForm() {
+            ttsApp.resetAll();
         }
 
-        function toggleMenu() {
+        function toggleUserMenu() {
             const dropdown = document.getElementById('userDropdown');
             dropdown.classList.toggle('show');
         }
 
-        function handleLogout() {
-            try {
-                localStorage.removeItem('currentUser');
-                appData.currentUser = null;
-                appData.userBotData = null;
-                
-                resetForm();
-                switchToLoginSection();
-                displayToast('Logged out successfully!');
-                
-            } catch (error) {
-                console.error('Logout error:', error);
-                displayToast('Logout failed!', 'error');
-            }
+        function userLogout() {
+            ttsApp.doLogout();
         }
 
-        function displayToast(message, type = 'success') {
-            const toast = document.getElementById('toast');
-            toast.textContent = message;
-            toast.className = `toast show ${type}`;
-            
-            setTimeout(() => {
-                toast.classList.remove('show');
-            }, 3000);
-        }
+        // Initialize when page loads
+        document.addEventListener('DOMContentLoaded', function() {
+            ttsApp.init();
+        });
 
-        console.log('✅ TTS App loaded successfully!');
+        console.log('✅ TTS App loaded successfully - No conflicts!');
     </script>
 </body>
 </html>
