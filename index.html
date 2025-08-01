@@ -12,7 +12,6 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     
     <style>
-        /* [Previous CSS styles remain the same] */
         * {
             margin: 0;
             padding: 0;
@@ -42,7 +41,7 @@
             position: relative;
         }
 
-        /* 🆕 Login Section Styles */
+        /* Login Section Styles */
         .login-section {
             position: fixed;
             top: 0;
@@ -158,7 +157,6 @@
             margin-bottom: 0.5rem;
         }
 
-        /* [Rest of the CSS remains the same] */
         /* Background Animation */
         .bg-animation {
             position: fixed;
@@ -316,10 +314,6 @@
             padding: 2rem;
             box-shadow: 0 8px 32px var(--shadow);
         }
-
-        /* [Continue with rest of the CSS - I'll skip repetition but all styles remain] */
-        /* Main Content, Hero, Stats, Audio Cards, Upload, Processing, Download sections... */
-        /* [Previous styles continue unchanged] */
 
         /* Main Content */
         .main-content {
@@ -881,7 +875,7 @@
         <div class="sound-wave"></div>
     </div>
 
-    <!-- 🆕 Login Section -->
+    <!-- Login Section -->
     <div class="login-section" id="loginSection">
         <div class="login-container">
             <h2 class="login-title">
@@ -1126,7 +1120,7 @@
             </div>
         </section>
 
-        <!-- Download Section with R2 Integration -->
+        <!-- Download Section (Preview Button Removed) -->
         <section class="download-section" id="downloadSection">
             <div class="download-icon">
                 <i class="fas fa-download"></i>
@@ -1176,19 +1170,6 @@
 
     <!-- Toast -->
     <div class="toast" id="toast"></div>
-
-    <!-- Audio Preview Modal -->
-    <div id="audioPreviewModal" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.8); z-index: 2000; display: flex; align-items: center; justify-content: center;">
-        <div style="background: var(--glass-bg); backdrop-filter: blur(10px); padding: 2rem; border-radius: 20px; max-width: 500px; width: 90%;">
-            <h3 style="margin-bottom: 1rem; text-align: center;">Audio Preview</h3>
-            <audio id="previewAudioPlayer" controls style="width: 100%; margin-bottom: 1rem;">
-                Your browser does not support the audio element.
-            </audio>
-            <div style="text-align: center;">
-                <button class="btn btn-primary" onclick="closePreview()">Close</button>
-            </div>
-        </div>
-    </div>
 
     <script type="module">
         import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js';
@@ -1245,7 +1226,7 @@
             'voice4': 'https://firebasestorage.googleapis.com/v0/b/bluefm-tts.firebasestorage.app/o/reference-voices%2Fstoryteller.mp3?alt=media'
         };
 
-        // 🆕 Initialize App
+        // Initialize App
         function initializeApp() {
             // Check if user is already logged in
             const savedUser = localStorage.getItem('currentUser');
@@ -1263,13 +1244,13 @@
             }
         }
 
-        // 🆕 Show Login Section
+        // Show Login Section
         function showLoginSection() {
             document.getElementById('loginSection').style.display = 'flex';
             document.getElementById('mainContent').style.display = 'none';
         }
 
-        // 🆕 Show Main Content
+        // Show Main Content
         function showMainContent() {
             document.getElementById('loginSection').style.display = 'none';
             document.getElementById('mainContent').style.display = 'block';
@@ -1283,7 +1264,7 @@
             }
         }
 
-        // 🆕 Handle Login Form
+        // Handle Login Form
         document.getElementById('loginForm').addEventListener('submit', async (e) => {
             e.preventDefault();
             
@@ -1359,7 +1340,7 @@
             errorDiv.style.display = 'block';
         }
 
-        // 🆕 Check for Active Jobs
+        // Check for Active Jobs
         async function checkActiveJobs() {
             if (!currentUser) return;
             
@@ -1534,7 +1515,7 @@
             }
         }
 
-        // 🆕 Enhanced Generate Audio with User-specific Bot
+        // Enhanced Generate Audio with User-specific Bot
         window.generateAudio = async function() {
             if (!selectedVoice || !uploadedFile || !currentUser) {
                 showToast('Please select a voice and upload a file!', 'error');
@@ -1555,7 +1536,7 @@
                 const textFileName = `${jobId}-${uploadedFile.name}`;
                 const textRef = ref(storage, `tts-requests/${userId}/${textFileName}`);
                 
-                // 🆕 Upload with user and bot metadata
+                // Upload with user and bot metadata
                 const metadata = {
                     customMetadata: {
                         userId: userId,
@@ -1730,30 +1711,6 @@
             }
         }
 
-        // Preview Audio
-        window.previewAudio = function() {
-            if (!currentDownloadUrl) {
-                showToast('Audio not available for preview!', 'error');
-                return;
-            }
-            
-            const modal = document.getElementById('audioPreviewModal');
-            const player = document.getElementById('previewAudioPlayer');
-            
-            player.src = currentDownloadUrl;
-            modal.style.display = 'flex';
-        }
-
-        // Close Preview
-        window.closePreview = function() {
-            const modal = document.getElementById('audioPreviewModal');
-            const player = document.getElementById('previewAudioPlayer');
-            
-            player.pause();
-            player.currentTime = 0;
-            modal.style.display = 'none';
-        }
-
         // Show Error
         function showError(error) {
             document.getElementById('processingSection').classList.remove('show');
@@ -1847,17 +1804,12 @@
             if (!e.target.closest('.user-menu')) {
                 document.getElementById('userDropdown').classList.remove('show');
             }
-            
-            // Close preview modal when clicking outside
-            if (e.target.id === 'audioPreviewModal') {
-                closePreview();
-            }
         });
 
         // Make functions available globally
         window.checkGenerateButton = checkGenerateButton;
         
-        // 🆕 Initialize the app when page loads
+        // Initialize the app when page loads
         initializeApp();
     </script>
 </body>
