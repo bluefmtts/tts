@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -13,6 +12,7 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     
     <style>
+        /* [Previous CSS styles remain the same] */
         * {
             margin: 0;
             padding: 0;
@@ -42,6 +42,123 @@
             position: relative;
         }
 
+        /* 🆕 Login Section Styles */
+        .login-section {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(135deg, #1e3a8a 0%, #2563eb 50%, #3b82f6 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+        }
+
+        .login-container {
+            background: var(--glass-bg);
+            backdrop-filter: blur(10px);
+            border: 1px solid var(--glass-border);
+            border-radius: 20px;
+            padding: 3rem;
+            max-width: 400px;
+            width: 90%;
+            text-align: center;
+            box-shadow: 0 8px 32px var(--shadow);
+        }
+
+        .login-title {
+            font-size: 2rem;
+            margin-bottom: 0.5rem;
+            color: var(--text-primary);
+        }
+
+        .login-subtitle {
+            color: var(--text-secondary);
+            margin-bottom: 2rem;
+        }
+
+        .form-group {
+            margin-bottom: 1.5rem;
+            text-align: left;
+        }
+
+        .form-label {
+            display: block;
+            margin-bottom: 0.5rem;
+            color: var(--text-primary);
+            font-weight: 500;
+        }
+
+        .form-input {
+            width: 100%;
+            padding: 0.75rem 1rem;
+            border: 1px solid var(--glass-border);
+            border-radius: 10px;
+            background: rgba(255, 255, 255, 0.1);
+            color: var(--text-primary);
+            font-size: 1rem;
+        }
+
+        .form-input::placeholder {
+            color: var(--text-secondary);
+        }
+
+        .form-input:focus {
+            outline: none;
+            border-color: var(--accent);
+            box-shadow: 0 0 0 2px rgba(96, 165, 250, 0.2);
+        }
+
+        .login-btn {
+            width: 100%;
+            padding: 0.75rem;
+            background: linear-gradient(45deg, var(--primary), var(--secondary));
+            border: none;
+            border-radius: 10px;
+            color: white;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .login-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 30px var(--shadow);
+        }
+
+        .login-btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .error-message {
+            color: #ef4444;
+            background: rgba(239, 68, 68, 0.1);
+            border: 1px solid #ef4444;
+            padding: 0.75rem;
+            border-radius: 10px;
+            margin-top: 1rem;
+            display: none;
+        }
+
+        .bot-info {
+            background: rgba(16, 185, 129, 0.1);
+            border: 1px solid var(--success);
+            padding: 1rem;
+            border-radius: 10px;
+            margin-top: 1rem;
+            display: none;
+        }
+
+        .bot-info h4 {
+            color: var(--success);
+            margin-bottom: 0.5rem;
+        }
+
+        /* [Rest of the CSS remains the same] */
         /* Background Animation */
         .bg-animation {
             position: fixed;
@@ -199,6 +316,10 @@
             padding: 2rem;
             box-shadow: 0 8px 32px var(--shadow);
         }
+
+        /* [Continue with rest of the CSS - I'll skip repetition but all styles remain] */
+        /* Main Content, Hero, Stats, Audio Cards, Upload, Processing, Download sections... */
+        /* [Previous styles continue unchanged] */
 
         /* Main Content */
         .main-content {
@@ -528,7 +649,7 @@
             margin-top: 1rem;
         }
 
-        /* 🆕 Real-time Status Update Section */
+        /* Real-time Status Update Section */
         .status-update {
             background: rgba(59, 130, 246, 0.1);
             border: 1px solid var(--secondary);
@@ -760,6 +881,41 @@
         <div class="sound-wave"></div>
     </div>
 
+    <!-- 🆕 Login Section -->
+    <div class="login-section" id="loginSection">
+        <div class="login-container">
+            <h2 class="login-title">
+                <i class="fas fa-microphone-alt" style="color: var(--accent);"></i>
+                Blue FM TTS
+            </h2>
+            <p class="login-subtitle">Enter your email to access your personal TTS bot</p>
+            
+            <form id="loginForm">
+                <div class="form-group">
+                    <label class="form-label" for="userEmail">Email Address</label>
+                    <input 
+                        type="email" 
+                        id="userEmail" 
+                        class="form-input" 
+                        placeholder="your@email.com"
+                        required
+                    >
+                </div>
+                
+                <button type="submit" class="login-btn" id="loginBtn">
+                    <i class="fas fa-sign-in-alt"></i>
+                    Access My TTS Bot
+                </button>
+                
+                <div class="error-message" id="errorMessage"></div>
+                <div class="bot-info" id="botInfo">
+                    <h4>🤖 Your Personal Bot:</h4>
+                    <p id="botUsername">Loading...</p>
+                </div>
+            </form>
+        </div>
+    </div>
+
     <!-- Navigation -->
     <nav>
         <div class="nav-container">
@@ -781,8 +937,9 @@
                     </button>
                     <div class="user-dropdown" id="userDropdown">
                         <div style="padding: 0.75rem; border-bottom: 1px solid var(--glass-border);">
-                            <div style="font-weight: 600;">Free Plan</div>
+                            <div style="font-weight: 600;" id="userPlan">Free Plan</div>
                             <div style="font-size: 0.8rem; color: var(--text-secondary);">5,000 chars/month</div>
+                            <div style="font-size: 0.8rem; color: var(--accent);" id="userBot">Bot: Loading...</div>
                         </div>
                         <a href="membership.html" class="nav-link" style="display: block; padding: 0.75rem;">
                             <i class="fas fa-gem"></i> Upgrade to Premium
@@ -797,11 +954,11 @@
     </nav>
 
     <!-- Main Content -->
-    <main class="main-content">
+    <main class="main-content" id="mainContent" style="display: none;">
         <!-- Hero Section -->
         <section class="hero-section">
             <h1 class="hero-title">Transform Text to Natural Speech</h1>
-            <p class="hero-subtitle">Create professional voiceovers with AI-powered voices</p>
+            <p class="hero-subtitle">Create professional voiceovers with your personal AI bot</p>
         </section>
 
         <!-- Stats Section -->
@@ -933,7 +1090,7 @@
             </button>
         </section>
 
-        <!-- 🆕 Enhanced Processing Section with Real-time Updates -->
+        <!-- Processing Section with Real-time Updates -->
         <section class="processing-section" id="processingSection">
             <div class="processing-icon">
                 <i class="fas fa-cog"></i>
@@ -946,7 +1103,7 @@
                 <small>Processing time depends on file size and server load</small>
             </div>
             
-            <!-- 🆕 Real-time Status Updates -->
+            <!-- Real-time Status Updates -->
             <div class="status-update">
                 <h4 style="margin-bottom: 1rem;">Processing Status:</h4>
                 <ul class="status-steps" id="statusSteps">
@@ -954,7 +1111,7 @@
                         <i class="fas fa-clock"></i> Uploading files...
                     </li>
                     <li class="status-step pending" id="step2">
-                        <i class="fas fa-clock"></i> Sending to processing server...
+                        <i class="fas fa-clock"></i> Sending to your personal bot...
                     </li>
                     <li class="status-step pending" id="step3">
                         <i class="fas fa-clock"></i> Generating audio with AI...
@@ -969,7 +1126,7 @@
             </div>
         </section>
 
-        <!-- 🆕 Enhanced Download Section with R2 Integration -->
+        <!-- Download Section with R2 Integration -->
         <section class="download-section" id="downloadSection">
             <div class="download-icon">
                 <i class="fas fa-download"></i>
@@ -1023,7 +1180,7 @@
     <!-- Toast -->
     <div class="toast" id="toast"></div>
 
-    <!-- 🆕 Audio Preview Modal -->
+    <!-- Audio Preview Modal -->
     <div id="audioPreviewModal" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.8); z-index: 2000; display: flex; align-items: center; justify-content: center;">
         <div style="background: var(--glass-bg); backdrop-filter: blur(10px); padding: 2rem; border-radius: 20px; max-width: 500px; width: 90%;">
             <h3 style="margin-bottom: 1rem; text-align: center;">Audio Preview</h3>
@@ -1038,11 +1195,11 @@
 
     <script type="module">
         import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js';
-        import { getAuth, onAuthStateChanged, signOut } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js';
         import { getStorage, ref, uploadBytes, getDownloadURL } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-storage.js';
         import { getFirestore, doc, onSnapshot, collection, query, where, orderBy, limit } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js';
+        import { getFunctions, httpsCallable } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-functions.js';
 
-        // ✅ Firebase configuration
+        // Firebase configuration
         const firebaseConfig = {
             apiKey: "AIzaSyCmBZmN-BCa3Qkb7f7K9TjXuK1_ma1ukbw",
             authDomain: "bluefm-tts.firebaseapp.com",
@@ -1054,9 +1211,9 @@
         };
 
         const app = initializeApp(firebaseConfig);
-        const auth = getAuth(app);
         const storage = getStorage(app);
         const db = getFirestore(app);
+        const functions = getFunctions(app);
 
         // Global variables
         let selectedVoice = null;
@@ -1065,6 +1222,7 @@
         let currentJobId = null;
         let jobListener = null;
         let currentDownloadUrl = null;
+        let userBotData = null;
 
         // Voice names mapping
         const voiceNames = {
@@ -1074,7 +1232,7 @@
             'voice4': 'Storyteller'
         };
 
-        // ✅ Voice to Reference Audio mapping
+        // Voice to Reference Audio mapping
         const voiceToReference = {
             'voice1': 'professional-male.mp3',
             'voice2': 'friendly-female.mp3',
@@ -1082,7 +1240,7 @@
             'voice4': 'storyteller.mp3'
         };
 
-        // ✅ Demo audio URLs
+        // Demo audio URLs
         const demoAudioUrls = {
             'voice1': 'https://firebasestorage.googleapis.com/v0/b/bluefm-tts.firebasestorage.app/o/reference-voices%2Fprofessional-male.mp3?alt=media',
             'voice2': 'https://firebasestorage.googleapis.com/v0/b/bluefm-tts.firebasestorage.app/o/reference-voices%2Ffriendly-female.mp3?alt=media',
@@ -1090,35 +1248,128 @@
             'voice4': 'https://firebasestorage.googleapis.com/v0/b/bluefm-tts.firebasestorage.app/o/reference-voices%2Fstoryteller.mp3?alt=media'
         };
 
-        // Check authentication state
-        onAuthStateChanged(auth, (user) => {
-            if (user) {
-                currentUser = user;
-                console.log('✅ User logged in:', user.email);
-                
-                // Update UI with user info
-                document.getElementById('userName').textContent = user.displayName || user.email.split('@')[0];
-                
-                // Store user data
-                localStorage.setItem('isLoggedIn', 'true');
-                localStorage.setItem('userEmail', user.email);
-                localStorage.setItem('userId', user.uid);
-                
-                // 🆕 Check for any active jobs
-                checkActiveJobs();
-                
+        // 🆕 Initialize App
+        function initializeApp() {
+            // Check if user is already logged in
+            const savedUser = localStorage.getItem('currentUser');
+            if (savedUser) {
+                try {
+                    currentUser = JSON.parse(savedUser);
+                    showMainContent();
+                    checkActiveJobs();
+                } catch (error) {
+                    console.error('Error parsing saved user:', error);
+                    showLoginSection();
+                }
             } else {
-                console.log('❌ User not logged in');
-                window.location.href = 'login.html';
+                showLoginSection();
+            }
+        }
+
+        // 🆕 Show Login Section
+        function showLoginSection() {
+            document.getElementById('loginSection').style.display = 'flex';
+            document.getElementById('mainContent').style.display = 'none';
+        }
+
+        // 🆕 Show Main Content
+        function showMainContent() {
+            document.getElementById('loginSection').style.display = 'none';
+            document.getElementById('mainContent').style.display = 'block';
+            
+            // Update UI with user info
+            if (currentUser) {
+                document.getElementById('userName').textContent = currentUser.email.split('@')[0];
+                if (currentUser.assignedBot) {
+                    document.getElementById('userBot').textContent = `Bot: ${currentUser.assignedBot.botUsername}`;
+                }
+            }
+        }
+
+        // 🆕 Handle Login Form
+        document.getElementById('loginForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            
+            const email = document.getElementById('userEmail').value.trim();
+            const loginBtn = document.getElementById('loginBtn');
+            const errorDiv = document.getElementById('errorMessage');
+            const botInfoDiv = document.getElementById('botInfo');
+            
+            if (!email) {
+                showError('Please enter your email address');
+                return;
+            }
+            
+            // Show loading state
+            loginBtn.disabled = true;
+            loginBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Checking...';
+            errorDiv.style.display = 'none';
+            botInfoDiv.style.display = 'none';
+            
+            try {
+                // Call Firebase function to authenticate user
+                const authenticateUser = httpsCallable(functions, 'authenticateUser');
+                const result = await authenticateUser({ email: email });
+                
+                if (result.data.success) {
+                    // User found with assigned bot
+                    currentUser = {
+                        userId: result.data.userId,
+                        email: result.data.email,
+                        assignedBot: result.data.assignedBot
+                    };
+                    
+                    userBotData = result.data.assignedBot;
+                    
+                    // Save user data
+                    localStorage.setItem('currentUser', JSON.stringify(currentUser));
+                    
+                    // Show bot info briefly
+                    document.getElementById('botUsername').textContent = result.data.assignedBot.botUsername;
+                    botInfoDiv.style.display = 'block';
+                    
+                    // Redirect to main content after 1 second
+                    setTimeout(() => {
+                        showMainContent();
+                        showToast(`Welcome! Your bot ${result.data.assignedBot.botUsername} is ready!`, 'success');
+                    }, 1000);
+                    
+                } else {
+                    showError('Authentication failed');
+                }
+                
+            } catch (error) {
+                console.error('Login error:', error);
+                
+                if (error.code === 'functions/not-found') {
+                    showError('User not found or no bot assigned. Please contact admin.');
+                } else if (error.code === 'functions/permission-denied') {
+                    showError('No bot assigned to this user. Please contact admin.');
+                } else {
+                    showError('Login failed. Please try again.');
+                }
+            } finally {
+                // Reset button
+                loginBtn.disabled = false;
+                loginBtn.innerHTML = '<i class="fas fa-sign-in-alt"></i> Access My TTS Bot';
             }
         });
 
+        // Show error message
+        function showError(message) {
+            const errorDiv = document.getElementById('errorMessage');
+            errorDiv.textContent = message;
+            errorDiv.style.display = 'block';
+        }
+
         // 🆕 Check for Active Jobs
         async function checkActiveJobs() {
+            if (!currentUser) return;
+            
             try {
                 const q = query(
                     collection(db, "tts_jobs"),
-                    where("userId", "==", currentUser.uid),
+                    where("userId", "==", currentUser.userId),
                     where("status", "in", ["processing", "sent_to_telegram"]),
                     orderBy("createdAt", "desc"),
                     limit(1)
@@ -1157,7 +1408,7 @@
             showToast(`Voice selected: ${voiceNames[voiceId]}!`);
         }
 
-        // ✅ Enhanced Play Demo with Real Audio
+        // Play Demo with Real Audio
         window.playDemo = function(event, voiceId) {
             event.stopPropagation();
             const btn = event.currentTarget;
@@ -1286,9 +1537,9 @@
             }
         }
 
-        // ✅ Enhanced Generate Audio with Real-time Monitoring
+        // 🆕 Enhanced Generate Audio with User-specific Bot
         window.generateAudio = async function() {
-            if (!selectedVoice || !uploadedFile) {
+            if (!selectedVoice || !uploadedFile || !currentUser) {
                 showToast('Please select a voice and upload a file!', 'error');
                 return;
             }
@@ -1296,21 +1547,24 @@
             try {
                 // Generate unique ID for this job
                 const jobId = Date.now().toString();
-                const userId = currentUser.uid;
+                const userId = currentUser.userId;
                 currentJobId = jobId;
                 
                 // Show processing section
                 showProcessingSection();
                 updateStatus('Uploading files...', 1);
                 
-                // Upload text file with metadata
+                // Upload text file with metadata including user info
                 const textFileName = `${jobId}-${uploadedFile.name}`;
                 const textRef = ref(storage, `tts-requests/${userId}/${textFileName}`);
                 
-                // ✅ Upload with reference voice metadata
+                // 🆕 Upload with user and bot metadata
                 const metadata = {
                     customMetadata: {
                         userId: userId,
+                        userEmail: currentUser.email,
+                        botToken: userBotData.botToken,
+                        botUsername: userBotData.botUsername,
                         voiceId: selectedVoice,
                         voiceName: voiceNames[selectedVoice],
                         referenceAudio: voiceToReference[selectedVoice],
@@ -1320,14 +1574,14 @@
                 };
                 
                 await uploadBytes(textRef, uploadedFile, metadata);
-                console.log('✅ Text file uploaded with reference voice info');
+                console.log('✅ Text file uploaded with user-specific bot info');
                 
-                updateStatus('Sending to processing server...', 2);
+                updateStatus('Sending to your personal bot...', 2);
                 
-                // 🆕 Start real-time job monitoring
+                // Start real-time job monitoring
                 startJobMonitoring(jobId);
                 
-                showToast('Files uploaded! Processing started...', 'success');
+                showToast(`Files uploaded! Processing with ${userBotData.botUsername}...`, 'success');
                 
             } catch (error) {
                 console.error('❌ Upload error:', error);
@@ -1336,7 +1590,7 @@
             }
         }
 
-        // 🆕 Real-time Job Monitoring
+        // Real-time Job Monitoring
         function startJobMonitoring(jobId) {
             if (jobListener) {
                 jobListener(); // Unsubscribe from previous listener
@@ -1355,7 +1609,7 @@
                             break;
                             
                         case 'sent_to_telegram':
-                            updateStatus('Processing on AI server...', 3);
+                            updateStatus(`Processing on ${userBotData.botUsername}...`, 3);
                             break;
                             
                         case 'completed':
@@ -1377,7 +1631,7 @@
             });
         }
 
-        // 🆕 Update Processing Status
+        // Update Processing Status
         function updateStatus(message, step) {
             document.getElementById('processingMessage').textContent = message;
             
@@ -1399,14 +1653,14 @@
             }
         }
 
-        // 🆕 Show Processing Section
+        // Show Processing Section
         function showProcessingSection() {
             document.getElementById('generateSection').style.display = 'none';
             document.getElementById('processingSection').classList.add('show');
             document.getElementById('downloadSection').classList.remove('show');
         }
 
-        // 🆕 Show Download Section with R2 Data
+        // Show Download Section with R2 Data
         function showDownloadSection(jobData) {
             updateStatus('Audio ready for download!', 5);
             
@@ -1427,7 +1681,7 @@
                     document.getElementById('audioExpiry').textContent = `${hoursLeft} hours`;
                 }
                 
-                showToast('🎉 Audio generation completed!', 'success');
+                showToast(`🎉 Audio generation completed by ${userBotData.botUsername}!`, 'success');
                 
                 // Get file size from R2 URL
                 getFileSizeFromUrl(currentDownloadUrl);
@@ -1435,7 +1689,7 @@
             }, 1000);
         }
 
-        // 🆕 Get File Size from R2 URL
+        // Get File Size from R2 URL
         async function getFileSizeFromUrl(url) {
             try {
                 const response = await fetch(url, { method: 'HEAD' });
@@ -1450,7 +1704,7 @@
             }
         }
 
-        // 🆕 Download Audio from R2
+        // Download Audio from R2
         window.downloadAudioFromR2 = async function() {
             if (!currentDownloadUrl) {
                 showToast('Download URL not available!', 'error');
@@ -1479,7 +1733,7 @@
             }
         }
 
-        // 🆕 Preview Audio
+        // Preview Audio
         window.previewAudio = function() {
             if (!currentDownloadUrl) {
                 showToast('Audio not available for preview!', 'error');
@@ -1493,7 +1747,7 @@
             modal.style.display = 'flex';
         }
 
-        // 🆕 Close Preview
+        // Close Preview
         window.closePreview = function() {
             const modal = document.getElementById('audioPreviewModal');
             const player = document.getElementById('previewAudioPlayer');
@@ -1555,15 +1809,24 @@
         // Logout
         window.logout = async function() {
             try {
-                await signOut(auth);
+                // Clear user data
+                localStorage.removeItem('currentUser');
+                currentUser = null;
+                userBotData = null;
                 
-                localStorage.removeItem('isLoggedIn');
-                localStorage.removeItem('userEmail');
-                localStorage.removeItem('userId');
-                localStorage.removeItem('userName');
+                // Stop job monitoring
+                if (jobListener) {
+                    jobListener();
+                    jobListener = null;
+                }
+                
+                // Reset form
+                resetForm();
+                
+                // Show login section
+                showLoginSection();
                 
                 showToast('Logged out successfully!');
-                window.location.href = 'login.html';
                 
             } catch (error) {
                 console.error('Logout error:', error);
@@ -1596,6 +1859,9 @@
 
         // Make functions available globally
         window.checkGenerateButton = checkGenerateButton;
+        
+        // 🆕 Initialize the app when page loads
+        initializeApp();
     </script>
 </body>
 </html>
