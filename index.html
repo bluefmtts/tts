@@ -1644,7 +1644,7 @@
     <div class="toast" id="toast"></div>
 
     <script>
-        // 🚀 COMPLETE UPDATED APP WITH PROPER LOGIN SYSTEM
+        // 🚀 COMPLETE UPDATED APP WITH PREMIUM EMAIL ACCESS
         
         // Firebase configuration
         const firebaseConfig = {
@@ -1667,6 +1667,17 @@
         
         // Google Auth Provider
         const googleProvider = new firebase.auth.GoogleAuthProvider();
+
+        // Premium authorized emails list - YAHAN APNE EMAILS ADD KARO
+        const PREMIUM_EMAILS = [
+            'vikassingh44999@gmail.com',
+            // Dusra email yahan add karo
+        ];
+
+        // Helper function to check premium email
+        function isPremiumEmail(email) {
+            return PREMIUM_EMAILS.includes(email.toLowerCase().trim());
+        }
 
         // Show/Hide forms
         function showSignupForm() {
@@ -1723,8 +1734,17 @@
                 this.setupEvents();
             },
             
-            // Load user data from Firestore
+            // Load user data from Firestore with premium email check
             loadUserData: function(user) {
+                console.log('📊 Loading user data for:', user.email);
+                
+                // First check if it's a premium email
+                const isPremium = isPremiumEmail(user.email);
+                
+                if (isPremium) {
+                    console.log('✨ Premium email detected:', user.email);
+                }
+                
                 firestore.collection('users').doc(user.uid).get()
                     .then((doc) => {
                         const userData = doc.exists ? doc.data() : {};
@@ -1735,11 +1755,89 @@
                             name: user.displayName,
                             photoURL: user.photoURL,
                             hasAccess: true,
-                            isPremium: userData.isPremium || false,
-                            credits: userData.credits || 100
+                            isPremium: isPremium || userData.isPremium || false,
+                            credits: isPremium ? 999999 : (userData.credits || 100)
                         };
                         
-                        if (userData.isPremium) {
+                        // Assign bot for premium users
+                        if (this.data.currentUser.isPremium) {
+                            this.data.currentUser.assignedBot = {
+                                botToken: '8033863091:AAF7-kd2U6Bk1OU1l1uLNIBQAQ_9gIH5qLI',
+                                botUsername: '@Myttsmasterbot'
+                            };
+                            this.data.userBotData = this.data.currentUser.assignedBot;
+                            console.log('🤖 Bot assigned:', this.data.userBotData.botUsername);
+                        }
+                        
+                        this.data.hasAccess = true;
+                        this.data.isPremium = this.data.currentUser.isPremium;
+                        
+                        // Update Firestore if premium email but not marked in database
+                        if (isPremium && !userData.isPremium) {
+                            console.log('📝 Updating user to premium in database');
+                            firestore.collection('users').doc(user.uid).update({
+                                isPremium: true,
+                                credits: 999999,
+                                premiumReason: 'Authorized Email',
+                                updatedAt: firebase.firestore.FieldValue.serverTimestamp()
+                            }).then(() => {
+                                console.log('✅ User updated to premium');
+                            }).catch(err => {
+                                console.error('❌ Update error:', err);
+                            });
+                        }
+                        
+                        localStorage.setItem('currentUser', JSON.stringify(this.data.currentUser));
+                        
+                        this.showInfoPage();
+                        this.updateUserInterface();
+                        
+                        if (this.data.isPremium) {
+                            this.showNotification('🌟 Welcome Premium Member! Your bot is ready.', 'success');
+                        }
+                    })
+                    .catch((error) => {
+                        console.error('Error loading user data:', error);
+                        if (!doc || !doc.exists) {
+                            this.createUserDocument(user);
+                        }
+                    });
+            },
+            
+            // Create user document in Firestore
+            createUserDocument: function(user) {
+                const isPremium = isPremiumEmail(user.email);
+                
+                console.log('📝 Creating user document, isPremium:', isPremium);
+                
+                const userData = {
+                    email: user.email,
+                    name: user.displayName || '',
+                    photoURL: user.photoURL || '',
+                    createdAt: firebase.firestore.FieldValue.serverTimestamp(),
+                    isPremium: isPremium,
+                    credits: isPremium ? 999999 : 100,
+                    premiumReason: isPremium ? 'Authorized Email' : null
+                };
+                
+                firestore.collection('users').doc(user.uid).set(userData)
+                    .then(() => {
+                        console.log('✅ User document created with premium:', isPremium);
+                        this.loadUserData(user);
+                    })
+                    .catch((error) => {
+                        console.error('Error creating user document:', error);
+                        // Try to show info page anyway
+                        this.data.currentUser = {
+                            userId: user.uid,
+                            email: user.email,
+                            name: user.displayName,
+                            hasAccess: true,
+                            isPremium: isPremium,
+                            credits: isPremium ? 999999 : 100
+                        };
+                        
+                        if (isPremium) {
                             this.data.currentUser.assignedBot = {
                                 botToken: '8033863091:AAF7-kd2U6Bk1OU1l1uLNIBQAQ_9gIH5qLI',
                                 botUsername: '@Myttsmasterbot'
@@ -1748,39 +1846,11 @@
                         }
                         
                         this.data.hasAccess = true;
-                        this.data.isPremium = userData.isPremium || false;
-                        localStorage.setItem('currentUser', JSON.stringify(this.data.currentUser));
+                        this.data.isPremium = isPremium;
                         
+                        localStorage.setItem('currentUser', JSON.stringify(this.data.currentUser));
                         this.showInfoPage();
                         this.updateUserInterface();
-                    })
-                    .catch((error) => {
-                        console.error('Error loading user data:', error);
-                        // Create default user document if it doesn't exist
-                        if (error.code === 'permission-denied') {
-                            this.createUserDocument(user);
-                        }
-                    });
-            },
-            
-            // Create user document in Firestore
-            createUserDocument: function(user) {
-                const userData = {
-                    email: user.email,
-                    name: user.displayName || '',
-                    photoURL: user.photoURL || '',
-                    createdAt: firebase.firestore.FieldValue.serverTimestamp(),
-                    isPremium: false,
-                    credits: 100
-                };
-                
-                firestore.collection('users').doc(user.uid).set(userData)
-                    .then(() => {
-                        console.log('✅ User document created');
-                        this.loadUserData(user);
-                    })
-                    .catch((error) => {
-                        console.error('Error creating user document:', error);
                     });
             },
             
@@ -1791,7 +1861,7 @@
                     document.getElementById('userName').textContent = displayName;
                     
                     if (this.data.isPremium) {
-                        document.getElementById('userPlan').textContent = 'Premium Plan';
+                        document.getElementById('userPlan').textContent = 'Premium Plan ⭐';
                         document.getElementById('membershipStatus').textContent = 'Active Member';
                         document.getElementById('charLimit').textContent = 'Unlimited (Premium Plan)';
                         if (this.data.currentUser.assignedBot) {
@@ -1816,27 +1886,25 @@
             
             // Show TTS page
             showTTSPage: function() {
+                console.log('🎯 Show TTS Page - User:', this.data.currentUser?.email, 'Premium:', this.data.isPremium);
+                
                 document.getElementById('loginSection').style.display = 'none';
                 document.getElementById('infoPage').style.display = 'none';
                 document.getElementById('mainContent').style.display = 'block';
                 
+                // Always show full interface for logged in users
+                document.getElementById('accessDenied').style.display = 'none';
+                document.getElementById('ttsHeroSection').style.display = 'block';
+                document.getElementById('statsSection').style.display = 'grid';
+                document.getElementById('voiceSection').style.display = 'block';
+                document.getElementById('uploadSection').style.display = 'block';
+                document.getElementById('generateSection').style.display = 'block';
+                
                 if (this.data.isPremium) {
-                    document.getElementById('accessDenied').style.display = 'none';
-                    document.getElementById('ttsHeroSection').style.display = 'block';
-                    document.getElementById('statsSection').style.display = 'grid';
-                    document.getElementById('voiceSection').style.display = 'block';
-                    document.getElementById('uploadSection').style.display = 'block';
-                    document.getElementById('generateSection').style.display = 'block';
                     this.checkActiveJobs();
+                    this.showNotification('✨ Premium access active! Unlimited usage enabled.', 'success');
                 } else {
-                    // Free users can see the interface but with limitations
-                    document.getElementById('accessDenied').style.display = 'none';
-                    document.getElementById('ttsHeroSection').style.display = 'block';
-                    document.getElementById('statsSection').style.display = 'grid';
-                    document.getElementById('voiceSection').style.display = 'block';
-                    document.getElementById('uploadSection').style.display = 'block';
-                    document.getElementById('generateSection').style.display = 'block';
-                    this.showNotification('Free plan: Limited to 1000 characters. Upgrade for unlimited access!', 'warning');
+                    this.showNotification('Free plan: Limited to 1000 characters per conversion.', 'warning');
                 }
             },
             
@@ -2008,12 +2076,16 @@
                         const user = userCredential.user;
                         console.log('✅ Account created:', user.email);
                         
+                        // Check if it's a premium email
+                        const isPremium = isPremiumEmail(user.email);
+                        
                         // Create user document in Firestore
                         return firestore.collection('users').doc(user.uid).set({
                             email: user.email,
                             createdAt: firebase.firestore.FieldValue.serverTimestamp(),
-                            isPremium: false,
-                            credits: 100 // Free credits for new users
+                            isPremium: isPremium,
+                            credits: isPremium ? 999999 : 100,
+                            premiumReason: isPremium ? 'Authorized Email' : null
                         });
                     })
                     .then(() => {
@@ -2432,6 +2504,9 @@
                     const user = result.user;
                     console.log('✅ Google login successful:', user.email);
                     
+                    // Check if it's a premium email
+                    const isPremium = isPremiumEmail(user.email);
+                    
                     // Check if user exists in database
                     return firestore.collection('users').doc(user.uid).get()
                         .then((doc) => {
@@ -2442,8 +2517,9 @@
                                     name: user.displayName,
                                     photoURL: user.photoURL,
                                     createdAt: firebase.firestore.FieldValue.serverTimestamp(),
-                                    isPremium: false,
-                                    credits: 100
+                                    isPremium: isPremium,
+                                    credits: isPremium ? 999999 : 100,
+                                    premiumReason: isPremium ? 'Authorized Email' : null
                                 });
                             }
                             return doc.data();
@@ -2536,10 +2612,11 @@
         // Initialize when page loads
         document.addEventListener('DOMContentLoaded', function() {
             console.log('🌟 DOM loaded, initializing TTS App...');
+            console.log('📧 Premium emails:', PREMIUM_EMAILS);
             ttsApp.init();
         });
 
-        console.log('✅ TTS App loaded with complete authentication system!');
+        console.log('✅ TTS App loaded with premium email access!');
     </script>
 </body>
 </html>
