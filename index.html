@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -528,7 +527,7 @@
             margin-top: 1rem;
         }
 
-        /* 🆕 Real-time Status Update Section */
+        /* Real-time Status Update Section */
         .status-update {
             background: rgba(59, 130, 246, 0.1);
             border: 1px solid var(--secondary);
@@ -637,6 +636,158 @@
         .detail-value {
             color: var(--text-primary);
             font-weight: 600;
+        }
+
+        /* History Section Styles */
+        .history-section {
+            margin-top: 2rem;
+        }
+
+        .history-controls {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 2rem;
+        }
+
+        .history-count {
+            color: var(--text-secondary);
+        }
+
+        .history-grid {
+            display: grid;
+            gap: 1rem;
+        }
+
+        .history-item {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid var(--glass-border);
+            border-radius: 15px;
+            padding: 1.5rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            transition: all 0.3s ease;
+        }
+
+        .history-item:hover {
+            background: rgba(255, 255, 255, 0.1);
+            transform: translateX(5px);
+        }
+
+        .history-item-info {
+            flex: 1;
+        }
+
+        .history-item-title {
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+            color: var(--text-primary);
+        }
+
+        .history-item-details {
+            display: flex;
+            gap: 1rem;
+            font-size: 0.9rem;
+            color: var(--text-secondary);
+        }
+
+        .history-item-detail {
+            display: flex;
+            align-items: center;
+            gap: 0.25rem;
+        }
+
+        .history-item-actions {
+            display: flex;
+            gap: 0.5rem;
+            align-items: center;
+        }
+
+        .history-status {
+            padding: 0.25rem 0.75rem;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            font-weight: 600;
+        }
+
+        .history-status.completed {
+            background: rgba(16, 185, 129, 0.2);
+            color: var(--success);
+            border: 1px solid var(--success);
+        }
+
+        .history-status.processing {
+            background: rgba(245, 158, 11, 0.2);
+            color: var(--warning);
+            border: 1px solid var(--warning);
+        }
+
+        .history-status.failed {
+            background: rgba(239, 68, 68, 0.2);
+            color: #ef4444;
+            border: 1px solid #ef4444;
+        }
+
+        .history-status.expired {
+            background: rgba(156, 163, 175, 0.2);
+            color: #9ca3af;
+            border: 1px solid #9ca3af;
+        }
+
+        .history-loading {
+            text-align: center;
+            padding: 2rem;
+            color: var(--text-secondary);
+        }
+
+        .history-empty {
+            text-align: center;
+            padding: 3rem;
+            color: var(--text-secondary);
+        }
+
+        .history-download-btn {
+            background: linear-gradient(45deg, var(--success), #059669);
+            border: none;
+            color: white;
+            padding: 0.5rem 1rem;
+            border-radius: 25px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            transition: all 0.3s ease;
+            font-weight: 600;
+        }
+
+        .history-download-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 20px rgba(16, 185, 129, 0.4);
+        }
+
+        .history-download-btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        .history-preview-btn {
+            background: var(--primary);
+            border: none;
+            color: white;
+            width: 35px;
+            height: 35px;
+            border-radius: 50%;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s ease;
+        }
+
+        .history-preview-btn:hover {
+            background: var(--secondary);
+            transform: scale(1.1);
         }
 
         /* Character Counter */
@@ -759,7 +910,7 @@
     <div class="bg-animation">
         <div class="sound-wave"></div>
     </div>
-
+    
     <!-- Navigation -->
     <nav>
         <div class="nav-container">
@@ -768,6 +919,9 @@
                 Blue FM TTS
             </a>
             <div class="nav-links">
+                <a href="#historySection" class="nav-link" onclick="scrollToHistory()">
+                    <i class="fas fa-history"></i> History
+                </a>
                 <a href="my-audio.html" class="nav-link audio-link">
                     <i class="fas fa-headphones"></i> Your Audio
                 </a>
@@ -933,7 +1087,7 @@
             </button>
         </section>
 
-        <!-- 🆕 Enhanced Processing Section with Real-time Updates -->
+        <!-- Processing Section with Real-time Updates -->
         <section class="processing-section" id="processingSection">
             <div class="processing-icon">
                 <i class="fas fa-cog"></i>
@@ -946,7 +1100,7 @@
                 <small>Processing time depends on file size and server load</small>
             </div>
             
-            <!-- 🆕 Real-time Status Updates -->
+            <!-- Real-time Status Updates -->
             <div class="status-update">
                 <h4 style="margin-bottom: 1rem;">Processing Status:</h4>
                 <ul class="status-steps" id="statusSteps">
@@ -969,7 +1123,7 @@
             </div>
         </section>
 
-        <!-- 🆕 Enhanced Download Section with R2 Integration -->
+        <!-- Download Section with R2 Integration -->
         <section class="download-section" id="downloadSection">
             <div class="download-icon">
                 <i class="fas fa-download"></i>
@@ -1013,6 +1167,36 @@
                 <i class="fas fa-plus"></i> Create Another Audio
             </button>
         </section>
+
+        <!-- History Section -->
+        <section class="history-section glass-container" id="historySection">
+            <h2 class="section-title">
+                <i class="fas fa-history"></i> Your Audio History
+            </h2>
+            
+            <!-- History Controls -->
+            <div class="history-controls">
+                <button class="btn btn-primary" onclick="loadAudioHistory()">
+                    <i class="fas fa-sync"></i> Refresh History
+                </button>
+                <span class="history-count">Total: <span id="historyCount">0</span> audios</span>
+            </div>
+            
+            <!-- History Grid -->
+            <div class="history-grid" id="historyGrid">
+                <!-- History items will be loaded here -->
+                <div class="history-loading">
+                    <i class="fas fa-spinner fa-spin"></i>
+                    <p>Loading your audio history...</p>
+                </div>
+            </div>
+            
+            <!-- Empty State -->
+            <div class="history-empty" id="historyEmpty" style="display: none;">
+                <i class="fas fa-folder-open" style="font-size: 3rem; color: var(--text-secondary); margin-bottom: 1rem;"></i>
+                <p>No audio history yet. Generate your first audio!</p>
+            </div>
+        </section>
     </main>
 
     <!-- Footer -->
@@ -1023,7 +1207,7 @@
     <!-- Toast -->
     <div class="toast" id="toast"></div>
 
-    <!-- 🆕 Audio Preview Modal -->
+    <!-- Audio Preview Modal -->
     <div id="audioPreviewModal" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.8); z-index: 2000; display: flex; align-items: center; justify-content: center;">
         <div style="background: var(--glass-bg); backdrop-filter: blur(10px); padding: 2rem; border-radius: 20px; max-width: 500px; width: 90%;">
             <h3 style="margin-bottom: 1rem; text-align: center;">Audio Preview</h3>
@@ -1041,8 +1225,9 @@
         import { getAuth, onAuthStateChanged, signOut } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js';
         import { getStorage, ref, uploadBytes, getDownloadURL } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-storage.js';
         import { getFirestore, doc, onSnapshot, collection, query, where, orderBy, limit } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js';
+        import { getFunctions, httpsCallable } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-functions.js';
 
-        // ✅ Firebase configuration
+        // Firebase configuration
         const firebaseConfig = {
             apiKey: "AIzaSyCmBZmN-BCa3Qkb7f7K9TjXuK1_ma1ukbw",
             authDomain: "bluefm-tts.firebaseapp.com",
@@ -1057,6 +1242,7 @@
         const auth = getAuth(app);
         const storage = getStorage(app);
         const db = getFirestore(app);
+        const functions = getFunctions(app);
 
         // Global variables
         let selectedVoice = null;
@@ -1065,6 +1251,7 @@
         let currentJobId = null;
         let jobListener = null;
         let currentDownloadUrl = null;
+        let audioHistoryData = [];
 
         // Voice names mapping
         const voiceNames = {
@@ -1074,7 +1261,7 @@
             'voice4': 'Storyteller'
         };
 
-        // ✅ Voice to Reference Audio mapping
+        // Voice to Reference Audio mapping
         const voiceToReference = {
             'voice1': 'professional-male.mp3',
             'voice2': 'friendly-female.mp3',
@@ -1082,7 +1269,7 @@
             'voice4': 'storyteller.mp3'
         };
 
-        // ✅ Demo audio URLs
+        // Demo audio URLs
         const demoAudioUrls = {
             'voice1': 'https://firebasestorage.googleapis.com/v0/b/bluefm-tts.firebasestorage.app/o/reference-voices%2Fprofessional-male.mp3?alt=media',
             'voice2': 'https://firebasestorage.googleapis.com/v0/b/bluefm-tts.firebasestorage.app/o/reference-voices%2Ffriendly-female.mp3?alt=media',
@@ -1104,8 +1291,13 @@
                 localStorage.setItem('userEmail', user.email);
                 localStorage.setItem('userId', user.uid);
                 
-                // 🆕 Check for any active jobs
+                // Check for any active jobs
                 checkActiveJobs();
+                
+                // Load audio history
+                setTimeout(() => {
+                    loadAudioHistory();
+                }, 1000);
                 
             } else {
                 console.log('❌ User not logged in');
@@ -1113,7 +1305,7 @@
             }
         });
 
-        // 🆕 Check for Active Jobs
+        // Check for Active Jobs
         async function checkActiveJobs() {
             try {
                 const q = query(
@@ -1157,7 +1349,7 @@
             showToast(`Voice selected: ${voiceNames[voiceId]}!`);
         }
 
-        // ✅ Enhanced Play Demo with Real Audio
+        // Play Demo
         window.playDemo = function(event, voiceId) {
             event.stopPropagation();
             const btn = event.currentTarget;
@@ -1286,7 +1478,7 @@
             }
         }
 
-        // ✅ Enhanced Generate Audio with Real-time Monitoring
+        // Generate Audio
         window.generateAudio = async function() {
             if (!selectedVoice || !uploadedFile) {
                 showToast('Please select a voice and upload a file!', 'error');
@@ -1307,7 +1499,7 @@
                 const textFileName = `${jobId}-${uploadedFile.name}`;
                 const textRef = ref(storage, `tts-requests/${userId}/${textFileName}`);
                 
-                // ✅ Upload with reference voice metadata
+                // Upload with reference voice metadata
                 const metadata = {
                     customMetadata: {
                         userId: userId,
@@ -1324,7 +1516,7 @@
                 
                 updateStatus('Sending to processing server...', 2);
                 
-                // 🆕 Start real-time job monitoring
+                // Start real-time job monitoring
                 startJobMonitoring(jobId);
                 
                 showToast('Files uploaded! Processing started...', 'success');
@@ -1336,7 +1528,7 @@
             }
         }
 
-        // 🆕 Real-time Job Monitoring
+        // Real-time Job Monitoring
         function startJobMonitoring(jobId) {
             if (jobListener) {
                 jobListener(); // Unsubscribe from previous listener
@@ -1377,7 +1569,7 @@
             });
         }
 
-        // 🆕 Update Processing Status
+        // Update Processing Status
         function updateStatus(message, step) {
             document.getElementById('processingMessage').textContent = message;
             
@@ -1399,14 +1591,14 @@
             }
         }
 
-        // 🆕 Show Processing Section
+        // Show Processing Section
         function showProcessingSection() {
             document.getElementById('generateSection').style.display = 'none';
             document.getElementById('processingSection').classList.add('show');
             document.getElementById('downloadSection').classList.remove('show');
         }
 
-        // 🆕 Show Download Section with R2 Data
+        // Show Download Section
         function showDownloadSection(jobData) {
             updateStatus('Audio ready for download!', 5);
             
@@ -1432,10 +1624,15 @@
                 // Get file size from R2 URL
                 getFileSizeFromUrl(currentDownloadUrl);
                 
+                // Refresh history after 2 seconds
+                setTimeout(() => {
+                    loadAudioHistory();
+                }, 2000);
+                
             }, 1000);
         }
 
-        // 🆕 Get File Size from R2 URL
+        // Get File Size from URL
         async function getFileSizeFromUrl(url) {
             try {
                 const response = await fetch(url, { method: 'HEAD' });
@@ -1450,7 +1647,7 @@
             }
         }
 
-        // 🆕 Download Audio from R2
+        // Download Audio from R2
         window.downloadAudioFromR2 = async function() {
             if (!currentDownloadUrl) {
                 showToast('Download URL not available!', 'error');
@@ -1479,7 +1676,7 @@
             }
         }
 
-        // 🆕 Preview Audio
+        // Preview Audio
         window.previewAudio = function() {
             if (!currentDownloadUrl) {
                 showToast('Audio not available for preview!', 'error');
@@ -1493,7 +1690,7 @@
             modal.style.display = 'flex';
         }
 
-        // 🆕 Close Preview
+        // Close Preview
         window.closePreview = function() {
             const modal = document.getElementById('audioPreviewModal');
             const player = document.getElementById('previewAudioPlayer');
@@ -1502,6 +1699,221 @@
             player.currentTime = 0;
             modal.style.display = 'none';
         }
+
+        // Load Audio History
+        async function loadAudioHistory() {
+            try {
+                const historyGrid = document.getElementById('historyGrid');
+                const historyEmpty = document.getElementById('historyEmpty');
+                
+                // Show loading
+                historyGrid.innerHTML = `
+                    <div class="history-loading">
+                        <i class="fas fa-spinner fa-spin"></i>
+                        <p>Loading your audio history...</p>
+                    </div>
+                `;
+                historyEmpty.style.display = 'none';
+                
+                // Call getUserAudioHistory function
+                const getUserHistory = httpsCallable(functions, 'getUserAudioHistory');
+                const result = await getUserHistory({ limit: 20 });
+                
+                if (result.data && result.data.audioHistory) {
+                    audioHistoryData = result.data.audioHistory;
+                    displayAudioHistory(audioHistoryData);
+                } else {
+                    showEmptyHistory();
+                }
+                
+            } catch (error) {
+                console.error('❌ Error loading history:', error);
+                showToast('Failed to load audio history', 'error');
+                showEmptyHistory();
+            }
+        }
+
+        // Display Audio History
+        function displayAudioHistory(historyItems) {
+            const historyGrid = document.getElementById('historyGrid');
+            const historyEmpty = document.getElementById('historyEmpty');
+            const historyCount = document.getElementById('historyCount');
+            
+            // Update count
+            historyCount.textContent = historyItems.length;
+            
+            if (historyItems.length === 0) {
+                showEmptyHistory();
+                return;
+            }
+            
+            // Clear grid
+            historyGrid.innerHTML = '';
+            historyEmpty.style.display = 'none';
+            
+            // Add history items
+            historyItems.forEach((item, index) => {
+                const historyItem = createHistoryItem(item, index);
+                historyGrid.appendChild(historyItem);
+            });
+        }
+
+        // Create History Item Element
+        function createHistoryItem(item, index) {
+            const div = document.createElement('div');
+            div.className = 'history-item';
+            
+            // Format date
+            const createdDate = item.createdAt ? new Date(item.createdAt._seconds * 1000) : new Date();
+            const formattedDate = createdDate.toLocaleDateString('en-US', {
+                month: 'short',
+                day: 'numeric',
+                hour: '2-digit',
+                minute: '2-digit'
+            });
+            
+            // Check if expired
+            let isExpired = false;
+            let expiryText = '';
+            
+            if (item.expiresAt) {
+                const expiryDate = new Date(item.expiresAt._seconds * 1000);
+                isExpired = expiryDate < new Date();
+                
+                if (!isExpired) {
+                    const hoursLeft = Math.ceil((expiryDate - new Date()) / (1000 * 60 * 60));
+                    expiryText = `${hoursLeft}h left`;
+                } else {
+                    expiryText = 'Expired';
+                }
+            }
+            
+            // Determine status
+            let status = item.status || 'processing';
+            let statusClass = status;
+            let statusText = status.charAt(0).toUpperCase() + status.slice(1);
+            
+            if (isExpired) {
+                statusClass = 'expired';
+                statusText = 'Expired';
+            }
+            
+            // Check if can download
+            const canDownload = status === 'completed' && !isExpired && item.downloadUrl;
+            
+            div.innerHTML = `
+                <div class="history-item-info">
+                    <div class="history-item-title">
+                        <i class="fas fa-file-audio"></i> Audio #${index + 1}
+                    </div>
+                    <div class="history-item-details">
+                        <span class="history-item-detail">
+                            <i class="fas fa-calendar"></i> ${formattedDate}
+                        </span>
+                        <span class="history-item-detail">
+                            <i class="fas fa-microphone"></i> ${voiceNames[item.voiceId] || 'Unknown Voice'}
+                        </span>
+                        ${expiryText ? `
+                            <span class="history-item-detail">
+                                <i class="fas fa-clock"></i> ${expiryText}
+                            </span>
+                        ` : ''}
+                    </div>
+                </div>
+                <div class="history-item-actions">
+                    <span class="history-status ${statusClass}">${statusText}</span>
+                    ${canDownload ? `
+                        <button class="history-preview-btn" onclick="previewHistoryAudio('${item.downloadUrl}')" title="Preview">
+                            <i class="fas fa-play"></i>
+                        </button>
+                        <button class="history-download-btn" onclick="downloadHistoryAudio('${item.downloadUrl}', '${item.jobId}')">
+                            <i class="fas fa-download"></i> Download
+                        </button>
+                    ` : status === 'processing' || status === 'sent_to_telegram' ? `
+                        <button class="history-download-btn" disabled>
+                            <i class="fas fa-spinner fa-spin"></i> Processing
+                        </button>
+                    ` : status === 'failed' ? `
+                        <button class="history-download-btn" disabled>
+                            <i class="fas fa-times"></i> Failed
+                        </button>
+                    ` : `
+                        <button class="history-download-btn" disabled>
+                            <i class="fas fa-ban"></i> Unavailable
+                        </button>
+                    `}
+                </div>
+            `;
+            
+            return div;
+        }
+
+        // Show Empty History
+        function showEmptyHistory() {
+            const historyGrid = document.getElementById('historyGrid');
+            const historyEmpty = document.getElementById('historyEmpty');
+            
+            historyGrid.innerHTML = '';
+            historyEmpty.style.display = 'block';
+            document.getElementById('historyCount').textContent = '0';
+        }
+
+        // Download History Audio
+        window.downloadHistoryAudio = function(downloadUrl, jobId) {
+            if (!downloadUrl) {
+                showToast('Download URL not available!', 'error');
+                return;
+            }
+            
+            try {
+                showToast('Starting download...', 'success');
+                
+                // Create download link
+                const link = document.createElement('a');
+                link.href = downloadUrl;
+                link.download = `audio_${jobId}.wav`;
+                link.target = '_blank';
+                
+                // Trigger download
+                document.body.appendChild(link);
+                link.click();
+                document.body.removeChild(link);
+                
+                showToast('Download started!', 'success');
+                
+            } catch (error) {
+                console.error('❌ Download error:', error);
+                showToast('Download failed! Please try again.', 'error');
+            }
+        }
+
+        // Preview History Audio
+        window.previewHistoryAudio = function(downloadUrl) {
+            if (!downloadUrl) {
+                showToast('Audio not available for preview!', 'error');
+                return;
+            }
+            
+            const modal = document.getElementById('audioPreviewModal');
+            const player = document.getElementById('previewAudioPlayer');
+            
+            player.src = downloadUrl;
+            modal.style.display = 'flex';
+        }
+
+        // Scroll to History
+        window.scrollToHistory = function() {
+            document.getElementById('historySection').scrollIntoView({ behavior: 'smooth' });
+            loadAudioHistory(); // Refresh history when clicked
+        }
+
+        // Auto-refresh history every 30 seconds if there are processing items
+        setInterval(() => {
+            if (audioHistoryData.some(item => item.status === 'processing' || item.status === 'sent_to_telegram')) {
+                console.log('🔄 Auto-refreshing history for processing items...');
+                loadAudioHistory();
+            }
+        }, 30000);
 
         // Show Error
         function showError(error) {
@@ -1596,6 +2008,8 @@
 
         // Make functions available globally
         window.checkGenerateButton = checkGenerateButton;
+        window.showToast = showToast;
+        window.loadAudioHistory = loadAudioHistory;
     </script>
 </body>
 </html>
